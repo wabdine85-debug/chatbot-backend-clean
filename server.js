@@ -25,7 +25,9 @@ app.post("/chat", async (req, res) => {
         {
           role: "system",
           content:
-            "Du bist ein Verkaufsassistent für das Kosmetikstudio Palais de Beauté in Wiesbaden. " +
+            "Du bist Wisy, ein Beratungsassistent für PDB Aesthetic Room (kurz: PDB). \
+Antworte stets freundlich, professionell und in maximal zwei Sätzen."
+ +
             "Du beantwortest Fragen freundlich und leitest Kunden aktiv zur Terminbuchung oder zum Kauf.",
         },
         { role: "user", content: userMessage },

@@ -21,17 +21,23 @@ app.post("/chat", async (req, res) => {
 
     // Harte Regel: Kontakt/Termin → immer Kontaktformular-Link
     const lower = userMessage.toLowerCase();
-    if (
-      lower.includes("mail") ||
-      lower.includes("e-mail") ||
-      lower.includes("email") ||
-      lower.includes("kontakt") ||
-      lower.includes("termin")
-    ) {
-return res.json({
-  replyText: "Bitte nutzen Sie für Anfragen unser Kontaktformular:",
-  link: "https://www.palaisdebeaute.de/pages/kontakt"
+// --- Hier kein vorzeitiges return mehr ---
+const completion = await client.chat.completions.create({
+  model: "gpt-4o-mini",
+  max_tokens: 120,
+  messages: [
+    {
+      role: "system",
+      content: `Du bist Wisy, ein Beratungsassistent für PDB Aesthetic Room (kurz: PDB).
+Antworte stets freundlich, professionell und in maximal zwei Sätzen.
+Wenn der Nutzer nach E-Mail, Kontakt oder Termin fragt, gib IMMER nur den Link zum Kontaktformular an:
+HIER-DEINE-URL .
+Erfinde niemals eine andere E-Mail-Adresse oder Telefonnummer.`,
+    },
+    { role: "user", content: userMessage },
+  ],
 });
+
 
 
     }
@@ -45,7 +51,7 @@ return res.json({
           content: `Du bist Wisy, ein Beratungsassistent für PDB Aesthetic Room (kurz: PDB).
 Antworte stets freundlich, professionell und in maximal zwei Sätzen.
 Wenn der Nutzer nach E-Mail, Kontakt oder Termin fragt, gib IMMER nur diesen Link zum Kontaktformular an:
-https://www.palaisdebeaute.de/pages/contact .
+https://palaisdebeaute.de/pages/contact .
 Erfinde niemals eine andere E-Mail-Adresse oder Telefonnummer.`,
         },
         { role: "user", content: userMessage },

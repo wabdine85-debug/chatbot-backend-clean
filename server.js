@@ -8,7 +8,7 @@ dotenv.config();
 
 const app = express();
 app.use(cors());
-app.use(bodyParser.json());
+app.use(bodyParser.json()); 
 
 const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
@@ -28,7 +28,7 @@ app.post("/chat", async (req, res) => {
           content: `Du bist Wisy, ein Beratungsassistent für PDB Aesthetic Room (kurz: PDB).
 Antworte stets freundlich, professionell und in maximal zwei Sätzen.
 Wenn der Nutzer nach E-Mail, Kontakt oder Termin fragt, gib IMMER nur diesen Link zum Kontaktformular an:
-https://palaisdebeaute.de/pages/contact
+/pages/contact
 Erfinde niemals eine andere E-Mail-Adresse oder Telefonnummer.`,
         },
         { role: "user", content: userMessage },

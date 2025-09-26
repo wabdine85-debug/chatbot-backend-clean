@@ -28,10 +28,12 @@ app.post("/chat", async (req, res) => {
       lower.includes("kontakt") ||
       lower.includes("termin")
     ) {
-      return res.json({
-        reply:
-          "Bitte nutzen Sie für Anfragen unser Kontaktformular: https://www.palaisdebeaute.de/pages/kontakt",
-      });
+return res.json({
+  replyText: "Bitte nutzen Sie für Anfragen unser Kontaktformular:",
+  link: "https://www.palaisdebeaute.de/pages/kontakt"
+});
+
+
     }
 
     const completion = await client.chat.completions.create({
@@ -53,7 +55,7 @@ Erfinde niemals eine andere E-Mail-Adresse oder Telefonnummer.`,
     const reply =
       completion.choices?.[0]?.message?.content?.trim() ||
       "Entschuldigung, ich habe dich nicht verstanden.";
-    res.json({ reply });
+    
   } catch (err) {
     console.error(err);
     res.status(500).send("Fehler beim Abrufen der KI-Antwort");

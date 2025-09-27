@@ -29,7 +29,7 @@ app.post("/chat", async (req, res) => {
 Antworte stets freundlich, professionell und in maximal zwei Sätzen.
 Wenn der Nutzer nach E-Mail, Kontakt oder Termin fragt,
 gib IMMER folgenden Markdown-Link aus:
-[Kontaktformular](https://www.palaisdebeaute.de/pages/contact)
+[Kontaktformular](https://palaisdebeaute.de/pages/contact)
 Erfinde niemals eine andere E-Mail-Adresse oder Telefonnummer.`,
 
         },

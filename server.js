@@ -5,12 +5,6 @@ import dotenv from "dotenv";
 import OpenAI from "openai";
 import fs from "fs";
 
-// Behandlungsdaten aus JSON laden
-const treatments = JSON.parse(
-  fs.readFileSync(new URL("./treatments.json", import.meta.url))
-);
-
-
 dotenv.config();
 
 const app = express();
@@ -19,33 +13,51 @@ app.use(bodyParser.json());
 
 const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
-// Healthcheck
-app.get("/", (_req, res) => res.send("OK"));
-
 const CONTACT_URL = "https://palaisdebeaute.de/pages/contact";
 
-// Hilfsfunktion: Erzwingt sauberen Markdown-Link
+// Behandlungsdaten aus JSON laden
+const treatments = JSON.parse(
+  fs.readFileSync(new URL("./treatments.json", import.meta.url))
+);
+
+// Hilfsfunktion: genau EIN sauberer Markdown-Link, Duplikate vermeiden
 function forceMarkdownLink(text) {
   if (!text) return "";
-  // 1) Bereits vorhandenen Markdown-Link auf korrekte URL & Ankertext normalisieren
-  const mdExactUrl = new RegExp(`\\[([^\\]]+)\\]\\(${CONTACT_URL.replace(/\//g, "\\/")}\\)`, "g");
-  let out = text.replace(mdExactUrl, `[Kontaktformular](${CONTACT_URL})`);
 
-  // 2) Rohe URL -> Markdown-Link
-  const rawUrl = new RegExp(CONTACT_URL.replace(/\//g, "\\/"), "g");
-  out = out.replace(rawUrl, `[Kontaktformular](${CONTACT_URL})`);
+  let out = text;
+  const urlEsc = CONTACT_URL.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const mdLinkStr = `\\[\\s*Kontaktformular\\s*\\]\\(${urlEsc}\\)`;
+  const mdLinkRe = new RegExp(mdLinkStr, "i");
 
-  // 3) Kaputte HTML-Links -> Markdown-Link
-  out = out.replace(/<a[^>]*href="https?:\/\/[^"]+"[^>]*>.*?<\/a>/gi, `[Kontaktformular](${CONTACT_URL})`);
+  // 0) Kaputte Variante wie [Kontaktformular](Kontaktformular) → reparieren
+  out = out.replace(/\[\s*Kontaktformular\s*\]\(\s*Kontaktformular\s*\)/gi, `[Kontaktformular](${CONTACT_URL})`);
 
-  // 4) Satzzeichen direkt nach dem Link von der URL trennen (z. B. ...contact). -> ...contact ).
-  out = out.replace(
-    new RegExp(`(\\[Kontaktformular\\]\\(${CONTACT_URL.replace(/\//g, "\\/")}\\))([\\.,!\\?])(\\s|$)`, "g"),
-    `$1 $2$3`
-  );
+  // 1) HTML-Anker mit unserer URL → Markdown-Link
+  const htmlOurUrl = new RegExp(`<a[^>]*href=["']${urlEsc}["'][^>]*>[^<]*<\\/a>`, "i");
+  if (htmlOurUrl.test(out)) {
+    out = out.replace(htmlOurUrl, `[Kontaktformular](${CONTACT_URL})`);
+  }
+
+  // 2) Wenn noch kein korrekter Markdown-Link existiert → nackte URL zu Markdown-Link
+  if (!mdLinkRe.test(out)) {
+    const rawUrlRe = new RegExp(urlEsc, "g");
+    out = out.replace(rawUrlRe, `[Kontaktformular](${CONTACT_URL})`);
+  }
+
+  // 3) Lose „Kontaktformular“-Wörter direkt vor/nach dem Link entfernen (Duplikate)
+  const mdLinkLooseRe = new RegExp(mdLinkStr, "gi");
+  out = out
+    .replace(new RegExp(`Kontaktformular\\s*[:\\-–—]?\\s*(${mdLinkStr})`, "gi"), "$1")
+    .replace(new RegExp(`(${mdLinkStr})\\s*[:\\-–—]?\\s*Kontaktformular`, "gi"), "$1");
+
+  // 4) Satzzeichen direkt nach dem Link sauber abtrennen
+  out = out.replace(new RegExp(`(${mdLinkStr})([\\.,!\\?])(\\s|$)`, "gi"), "$1 $2$3");
 
   return out.trim();
 }
+
+// Healthcheck
+app.get("/", (_req, res) => res.send("OK"));
 
 app.post("/chat", async (req, res) => {
   try {
@@ -53,28 +65,31 @@ app.post("/chat", async (req, res) => {
 
     const completion = await client.chat.completions.create({
       model: "gpt-4o-mini",
-      max_tokens: 300,   // ca. 4 Sätze – reicht aus
+      max_tokens: 300, // ~4 Sätze
       messages: [
         {
           role: "system",
           content: `Du bist Wisy, ein Beratungsassistent für PDB Aesthetic Room (PDB).
-Antworte immer auf Deutsch, freundlich und professionell.
-Wenn es für den Nutzer hilfreich ist, darfst du bis zu vier Sätze schreiben,
-um die Behandlung und ihre Vorteile überzeugend zu erklären.
+ANTWORTE IMMER IN MAXIMAL VIER SÄTZEN. Schreibe nie mehr als vier Sätze.
+Antworte auf Deutsch, freundlich und professionell.
 
 Wenn der Nutzer nach konkreten Behandlungen oder Preisen fragt,
 nutze vorrangig diese Liste:
 ${treatments.map(t => `• ${t.name}: ${t.preis} € – ${t.beschreibung}`).join("\n")}
 
 Falls die gewünschte Behandlung hier nicht aufgeführt ist,
-gib bitte stattdessen allgemeine, hilfreiche Informationen
-(zum Beispiel typische Behandlungsmöglichkeiten oder Tipps)
-und lade den Nutzer ein, über den folgenden Link Kontakt aufzunehmen:
-(${CONTACT_URL})
+gib allgemeine, hilfreiche Informationen (z. B. typische Möglichkeiten/Tipps)
+und lade den Nutzer ein, über folgenden Link Kontakt aufzunehmen:
+${CONTACT_URL}
 
-Wichtig:
-– Erfinde niemals eine andere E-Mail-Adresse oder Telefonnummer.
-– Verwende niemals den Satz „Ich habe keine Informationen“.`
+    Wichtig:
+    – Schreibe den Hinweis auf das Kontaktformular immer nur EINMAL,
+      direkt als klickbaren Link im Format [Kontaktformular](URL),
+      und schreibe nicht zusätzlich davor oder danach noch einmal
+      das Wort „Kontaktformular“.
+    – Erfinde niemals eine andere E-Mail-Adresse oder Telefonnummer.
+    – Verwende niemals den Satz „Ich habe keine Informationen“.
+
         },
         { role: "user", content: userMessage },
       ],
@@ -92,7 +107,6 @@ Wichtig:
     res.status(500).send("Fehler beim Abrufen der KI-Antwort");
   }
 });
-
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Backend läuft auf Port ${PORT}`));

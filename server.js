@@ -8,12 +8,37 @@ dotenv.config();
 
 const app = express();
 app.use(cors());
-app.use(bodyParser.json()); 
+app.use(bodyParser.json());
 
 const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
-// einfacher Test-Endpunkt
+// Healthcheck
 app.get("/", (_req, res) => res.send("OK"));
+
+const CONTACT_URL = "https://palaisdebeaute.de/pages/contact";
+
+// Hilfsfunktion: Erzwingt sauberen Markdown-Link
+function forceMarkdownLink(text) {
+  if (!text) return "";
+  // 1) Bereits vorhandenen Markdown-Link auf korrekte URL & Ankertext normalisieren
+  const mdExactUrl = new RegExp(`\\[([^\\]]+)\\]\\(${CONTACT_URL.replace(/\//g, "\\/")}\\)`, "g");
+  let out = text.replace(mdExactUrl, `[Kontaktformular](${CONTACT_URL})`);
+
+  // 2) Rohe URL -> Markdown-Link
+  const rawUrl = new RegExp(CONTACT_URL.replace(/\//g, "\\/"), "g");
+  out = out.replace(rawUrl, `[Kontaktformular](${CONTACT_URL})`);
+
+  // 3) Kaputte HTML-Links -> Markdown-Link
+  out = out.replace(/<a[^>]*href="https?:\/\/[^"]+"[^>]*>.*?<\/a>/gi, `[Kontaktformular](${CONTACT_URL})`);
+
+  // 4) Satzzeichen direkt nach dem Link von der URL trennen (z. B. ...contact). -> ...contact ).
+  out = out.replace(
+    new RegExp(`(\\[Kontaktformular\\]\\(${CONTACT_URL.replace(/\//g, "\\/")}\\))([\\.,!\\?])(\\s|$)`, "g"),
+    `$1 $2$3`
+  );
+
+  return out.trim();
+}
 
 app.post("/chat", async (req, res) => {
   try {
@@ -21,25 +46,26 @@ app.post("/chat", async (req, res) => {
 
     const completion = await client.chat.completions.create({
       model: "gpt-4o-mini",
-      max_tokens: 120,
+      max_tokens: 400,
       messages: [
         {
           role: "system",
-          content: `Du bist Wisy, ein Beratungsassistent für PDB Aesthetic Room (kurz: PDB).
-Antworte stets freundlich, professionell und in maximal zwei Sätzen.
-Wenn der Nutzer nach E-Mail, Kontakt oder Termin fragt,
-gib IMMER folgenden Markdown-Link aus:
-[Kontaktformular](https://palaisdebeaute.de/pages/contact)
-Erfinde niemals eine andere E-Mail-Adresse oder Telefonnummer.`,
-
+          content: `Du bist Wisy, ein Beratungsassistent für PDB Aesthetic Room (PDB).
+Antworte immer auf Deutsch, freundlich und professionell.
+Wenn es für den Nutzer hilfreich ist, darfst du bis zu sechs Sätze schreiben,
+um die Behandlung und Vorteile überzeugend zu erklären.
+Wenn der Nutzer nach E-Mail, Kontakt oder Termin fragt, gib IMMER GENAU diesen Markdown-Link aus (kein HTML, keine Anführungszeichen, kein Satzzeichen direkt dahinter):
+[Kontaktformular](${CONTACT_URL})
+Erfinde niemals eine andere E-Mail-Adresse oder Telefonnummer.`
         },
         { role: "user", content: userMessage },
       ],
     });
 
-    const reply =
-      completion.choices?.[0]?.message?.content?.trim() ||
+    const raw = completion.choices?.[0]?.message?.content?.trim() ||
       "Entschuldigung, ich habe dich nicht verstanden.";
+
+    const reply = forceMarkdownLink(raw);
 
     res.json({ reply });
   } catch (err) {

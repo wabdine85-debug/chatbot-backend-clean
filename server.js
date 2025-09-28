@@ -30,7 +30,8 @@ function forceMarkdownLink(text) {
   const mdLinkRe = new RegExp(mdLinkStr, "i");
 
   // 0) Kaputte Variante wie [Kontaktformular](Kontaktformular) → reparieren
-  out = out.replace(/\[\s*Kontaktformular\s*\]\(\s*Kontaktformular\s*\)/gi, `[Kontaktformular](${CONTACT_URL})`);
+  out = out.replace(/\[\s*Kontaktformular\s*\]\(\s*Kontaktformular\s*\)/gi,
+                    `[Kontaktformular](${CONTACT_URL})`);
 
   // 1) HTML-Anker mit unserer URL → Markdown-Link
   const htmlOurUrl = new RegExp(`<a[^>]*href=["']${urlEsc}["'][^>]*>[^<]*<\\/a>`, "i");
@@ -45,7 +46,6 @@ function forceMarkdownLink(text) {
   }
 
   // 3) Lose „Kontaktformular“-Wörter direkt vor/nach dem Link entfernen (Duplikate)
-  const mdLinkLooseRe = new RegExp(mdLinkStr, "gi");
   out = out
     .replace(new RegExp(`Kontaktformular\\s*[:\\-–—]?\\s*(${mdLinkStr})`, "gi"), "$1")
     .replace(new RegExp(`(${mdLinkStr})\\s*[:\\-–—]?\\s*Kontaktformular`, "gi"), "$1");
@@ -82,14 +82,13 @@ gib allgemeine, hilfreiche Informationen (z. B. typische Möglichkeiten/Tipps)
 und lade den Nutzer ein, über folgenden Link Kontakt aufzunehmen:
 ${CONTACT_URL}
 
-    Wichtig:
-    – Schreibe den Hinweis auf das Kontaktformular immer nur EINMAL,
-      direkt als klickbaren Link im Format [Kontaktformular](URL),
-      und schreibe nicht zusätzlich davor oder danach noch einmal
-      das Wort „Kontaktformular“.
-    – Erfinde niemals eine andere E-Mail-Adresse oder Telefonnummer.
-    – Verwende niemals den Satz „Ich habe keine Informationen“.
-
+Wichtig:
+– Schreibe den Hinweis auf das Kontaktformular immer nur EINMAL,
+  direkt als klickbaren Link im Format [Kontaktformular](URL),
+  und schreibe nicht zusätzlich davor oder danach noch einmal
+  das Wort „Kontaktformular“.
+– Erfinde niemals eine andere E-Mail-Adresse oder Telefonnummer.
+– Verwende niemals den Satz „Ich habe keine Informationen“.`
         },
         { role: "user", content: userMessage },
       ],

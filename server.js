@@ -3,6 +3,13 @@ import cors from "cors";
 import bodyParser from "body-parser";
 import dotenv from "dotenv";
 import OpenAI from "openai";
+import fs from "fs";
+
+// Behandlungsdaten aus JSON laden
+const treatments = JSON.parse(
+  fs.readFileSync(new URL("./treatments.json", import.meta.url))
+);
+
 
 dotenv.config();
 
@@ -46,23 +53,35 @@ app.post("/chat", async (req, res) => {
 
     const completion = await client.chat.completions.create({
       model: "gpt-4o-mini",
-      max_tokens: 400,
+      max_tokens: 300,   // ca. 4 Sätze – reicht aus
       messages: [
         {
           role: "system",
           content: `Du bist Wisy, ein Beratungsassistent für PDB Aesthetic Room (PDB).
 Antworte immer auf Deutsch, freundlich und professionell.
-Wenn es für den Nutzer hilfreich ist, darfst du bis zu sechs Sätze schreiben,
-um die Behandlung und Vorteile überzeugend zu erklären.
-Wenn der Nutzer nach E-Mail, Kontakt oder Termin fragt, gib IMMER GENAU diesen Markdown-Link aus (kein HTML, keine Anführungszeichen, kein Satzzeichen direkt dahinter):
-[Kontaktformular](${CONTACT_URL})
-Erfinde niemals eine andere E-Mail-Adresse oder Telefonnummer.`
+Wenn es für den Nutzer hilfreich ist, darfst du bis zu vier Sätze schreiben,
+um die Behandlung und ihre Vorteile überzeugend zu erklären.
+
+Wenn der Nutzer nach konkreten Behandlungen oder Preisen fragt,
+nutze vorrangig diese Liste:
+${treatments.map(t => `• ${t.name}: ${t.preis} € – ${t.beschreibung}`).join("\n")}
+
+Falls die gewünschte Behandlung hier nicht aufgeführt ist,
+gib bitte stattdessen allgemeine, hilfreiche Informationen
+(zum Beispiel typische Behandlungsmöglichkeiten oder Tipps)
+und lade den Nutzer ein, über den folgenden Link Kontakt aufzunehmen:
+(${CONTACT_URL})
+
+Wichtig:
+– Erfinde niemals eine andere E-Mail-Adresse oder Telefonnummer.
+– Verwende niemals den Satz „Ich habe keine Informationen“.`
         },
         { role: "user", content: userMessage },
       ],
     });
 
-    const raw = completion.choices?.[0]?.message?.content?.trim() ||
+    const raw =
+      completion.choices?.[0]?.message?.content?.trim() ||
       "Entschuldigung, ich habe dich nicht verstanden.";
 
     const reply = forceMarkdownLink(raw);
@@ -73,6 +92,7 @@ Erfinde niemals eine andere E-Mail-Adresse oder Telefonnummer.`
     res.status(500).send("Fehler beim Abrufen der KI-Antwort");
   }
 });
+
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Backend läuft auf Port ${PORT}`));

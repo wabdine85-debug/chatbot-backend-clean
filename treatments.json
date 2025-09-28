@@ -1,0 +1,23 @@
+[
+  {
+    "id": "morpheus8-oberarme",
+    "name": "Morpheus8 Oberarme",
+    "beschreibung": "Straffung und Kollagenaufbau der Oberarme mit Radiofrequenz-Microneedling.",
+    "preis": 690,
+    "dauer": "ca. 60 Minuten"
+  },
+  {
+    "id": "alexandrit-gesicht",
+    "name": "Alexandrit Laser – Gesicht",
+    "beschreibung": "Dauerhafte Haarentfernung für das gesamte Gesicht.",
+    "preis": 120,
+    "dauer": "ca. 20 Minuten"
+  },
+  {
+    "id": "microneedling-gesicht",
+    "name": "Microneedling Gesicht",
+    "beschreibung": "Regt die körpereigene Kollagenproduktion an und verbessert das Hautbild.",
+    "preis": 139,
+    "dauer": "ca. 45 Minuten"
+  }
+]

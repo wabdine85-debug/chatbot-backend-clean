@@ -12,13 +12,6 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
-// Request-Logger
-app.use((req, _res, next) => {
-  const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
-  console.log(`[REQ] ${req.method} ${req.url} | origin=${req.headers.origin || "-"} | ip=${ip}`);
-  next();
-});
-
 const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 const CONTACT_URL = "https://palaisdebeaute.de/pages/contact";
 
@@ -26,17 +19,16 @@ const CONTACT_URL = "https://palaisdebeaute.de/pages/contact";
 function forceMarkdownLink(text) {
   if (!text) return "";
   let out = text;
+
   const urlEsc = CONTACT_URL.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   const mdLinkStr = `\\[\\s*Kontaktformular\\s*\\]\\(${urlEsc}\\)`;
   const mdLinkRe = new RegExp(mdLinkStr, "i");
-  out = out.replace(/\[\s*Kontaktformular\s*\]\(\s*Kontaktformular\s*\)/gi, `[Kontaktformular](${CONTACT_URL})`);
-  const htmlOurUrl = new RegExp(`<a[^>]*href=["']${urlEsc}["'][^>]*>[^<]*<\\/a>`, "i");
-  if (htmlOurUrl.test(out)) out = out.replace(htmlOurUrl, `[Kontaktformular](${CONTACT_URL})`);
-  if (!mdLinkRe.test(out)) out = out.replace(new RegExp(urlEsc, "g"), `[Kontaktformular](${CONTACT_URL})`);
-  out = out
-    .replace(new RegExp(`Kontaktformular\\s*[:\\-–—]?\\s*(${mdLinkStr})`, "gi"), "$1")
-    .replace(new RegExp(`(${mdLinkStr})\\s*[:\\-–—]?\\s*Kontaktformular`, "gi"), "$1");
-  out = out.replace(new RegExp(`(${mdLinkStr})([\\.,!\\?])(\\s|$)`, "gi"), "$1 $2$3");
+
+  // Falls kein Markdown-Link existiert → URL ersetzen
+  if (!mdLinkRe.test(out)) {
+    out = out.replace(new RegExp(urlEsc, "g"), `[Kontaktformular](${CONTACT_URL})`);
+  }
+
   return out.trim();
 }
 
@@ -45,128 +37,86 @@ function normalize(s) {
     .toString()
     .toLowerCase()
     .normalize("NFKD")
-    .replace(/[\u0300-\u036f]/g, "")         // Akzente weg
-    .replace(/[–—−]/g, "-")                  // Gedankenstriche vereinheitlichen
-    .replace(/[^a-z0-9\-+ ]+/g, " ")         // Sonderzeichen raus
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[–—−]/g, "-")
+    .replace(/[^a-z0-9\-+ ]+/g, " ")
     .replace(/\s+/g, " ")
     .trim();
 }
 
 function tokenize(s) {
-  return normalize(s).split(" ").filter(w => w.length > 2);
+  return normalize(s).split(" ").filter(w => w.length > 1);
 }
 
+function levenshtein(a, b) {
+  a = normalize(a); b = normalize(b);
+  const m = a.length, n = b.length;
+  const dp = Array.from({ length: m + 1 }, () => new Array(n + 1).fill(0));
+  for (let i = 0; i <= m; i++) dp[i][0] = i;
+  for (let j = 0; j <= n; j++) dp[0][j] = j;
+  for (let i = 1; i <= m; i++) {
+    for (let j = 1; j <= n; j++) {
+      const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+      dp[i][j] = Math.min(
+        dp[i - 1][j] + 1,
+        dp[i][j - 1] + 1,
+        dp[i - 1][j - 1] + cost
+      );
+    }
+  }
+  return dp[m][n];
+}
+
+/* ---------- Treatments laden ---------- */
 function loadTreatments() {
   const raw = JSON.parse(fs.readFileSync(new URL("./treatments.json", import.meta.url)));
-  return raw.map(t => {
-    if (t.treatment || t.description || t.areas) {
-      return {
-        name: t.treatment || t.name || "",
-        beschreibung: t.description || t.beschreibung || "",
-        preis: Array.isArray(t.areas) && t.areas.length
-          ? t.areas.map(a => `${a.name}: ${a.price} €`).join(" / ")
-          : (t.preis != null ? `${t.preis} €` : "Preis auf Anfrage"),
-        duration: t.duration || t.dauer || null,
-      };
-    }
-    return {
-      name: t.name || "",
-      beschreibung: t.beschreibung || "",
-      preis: t.preis != null ? `${t.preis} €` : "Preis auf Anfrage",
-      duration: t.dauer || t.duration || null,
-    };
-  });
+  return raw.map(t => ({
+    name: t.treatment || t.name || "",
+    beschreibung: t.description || t.beschreibung || "",
+    preis: t.preis || "",
+    url: t.url || CONTACT_URL
+  }));
 }
 
-function findTreatment(query, treatments) {
-  const qWords = tokenize(query);
-  if (!qWords.length) return null;
-  return treatments.find(t => {
-    const nameNorm = normalize(t.name);
-    return qWords.some(w => nameNorm.includes(w));
-  }) || null;
+/* ---------- Matching & Intent ---------- */
+function scoreMatch(query, item) {
+  const nq = normalize(query);
+  const nameNorm = normalize(item.name);
+  let score = 0;
+
+  if (nameNorm.includes(nq) || nq.includes(nameNorm)) score += 50;
+
+  const overlap = tokenize(query).filter(q => nameNorm.includes(q)).length;
+  score += overlap * 20;
+
+  const dist = levenshtein(nq, nameNorm);
+  if (dist <= 3) score += 30;
+
+  return score;
 }
 
-/* ------------------------- Routes ------------------------- */
+function smartFindTreatment(query, treatments) {
+  if (!query) return null;
+  const candidates = treatments
+    .map(t => ({ t, s: scoreMatch(query, t) }))
+    .sort((a, b) => b.s - a.s);
+  const best = candidates[0];
+  return best && best.s >= 30 ? best.t : null;
+}
 
+function detectIntent(msg) {
+  const n = normalize(msg);
+  return {
+    isPrice: /(preis|kosten|kostet|€|euro|teuer|angebot)/.test(n),
+    isWhat: /(was ist|erklaer|erklär|wirkung|info|geeignet|empfehlung)/.test(n),
+    isGreet: /^(hi|hallo|hey|servus|moin|guten (tag|morgen|abend))/.test(n),
+    isBooking: /(termin|buchen|buchung|verfuegbar|verfügbar|wann)/.test(n)
+  };
+}
+
+/* ------------------------- Routen ------------------------- */
 app.get("/", (_req, res) => res.send("OK"));
 
-// --- NEU: Check-Endpoint um den Live-Inhalt der treatments.json zu sehen ---
-app.get("/check-treatments", (_req, res) => {
-  try {
-    const raw = fs.readFileSync(new URL("./treatments.json", import.meta.url), "utf8");
-    // nur die ersten 500 Zeichen, damit es nicht zu groß wird
-    res.type("text/plain").send(raw.slice(0, 500));
-  } catch (err) {
-    console.error(err);
-    res.status(500).send("Fehler beim Lesen der Datei");
-  }
-});
-
-// Chat-Endpoint
-app.post("/chat", async (req, res) => {
-  console.log("UserMessage:", req.body.message);
-
-  try {
-    const userMessage = (req.body.message || "").toString().slice(0, 1000);
-    const treatments = loadTreatments();
-
-    const match = findTreatment(userMessage, treatments);
-    if (match) {
-      const d = match.duration ? ` – Dauer: ${match.duration}` : "";
-      return res.json({ reply: `${match.name}: ${match.preis}${d}` });
-    }
-
-    // sonst GPT befragen
-    const completion = await client.chat.completions.create({
-      model: "gpt-4o-mini",
-      max_tokens: 300,
-      messages: [
-        {
-          role: "system",
-          content: `Du bist Wisy, ein Beratungsassistent für PDB Aesthetic Room (PDB).
-ANTWORTE IMMER IN MAXIMAL VIER SÄTZEN. Schreibe nie mehr als vier Sätze.
-Antworte auf Deutsch, freundlich und professionell.
-
-Wenn der Nutzer nach konkreten Behandlungen oder Preisen fragt,
-nutze vorrangig diese Liste:
-${treatments.map(t => `• ${t.name}: ${t.preis} – ${t.beschreibung}`).join("\n")}
-
-Falls die gewünschte Behandlung hier nicht aufgeführt ist,
-gib allgemeine, hilfreiche Informationen und lade den Nutzer ein,
-über folgenden Link Kontakt aufzunehmen:
-${CONTACT_URL}
-
-Wichtig:
-– Schreibe den Hinweis auf das Kontaktformular immer nur EINMAL,
-  direkt als klickbaren Link im Format [Kontaktformular](${CONTACT_URL}).
-– Erfinde niemals eine andere E-Mail-Adresse oder Telefonnummer.
-– Verwende niemals den Satz „Ich habe keine Informationen“.`
-        },
-        { role: "user", content: userMessage },
-      ],
-    });
-
-    const raw = completion.choices?.[0]?.message?.content?.trim()
-               || "Entschuldigung, ich habe dich nicht verstanden.";
-    const reply = forceMarkdownLink(raw);
-    res.json({ reply });
-  } catch (err) {
-    console.error(err);
-    res.status(500).send("Fehler beim Abrufen der KI-Antwort");
-  }
-});
-
-// Debug-Endpunkt: gezielte Suche testen
-app.get("/debug/find", (req, res) => {
-  const treatments = loadTreatments();
-  const q = (req.query.q || "").toString();
-  const found = findTreatment(q, treatments);
-  if (!found) return res.json({ q, found: false });
-  res.json({ q, found: true, name: found.name, preis: found.preis, duration: found.duration || null });
-});
-
-// Status-Endpunkt
 app.get("/whoami", (_req, res) => {
   const path = new URL("./treatments.json", import.meta.url).pathname;
   let stats = { count: 0, names: [] };
@@ -186,6 +136,83 @@ app.get("/whoami", (_req, res) => {
     time: new Date().toISOString()
   });
 });
+
+/* ---------- /chat ---------- */
+app.post("/chat", async (req, res) => {
+  console.log("🔥 Neue Version läuft! Chat-Route betreten.");
+  const userMessage = (req.body.message || "").toString().slice(0, 300);
+  console.log("UserMessage:", userMessage);
+
+  const MAX_TOKENS = 120;
+  try {
+    const intent = detectIntent(userMessage);
+
+    const treatments = loadTreatments();
+    const best = smartFindTreatment(userMessage, treatments);
+
+    // 🟢 Debug-Ausgabe ins Log
+    console.log("BestMatch:", best ? best.name : "❌ Kein Treffer (GPT-Fallback)");
+
+    // ✅ Direkte Antwort aus JSON, wenn Behandlung erkannt
+    if (best) {
+      let reply;
+      const desc = (best.beschreibung || "").replace(/\s+/g, " ").slice(0, 120);
+      if (intent.isWhat) {
+        reply = `${best.name}: ${desc}. Preis ${best.preis}. Mehr Infos: ${best.url}`;
+      } else if (intent.isPrice) {
+        reply = `${best.name}: Preis ${best.preis}. Details: ${best.url}`;
+      } else {
+        reply = `${best.name}: ${desc}. Weitere Infos: ${best.url}`;
+      }
+      return res.json({ reply: forceMarkdownLink(reply) });
+    }
+
+    // ❌ Wenn keine Behandlung gefunden → GPT fragen
+    const SYSTEM_PROMPT =
+`Du bist Wisy, der Assistent von PDB Aesthetic Room Wiesbaden.
+Antworte immer freundlich, professionell und maximal in 3 Sätzen.
+Wenn keine Behandlung passt: lade höflich ein, unser [Kontaktformular](${CONTACT_URL}) zu nutzen.
+Keine Telefon/E-Mail angeben.`;
+
+    const messages = [
+      { role: "system", content: SYSTEM_PROMPT },
+      { role: "user", content: userMessage }
+    ];
+
+    const ask = async (model) => client.chat.completions.create({
+      model,
+      max_completion_tokens: MAX_TOKENS,
+      messages
+    });
+
+    let completion;
+    try {
+      completion = await ask("o4-mini");
+    } catch (err) {
+      if (err?.status === 429) {
+        console.warn("429 – fallback auf gpt-5-nano");
+        completion = await ask("gpt-5-nano");
+      } else {
+        throw err;
+      }
+    }
+
+    const raw = completion.choices?.[0]?.message?.content?.trim()
+      || "Entschuldigung, ich habe dich nicht verstanden.";
+    const reply = forceMarkdownLink(raw);
+
+    console.log("Antwort von GPT:", reply);
+
+    return res.json({ reply });
+
+  } catch (err) {
+    console.error("Fehler im /chat:", err);
+    return res.json({
+      reply: `Entschuldigung, es gab ein Problem. Bitte nutze unser [Kontaktformular](${CONTACT_URL}).`
+    });
+  }
+});
+
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Backend läuft auf Port ${PORT}`));

@@ -182,13 +182,35 @@ app.post("/chat", async (req, res) => {
   const MAX_TOKENS = 120;
   try {
     const intent = detectIntent(userMessage);
+    const nmsg = normalize(userMessage);
 
-    // Begrüßung
+    // 👉 Begrüßung
     if (intent.isGreet) {
       return res.json({ reply: "Hallo! Wie kann ich Ihnen heute weiterhelfen?" });
     }
 
-    // Treatments
+    // 👉 Öffnungszeiten (direkt, robust)
+    if (intent.isOpening || /offen|geoeffnet|geöffnet|öffnungszeiten|wann/.test(nmsg)) {
+      return res.json({
+        reply: "Wir haben Montag, Dienstag, Donnerstag und Freitag 10:00-18:00 Uhr, Samstag von 10:00–15:00 Uhr geöffnet. Mittwoch geschlossen"
+      });
+    }
+
+    // 👉 Adresse
+    if (/adresse|wo seid ihr|standort|wo finde ich euch/.test(nmsg)) {
+      return res.json({
+        reply: "PDB Aesthetic Room, Rheinstr. 59, 65185 Wiesbaden."
+      });
+    }
+
+    // 👉 Parkplatz
+    if (/park(en|platz)|auto|parken/.test(nmsg)) {
+      return res.json({
+        reply: "Parkmöglichkeiten findest du direkt in der Rheinstraße sowie im Parkhaus Luisenforum."
+      });
+    }
+
+    // 👉 Treatments laden
     const treatments = loadTreatments();
     const best = smartFindTreatment(userMessage, treatments);
 
@@ -200,27 +222,18 @@ app.post("/chat", async (req, res) => {
       return res.json({ reply: forceMarkdownLink(reply) });
     }
 
-    // FAQ & Öffnungszeiten
+    // 👉 FAQ fallback (falls du noch andere drin hast)
     const faq = loadFaq();
-   if (intent.isOpening) {
-  const f = faq.find(f =>
-    /(offnungszeit|offnungszeiten|geoeffnet|geöffnet|oeffnung|oeffnungszeiten)/.test(normalize(f.frage))
-  );
-  if (f) return res.json({ reply: f.antwort });
-}
+    const faqMatch = faq.find(f => nmsg.includes(normalize(f.frage)));
+    if (faqMatch) {
+      return res.json({ reply: faqMatch.antwort });
+    }
 
-
-
-    const faqMatch = faq.find(f => normalize(userMessage).includes(normalize(f.frage)));
-    if (faqMatch) return res.json({ reply: faqMatch.antwort });
-
-    // GPT Fallback
+    // 👉 GPT Fallback
     const SYSTEM_PROMPT = `
 Du bist Wisy, der Assistent von PDB Aesthetic Room Wiesbaden.
 Antworte immer freundlich, professionell und maximal in 3 Sätzen.
 Wenn keine Behandlung passt: lade höflich ein, unser [Kontaktformular](${CONTACT_URL}) zu nutzen.
-Nutze bevorzugt diese Infos:
-${faq.map(f => `- ${f.frage}: ${f.antwort}`).join("\n")}
 Keine Telefon/E-Mail angeben.
 `;
 
@@ -248,6 +261,7 @@ Keine Telefon/E-Mail angeben.
     });
   }
 });
+
 
 /* ---------- Server starten ---------- */
 const PORT = process.env.PORT || 3000;

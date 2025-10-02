@@ -203,9 +203,12 @@ app.post("/chat", async (req, res) => {
     // FAQ & Öffnungszeiten
     const faq = loadFaq();
    if (intent.isOpening) {
-  const f = faq.find(f => /offnungszeit|offnungszeiten|geoeffnet|geöffnet|oeffnung|oeffnungszeiten/.test(normalize(f.frage)));
+  const f = faq.find(f =>
+    /(offnungszeit|offnungszeiten|geoeffnet|geöffnet|oeffnung|oeffnungszeiten)/.test(normalize(f.frage))
+  );
   if (f) return res.json({ reply: f.antwort });
 }
+
 
 
     const faqMatch = faq.find(f => normalize(userMessage).includes(normalize(f.frage)));

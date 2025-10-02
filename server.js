@@ -14,16 +14,14 @@ app.use(bodyParser.json());
 
 const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 const CONTACT_URL = "https://palaisdebeaute.de/pages/contact";
-
 const DEBUG = process.env.DEBUG === "true";
-const MAX_DESC_CHARS = parseInt(process.env.MAX_DESC_CHARS || "240", 10);
-const MAX_DESC_SENTENCES = parseInt(process.env.MAX_DESC_SENTENCES || "2", 10);
 
 /* ------------------------- Utils ------------------------- */
 function forceMarkdownLink(text) {
   if (!text) return "";
   let out = text;
 
+  // Kontaktformular-Link IMMER als Markdown
   const urlEsc = CONTACT_URL.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   const mdLinkStr = `\\[\\s*Kontaktformular\\s*\\]\\(${urlEsc}\\)`;
   const mdLinkRe = new RegExp(mdLinkStr, "i");
@@ -32,6 +30,10 @@ function forceMarkdownLink(text) {
     out = out.replace(new RegExp(urlEsc, "g"), `[Kontaktformular](${CONTACT_URL})`);
   }
   return out.trim();
+}
+
+function makeMarkdownLink(label, url) {
+  return `[${label}](${url})`;
 }
 
 function normalize(s) {
@@ -69,19 +71,6 @@ function levenshtein(a, b) {
   return dp[m][n];
 }
 
-/* ---- Text kürzen: max. 2 Sätze / 240 Zeichen ---- */
-function firstSentences(text, maxSentences = 2) {
-  const clean = (text || "").replace(/\s+/g, " ").trim();
-  if (!clean) return "";
-  const parts = clean.split(/(?<=[.!?])\s+/);
-  return parts.slice(0, maxSentences).join(" ");
-}
-function shortenDesc(text) {
-  const s = firstSentences(text, MAX_DESC_SENTENCES);
-  if (s.length <= MAX_DESC_CHARS) return s;
-  return s.slice(0, MAX_DESC_CHARS - 1).trim() + "…";
-}
-
 /* ---------- Treatments laden ---------- */
 function loadTreatments() {
   try {
@@ -94,6 +83,16 @@ function loadTreatments() {
     }));
   } catch (e) {
     console.error("⚠️ Fehler beim Laden von treatments.json:", e.message);
+    return [];
+  }
+}
+
+/* ---------- FAQ laden ---------- */
+function loadFaq() {
+  try {
+    return JSON.parse(fs.readFileSync(new URL("./faq.json", import.meta.url)));
+  } catch (e) {
+    console.error("⚠️ Fehler beim Laden von faq.json:", e.message);
     return [];
   }
 }
@@ -115,26 +114,15 @@ function scoreMatch(query, item) {
   return score;
 }
 
-/* Synonymerkennung (Conditions → Behandlungen) */
 function synonymFind(query, treatments) {
   const n = normalize(query);
 
-  // Haare / Rückenhaare → Laser
-  if (/\bhaare|haarentfernung|ruecken|rücken\b/.test(n)) {
-    let t = treatments.find(x => /alexandrit|laser/i.test(x.name));
-    if (!t) t = treatments.find(x => /laser/i.test(x.name));
-    return t || null;
+  if (/\bhaare|haarentfernung|ruecken|rücken|bein|brust|arm|gesicht\b/.test(n)) {
+    return treatments.find(t => /laser/i.test(t.name));
   }
 
-  // Akne / unreine Haut → Akne, Hydrafacial, Peel, Microneedling, Herbs2Peel
-  if (/\bakne|pickel|unreine haut|entzue(nd|nd)|entzünd/i.test(n)) {
-    let t =
-      treatments.find(x => /akne/i.test(x.name)) ||
-      treatments.find(x => /hydrafacial/i.test(x.name)) ||
-      treatments.find(x => /peel|peeling/i.test(x.name)) ||
-      treatments.find(x => /microneedling/i.test(x.name)) ||
-      treatments.find(x => /herbs/i.test(x.name));
-    return t || null;
+  if (/\bakne|pickel|unreine haut|entzue|entzünd/i.test(n)) {
+    return treatments.find(t => /akne|hydrafacial|peel|microneedling/i.test(t.name));
   }
 
   return null;
@@ -143,16 +131,14 @@ function synonymFind(query, treatments) {
 function smartFindTreatment(query, treatments) {
   if (!query) return null;
 
-  // 1) Condition-Synonyme zuerst
   const syn = synonymFind(query, treatments);
   if (syn) return syn;
 
-  // 2) Fuzzy Matching
   const candidates = treatments
     .map(t => ({ t, s: scoreMatch(query, t) }))
     .sort((a, b) => b.s - a.s);
   const best = candidates[0];
-  return best && best.s >= 40 ? best.t : null; // leicht strenger
+  return best && best.s >= 40 ? best.t : null;
 }
 
 function detectIntent(msg) {
@@ -161,26 +147,9 @@ function detectIntent(msg) {
     isPrice: /(preis|kosten|kostet|€|euro|teuer|angebot)/.test(n),
     isWhat: /(was ist|erklaer|erklär|wirkung|info|geeignet|empfehlung)/.test(n),
     isGreet: /\b(hi|hallo|hey|servus|moin|guten (tag|morgen|abend))\b/.test(n),
-    isBooking: /(termin|buchen|buchung|verfuegbar|verfügbar|wann)/.test(n)
+    isBooking: /(termin|buchen|buchung|verfuegbar|verfügbar|wann)/.test(n),
+    isOpening: /(öffnungszeit|offnungszeit|geöffnet|geoeffnet|auf|bis wann|wann habt ihr)/.test(n)
   };
-}
-
-/* Einheitliche Kurz-Antwort bauen */
-function buildReply(best, intent) {
-  const desc = shortenDesc(best.beschreibung || "");
-  const hasPrice = !!best.preis;
-  const url = best.url || CONTACT_URL; // falls im JSON vergessen
-
-  if (intent.isPrice && hasPrice) {
-    return forceMarkdownLink(`${best.name}: Preis ${best.preis}. Mehr Infos hier: ${url}`);
-  }
-
-  if (intent.isWhat) {
-    return forceMarkdownLink(`${best.name}: ${desc}${hasPrice ? ` Preis: ${best.preis}.` : ""} Mehr Infos hier: ${url}`);
-  }
-
-  // neutral/kurz
-  return forceMarkdownLink(`${best.name}: ${desc}${hasPrice ? ` Preis: ${best.preis}.` : ""} Mehr Infos hier: ${url}`);
 }
 
 /* ------------------------- Routen ------------------------- */
@@ -193,17 +162,12 @@ app.get("/whoami", (_req, res) => {
     const raw = JSON.parse(fs.readFileSync(new URL("./treatments.json", import.meta.url)));
     stats = { count: raw.length || 0, names: raw.slice(0, 3).map(x => x.treatment || x.name) };
   } catch {}
-  let mtime = "";
-  try {
-    mtime = fs.statSync(new URL("./treatments.json", import.meta.url)).mtime.toISOString();
-  } catch {}
   res.json({
     service: "wisy-backend",
     pid: process.pid,
     host: os.hostname(),
     cwd: process.cwd(),
     treatmentsPath: path,
-    treatmentsMtime: mtime,
     treatmentsSample: stats,
     time: new Date().toISOString()
   });
@@ -224,23 +188,37 @@ app.post("/chat", async (req, res) => {
       return res.json({ reply: "Hallo! Wie kann ich Ihnen heute weiterhelfen?" });
     }
 
+    // Treatments
     const treatments = loadTreatments();
     const best = smartFindTreatment(userMessage, treatments);
 
-    if (DEBUG) console.log("BestMatch:", best ? best.name : "❌ Kein Treffer (GPT-Fallback)");
-
-    // ✅ JSON-Antwort wenn Treffer (kurz!)
     if (best) {
-      const reply = buildReply(best, intent);
-      return res.json({ reply });
+      const desc = (best.beschreibung || "").split(".")[0];
+      let reply = `${best.name}: ${desc}.`;
+      if (intent.isPrice && best.preis) reply += ` Preis: ${best.preis}.`;
+      reply += ` Mehr Infos hier: ${makeMarkdownLink("Behandlung ansehen", best.url)}`;
+      return res.json({ reply: forceMarkdownLink(reply) });
     }
 
-    // ❌ Kein Treffer → GPT fallback (max. 3 Sätze)
-    const SYSTEM_PROMPT =
-`Du bist Wisy, der Assistent von PDB Aesthetic Room Wiesbaden.
+    // FAQ & Öffnungszeiten
+    const faq = loadFaq();
+    if (intent.isOpening) {
+      const f = faq.find(f => normalize(f.frage).includes("offnungszeiten"));
+      if (f) return res.json({ reply: f.antwort });
+    }
+
+    const faqMatch = faq.find(f => normalize(userMessage).includes(normalize(f.frage)));
+    if (faqMatch) return res.json({ reply: faqMatch.antwort });
+
+    // GPT Fallback
+    const SYSTEM_PROMPT = `
+Du bist Wisy, der Assistent von PDB Aesthetic Room Wiesbaden.
 Antworte immer freundlich, professionell und maximal in 3 Sätzen.
 Wenn keine Behandlung passt: lade höflich ein, unser [Kontaktformular](${CONTACT_URL}) zu nutzen.
-Keine Telefon/E-Mail angeben.`;
+Nutze bevorzugt diese Infos:
+${faq.map(f => `- ${f.frage}: ${f.antwort}`).join("\n")}
+Keine Telefon/E-Mail angeben.
+`;
 
     const messages = [
       { role: "system", content: SYSTEM_PROMPT },
@@ -254,10 +232,9 @@ Keine Telefon/E-Mail angeben.`;
     });
 
     const raw = completion.choices?.[0]?.message?.content?.trim()
-      || "Entschuldigung, ich habe dich nicht verstanden. Bitte nutze unser [Kontaktformular](${CONTACT_URL}).";
+      || `Entschuldigung, ich habe dich nicht verstanden. Bitte nutze unser [Kontaktformular](${CONTACT_URL}).`;
     const reply = forceMarkdownLink(raw);
 
-    if (DEBUG) console.log("Antwort von GPT:", reply);
     return res.json({ reply });
 
   } catch (err) {

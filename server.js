@@ -24,11 +24,9 @@ function forceMarkdownLink(text) {
   const mdLinkStr = `\\[\\s*Kontaktformular\\s*\\]\\(${urlEsc}\\)`;
   const mdLinkRe = new RegExp(mdLinkStr, "i");
 
-  // Falls kein Markdown-Link existiert → URL ersetzen
   if (!mdLinkRe.test(out)) {
     out = out.replace(new RegExp(urlEsc, "g"), `[Kontaktformular](${CONTACT_URL})`);
   }
-
   return out.trim();
 }
 
@@ -97,6 +95,12 @@ function scoreMatch(query, item) {
 
 function smartFindTreatment(query, treatments) {
   if (!query) return null;
+
+  // 👉 Synonyme manuell mappen
+  if (normalize(query).includes("haare")) {
+    return treatments.find(t => normalize(t.name).includes("laser"));
+  }
+
   const candidates = treatments
     .map(t => ({ t, s: scoreMatch(query, t) }))
     .sort((a, b) => b.s - a.s);
@@ -109,7 +113,8 @@ function detectIntent(msg) {
   return {
     isPrice: /(preis|kosten|kostet|€|euro|teuer|angebot)/.test(n),
     isWhat: /(was ist|erklaer|erklär|wirkung|info|geeignet|empfehlung)/.test(n),
-    isGreet: /^(hi|hallo|hey|servus|moin|guten (tag|morgen|abend))/.test(n),
+    // 👉 Begrüßung enger fassen
+    isGreet: /^(hi$|hallo$|hey$|servus$|moin$|guten (tag|morgen|abend))/.test(n),
     isBooking: /(termin|buchen|buchung|verfuegbar|verfügbar|wann)/.test(n)
   };
 }
@@ -139,7 +144,7 @@ app.get("/whoami", (_req, res) => {
 
 /* ---------- /chat ---------- */
 app.post("/chat", async (req, res) => {
-  console.log("🔥 Neue Version läuft! Chat-Route betreten.");
+  console.log("🔥 Chat-Route gestartet");
   const userMessage = (req.body.message || "").toString().slice(0, 300);
   console.log("UserMessage:", userMessage);
 
@@ -155,13 +160,12 @@ app.post("/chat", async (req, res) => {
     const treatments = loadTreatments();
     const best = smartFindTreatment(userMessage, treatments);
 
-    // 🟢 Debug-Ausgabe ins Log
     console.log("BestMatch:", best ? best.name : "❌ Kein Treffer (GPT-Fallback)");
 
-    // ✅ Direkte Antwort aus JSON, wenn Behandlung erkannt
+    // ✅ JSON-Antwort wenn Treffer
     if (best) {
-      let reply;
       const desc = (best.beschreibung || "").replace(/\s+/g, " ");
+      let reply;
 
       if (intent.isWhat) {
         reply = `${best.name}: ${desc} Preis: ${best.preis}. Mehr Infos hier: ${best.url}`;
@@ -174,7 +178,7 @@ app.post("/chat", async (req, res) => {
       return res.json({ reply: forceMarkdownLink(reply) });
     }
 
-    // ❌ Wenn keine Behandlung gefunden → GPT fragen
+    // ❌ Kein Treffer → GPT fallback
     const SYSTEM_PROMPT =
 `Du bist Wisy, der Assistent von PDB Aesthetic Room Wiesbaden.
 Antworte immer freundlich, professionell und maximal in 3 Sätzen.
@@ -186,30 +190,17 @@ Keine Telefon/E-Mail angeben.`;
       { role: "user", content: userMessage }
     ];
 
-    const ask = async (model) => client.chat.completions.create({
-      model,
+    const completion = await client.chat.completions.create({
+      model: "o4-mini",
       max_completion_tokens: MAX_TOKENS,
       messages
     });
-
-    let completion;
-    try {
-      completion = await ask("o4-mini");
-    } catch (err) {
-      if (err?.status === 429) {
-        console.warn("429 – fallback auf gpt-5-nano");
-        completion = await ask("gpt-5-nano");
-      } else {
-        throw err;
-      }
-    }
 
     const raw = completion.choices?.[0]?.message?.content?.trim()
       || "Entschuldigung, ich habe dich nicht verstanden.";
     const reply = forceMarkdownLink(raw);
 
     console.log("Antwort von GPT:", reply);
-
     return res.json({ reply });
 
   } catch (err) {

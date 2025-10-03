@@ -179,7 +179,7 @@ app.post("/chat", async (req, res) => {
   const userMessage = (req.body.message || "").toString().slice(0, 300);
   if (DEBUG) console.log("UserMessage:", userMessage);
 
-  const MAX_TOKENS = 120;
+  const MAX_TOKENS = 200;
   try {
     const intent = detectIntent(userMessage);
     const nmsg = normalize(userMessage);
@@ -189,25 +189,21 @@ app.post("/chat", async (req, res) => {
       return res.json({ reply: "Hallo! Wie kann ich Ihnen heute weiterhelfen?" });
     }
 
-    // 👉 Öffnungszeiten (direkt, robust)
+    // 👉 Öffnungszeiten
     if (intent.isOpening || /offen|geoeffnet|geöffnet|öffnungszeiten|wann/.test(nmsg)) {
       return res.json({
-        reply: "Wir haben Montag, Dienstag, Donnerstag und Freitag 10:00-18:00 Uhr, Samstag von 10:00–15:00 Uhr geöffnet. Mittwoch geschlossen"
+        reply: "Wir haben Montag, Dienstag, Donnerstag und Freitag 10:00–18:00 Uhr, Samstag von 10:00–15:00 Uhr geöffnet. Mittwoch geschlossen."
       });
     }
 
     // 👉 Adresse
     if (/adresse|wo seid ihr|standort|wo finde ich euch/.test(nmsg)) {
-      return res.json({
-        reply: "PDB Aesthetic Room, Rheinstr. 59, 65185 Wiesbaden."
-      });
+      return res.json({ reply: "PDB Aesthetic Room, Rheinstr. 59, 65185 Wiesbaden." });
     }
 
     // 👉 Parkplatz
     if (/park(en|platz)|auto|parken/.test(nmsg)) {
-      return res.json({
-        reply: "Parkmöglichkeiten findest du direkt in der Rheinstraße sowie im Parkhaus Luisenforum."
-      });
+      return res.json({ reply: "Parkmöglichkeiten findest du direkt in der Rheinstraße sowie im Parkhaus Luisenforum." });
     }
 
     // 👉 Treatments laden
@@ -215,14 +211,20 @@ app.post("/chat", async (req, res) => {
     const best = smartFindTreatment(userMessage, treatments);
 
     if (best) {
-      const desc = (best.beschreibung || "").split(".")[0];
-      let reply = `${best.name}: ${desc}.`;
+      // längere Beschreibungen erlauben
+      const desc = (best.beschreibung || "")
+        .split(/(?<=\.)\s+/) // in Sätze aufteilen
+        .slice(0, 4)         // max. 4 Sätze
+        .join(" ")
+        .slice(0, 600);      // max. 600 Zeichen
+
+      let reply = `${best.name}: ${desc}`;
       if (intent.isPrice && best.preis) reply += ` Preis: ${best.preis}.`;
       reply += ` Mehr Infos hier: ${makeMarkdownLink("Behandlung ansehen", best.url)}`;
       return res.json({ reply: forceMarkdownLink(reply) });
     }
 
-    // 👉 FAQ fallback (falls du noch andere drin hast)
+    // 👉 FAQ fallback
     const faq = loadFaq();
     const faqMatch = faq.find(f => nmsg.includes(normalize(f.frage)));
     if (faqMatch) {
@@ -250,9 +252,8 @@ Keine Telefon/E-Mail angeben.
 
     const raw = completion.choices?.[0]?.message?.content?.trim()
       || `Entschuldigung, ich habe dich nicht verstanden. Bitte nutze unser [Kontaktformular](${CONTACT_URL}).`;
-    const reply = forceMarkdownLink(raw);
 
-    return res.json({ reply });
+    return res.json({ reply: forceMarkdownLink(raw) });
 
   } catch (err) {
     console.error("Fehler im /chat:", err);
@@ -261,7 +262,6 @@ Keine Telefon/E-Mail angeben.
     });
   }
 });
-
 
 /* ---------- Server starten ---------- */
 const PORT = process.env.PORT || 3000;

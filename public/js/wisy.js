@@ -1,7 +1,9 @@
 // ===============================
-// Wisy Chat – stabile LocalStorage-Version mit Logs
+// 💬 Wisy Chat mit PostgreSQL + LocalStorage-Fallback
 // ===============================
-const STORAGE_KEY = "wisyChatHistory:v1";
+
+const STORAGE_KEY = "wisyChatHistory:v2";
+const SESSION_KEY = "wisySessionId";
 const CHAT_ENDPOINT = "/chat";
 
 // --- DOM ---
@@ -12,32 +14,17 @@ const clearBtn = document.getElementById("clearChat");
 
 let chatHistory = [];
 
-// --- Helper ---
-function saveHistory() {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(chatHistory));
-    console.log("💾 Verlauf gespeichert:", chatHistory);
-  } catch (err) {
-    console.error("⚠️ Fehler beim Speichern:", err);
-  }
+// --- Session-ID erzeugen oder laden ---
+let sessionId = localStorage.getItem(SESSION_KEY);
+if (!sessionId) {
+  sessionId = crypto.randomUUID();
+  localStorage.setItem(SESSION_KEY, sessionId);
+  console.log("🆕 Neue Session-ID:", sessionId);
+} else {
+  console.log("🔁 Bestehende Session-ID:", sessionId);
 }
 
-function loadHistory() {
-  try {
-    const data = localStorage.getItem(STORAGE_KEY);
-    if (!data) {
-      console.log("📭 Kein gespeicherter Verlauf gefunden.");
-      return [];
-    }
-    const parsed = JSON.parse(data);
-    console.log("📂 Verlauf geladen:", parsed);
-    return Array.isArray(parsed) ? parsed : [];
-  } catch (err) {
-    console.error("⚠️ Fehler beim Laden:", err);
-    return [];
-  }
-}
-
+// --- UI Helper ---
 function addMessageToUI({ text, role }) {
   const el = document.createElement("div");
   el.className = role === "user" ? "msg user" : role === "system" ? "sys" : "msg bot";
@@ -46,38 +33,79 @@ function addMessageToUI({ text, role }) {
   chatContainer.scrollTop = chatContainer.scrollHeight;
 }
 
+function safeSaveLocal() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(chatHistory));
+}
+
+function safeLoadLocal() {
+  try {
+    const data = localStorage.getItem(STORAGE_KEY);
+    return data ? JSON.parse(data) : [];
+  } catch {
+    return [];
+  }
+}
+
+// --- Server Sync ---
+async function loadFromServer() {
+  try {
+    const res = await fetch(`/api/chat/session/${sessionId}`);
+    if (!res.ok) throw new Error("Server-Fehler beim Laden");
+    const data = await res.json();
+    chatHistory = data.messages || [];
+    console.log("📂 Verlauf aus DB geladen:", chatHistory);
+    chatHistory.forEach(m => addMessageToUI(m));
+  } catch (err) {
+    console.warn("⚠️ Konnte Verlauf nicht vom Server laden:", err);
+    chatHistory = safeLoadLocal();
+    chatHistory.forEach(m => addMessageToUI(m));
+  }
+}
+
+async function saveToServer() {
+  try {
+    await fetch("/api/chat/session", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ session_id: sessionId, messages: chatHistory })
+    });
+  } catch (err) {
+    console.warn("⚠️ Speichern auf Server fehlgeschlagen:", err);
+  }
+}
+
+// --- Nachrichtenlogik ---
 function addMessage({ text, role }) {
   chatHistory.push({ text, role });
   addMessageToUI({ text, role });
-  saveHistory();
+  safeSaveLocal();
+  saveToServer(); // 👈 automatisch in PostgreSQL speichern
 }
 
 async function sendToServer(userText) {
   const res = await fetch(CHAT_ENDPOINT, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ message: userText }),
+    body: JSON.stringify({ message: userText })
   });
   const data = await res.json();
   return data.reply || "Keine Antwort erhalten.";
 }
 
 // --- Init ---
-function init() {
+async function init() {
   console.log("🚀 Initialisierung gestartet...");
-  chatHistory = loadHistory();
+
+  await loadFromServer();
 
   if (chatHistory.length === 0) {
-    addMessage({ role: "system", text: "👋 Willkommen! Dein Chatverlauf wird lokal gespeichert." });
-  } else {
-    chatHistory.forEach(msg => addMessageToUI(msg));
+    addMessage({ role: "system", text: "👋 Willkommen! Dein Chat wird sicher gespeichert." });
   }
 
   chatForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     const text = chatInput.value.trim();
     if (!text) return;
-
     addMessage({ role: "user", text });
     chatInput.value = "";
 
@@ -97,15 +125,19 @@ function init() {
     }
   });
 
-  clearBtn.addEventListener("click", () => {
-    localStorage.removeItem(STORAGE_KEY);
+  clearBtn.addEventListener("click", async () => {
+    if (!confirm("Verlauf wirklich löschen?")) return;
     chatHistory = [];
+    safeSaveLocal();
+    await saveToServer(); // auch auf Server leeren
     chatContainer.innerHTML = "";
     addMessage({ role: "system", text: "🧹 Verlauf gelöscht." });
   });
 
-  // zur Sicherheit beim Schließen speichern
-  window.addEventListener("beforeunload", saveHistory);
+  window.addEventListener("beforeunload", () => {
+    safeSaveLocal();
+    saveToServer();
+  });
 }
 
 document.addEventListener("DOMContentLoaded", init);

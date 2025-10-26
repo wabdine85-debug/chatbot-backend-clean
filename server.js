@@ -7,6 +7,15 @@ import fs from "fs";
 import os from "os";
 
 dotenv.config();
+import pkg from "pg";
+const { Pool } = pkg;
+
+// Verbindung zu deiner Kundenkartei-Datenbank
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: { rejectUnauthorized: false }
+});
+
 
 const app = express();
 app.use(cors());
@@ -262,6 +271,38 @@ Keine Telefon/E-Mail angeben.
     return res.json({
       reply: `Entschuldigung, es gab ein Problem. Bitte nutze unser [Kontaktformular](${CONTACT_URL}).`
     });
+  }
+});
+/* ---------- Chat-Verlauf abrufen ---------- */
+app.get("/api/chat/session/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const result = await pool.query("SELECT messages FROM chat_sessions WHERE session_id = $1", [id]);
+    if (result.rowCount === 0) return res.json({ messages: [] });
+    res.json({ messages: result.rows[0].messages });
+  } catch (err) {
+    console.error("❌ Fehler beim Laden:", err);
+    res.status(500).json({ messages: [] });
+  }
+});
+
+/* ---------- Chat-Verlauf speichern ---------- */
+app.post("/api/chat/session", async (req, res) => {
+  const { session_id, messages } = req.body;
+  if (!session_id || !Array.isArray(messages)) return res.status(400).json({ ok: false });
+
+  try {
+    await pool.query(
+      `INSERT INTO chat_sessions (session_id, messages)
+       VALUES ($1, $2)
+       ON CONFLICT (session_id)
+       DO UPDATE SET messages=$2, updated_at=NOW()`,
+      [session_id, JSON.stringify(messages)]
+    );
+    res.json({ ok: true });
+  } catch (err) {
+    console.error("❌ Fehler beim Speichern:", err);
+    res.status(500).json({ ok: false });
   }
 });
 

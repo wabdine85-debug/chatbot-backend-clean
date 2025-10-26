@@ -6,7 +6,11 @@ import OpenAI from "openai";
 import fs from "fs";
 import os from "os";
 
-dotenv.config();
+// Nur lokal .env laden (nicht auf Render)
+if (process.env.NODE_ENV !== "production") {
+  dotenv.config();
+}
+
 import pkg from "pg";
 const { Pool } = pkg;
 

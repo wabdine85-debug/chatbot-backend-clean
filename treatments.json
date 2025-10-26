@@ -15,7 +15,7 @@
     "name": "Morpheus8",
     "beschreibung": "Minimalinvasive Hautstraffung mit Radiofrequenz-Microneedling.",
     "preis": "ab 450 €",
-    "url": "https://palaisdebeaute.de/products/morpheus8"
+    "url": "https://palaisdebeaute.de/products/morpheus-8"
   },
   {
     "name": "Laser Haarentfernung",
@@ -27,36 +27,36 @@
     "name": "HIFU / Ultherapy",
     "beschreibung": "Nicht-invasive Hautstraffung durch hochintensiven fokussierten Ultraschall.",
     "preis": "ab 399 €",
-    "url": "https://palaisdebeaute.de/products/hifu"
+    "url": "https://palaisdebeaute.de/products/hifuhifu-ultherapy"
   },
   {
     "name": "PRP / Vampir Lifting",
     "beschreibung": "Behandlung mit Eigenblutplasma zur Hautregeneration.",
     "preis": "ab 299 €",
-    "url": "https://palaisdebeaute.de/products/prp"
+    "url": "https://palaisdebeaute.de/products/vampire-lifting"
   },
   {
     "name": "Polynukleotide / PhilArt",
     "beschreibung": "Innovative Hautregeneration mit Polynukleotid-Injektionen.",
     "preis": "ab 249 €",
-    "url": "https://palaisdebeaute.de/products/philart"
+    "url": "https://palaisdebeaute.de/products/polyfill-polynukleotide"
   },
   {
     "name": "Botox",
     "beschreibung": "Faltenbehandlung und Glättung durch Botulinumtoxin.",
     "preis": "ab 199 €",
-    "url": "https://palaisdebeaute.de/products/botox"
+    "url": "https://palaisdebeaute.de/products/faltenunterspritzung"
   },
   {
     "name": "Hyaluron",
     "beschreibung": "Faltenunterspritzung und Volumenaufbau mit Hyaluronsäure.",
     "preis": "ab 249 €",
-    "url": "https://palaisdebeaute.de/products/hyaluron"
+    "url": "https://palaisdebeaute.de/products/hyaluron-1"
   },
   {
-    "name": "Permanent Make-up",
-    "beschreibung": "Langanhaltende Pigmentierung für Augenbrauen, Lippen und Lidstrich.",
-    "preis": "ab 299 €",
-    "url": "https://palaisdebeaute.de/products/permanent-make-up"
+    "name": "Circadia",
+    "beschreibung": "Die Circadia-Behandlung basiert auf dem natürlichen Rhythmus der Haut. Mit wirkstoffreichen Enzym- und Peelingformulierungen werden Zellen erneuert, die Haut durchfeuchtet und der Teint sichtbar verfeinert. Ideal zur Regeneration müder, gestresster oder sonnengeschädigter Haut.",
+    "preis": "ab 175 €",
+    "url": "https://palaisdebeaute.de/products/circadia-®-all-treatments"
   }
 ]

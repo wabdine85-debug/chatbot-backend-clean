@@ -20,33 +20,16 @@ const pool = new Pool({
   ssl: { rejectUnauthorized: false }
 });
 
-
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 app.use(express.static("public"));
-
 
 const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 const CONTACT_URL = "https://palaisdebeaute.de/pages/contact";
 const DEBUG = process.env.DEBUG === "true";
 
 /* ------------------------- Utils ------------------------- */
-function forceMarkdownLink(text) {
-  if (!text) return "";
-  let out = text;
-
-  // Kontaktformular-Link IMMER als Markdown
-  const urlEsc = CONTACT_URL.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  const mdLinkStr = `\\[\\s*Kontaktformular\\s*\\]\\(${urlEsc}\\)`;
-  const mdLinkRe = new RegExp(mdLinkStr, "i");
-
-  if (!mdLinkRe.test(out)) {
-    out = out.replace(new RegExp(urlEsc, "g"), `[Kontaktformular](${CONTACT_URL})`);
-  }
-  return out.trim();
-}
-
 function makeMarkdownLink(label, url) {
   return `[${label}](${url})`;
 }
@@ -68,7 +51,8 @@ function tokenize(s) {
 }
 
 function levenshtein(a, b) {
-  a = normalize(a); b = normalize(b);
+  a = normalize(a);
+  b = normalize(b);
   const m = a.length, n = b.length;
   const dp = Array.from({ length: m + 1 }, () => new Array(n + 1).fill(0));
   for (let i = 0; i <= m; i++) dp[i][0] = i;
@@ -190,11 +174,9 @@ app.get("/whoami", (_req, res) => {
 
 /* ---------- /chat ---------- */
 app.post("/chat", async (req, res) => {
-  if (DEBUG) console.log("🔥 Chat-Route gestartet");
   const userMessage = (req.body.message || "").toString().slice(0, 300);
-  if (DEBUG) console.log("UserMessage:", userMessage);
-
   const MAX_TOKENS = 200;
+
   try {
     const intent = detectIntent(userMessage);
     const nmsg = normalize(userMessage);
@@ -221,25 +203,26 @@ app.post("/chat", async (req, res) => {
       return res.json({ reply: "Parkmöglichkeiten findest du direkt in der Rheinstraße sowie im Parkhaus Luisenforum." });
     }
 
-    // 👉 Treatments laden
+    // 👉 Treatments
     const treatments = loadTreatments();
     const best = smartFindTreatment(userMessage, treatments);
 
     if (best) {
-      // längere Beschreibungen erlauben
       const desc = (best.beschreibung || "")
-        .split(/(?<=\.)\s+/) // in Sätze aufteilen
-        .slice(0, 4)         // max. 4 Sätze
+        .split(/(?<=\.)\s+/)
+        .slice(0, 4)
         .join(" ")
-        .slice(0, 600);      // max. 600 Zeichen
+        .slice(0, 600);
 
       let reply = `${best.name}: ${desc}`;
       if (intent.isPrice && best.preis) reply += ` Preis: ${best.preis}.`;
-      reply += ` Mehr Infos hier: ${makeMarkdownLink("Behandlung ansehen", best.url)}`;
-      return res.json({ reply: forceMarkdownLink(reply) });
+      reply += ` Mehr Infos hier: [Behandlung ansehen](${best.url})`;
+
+      const cleaned = cleanReply(reply);
+      return res.json({ reply: cleaned });
     }
 
-    // 👉 FAQ fallback
+    // 👉 FAQ Fallback
     const faq = loadFaq();
     const faqMatch = faq.find(f => nmsg.includes(normalize(f.frage)));
     if (faqMatch) {
@@ -265,10 +248,12 @@ Keine Telefon/E-Mail angeben.
       messages
     });
 
-    const raw = completion.choices?.[0]?.message?.content?.trim()
-      || `Entschuldigung, ich habe dich nicht verstanden. Bitte nutze unser [Kontaktformular](${CONTACT_URL}).`;
+    let raw =
+      completion.choices?.[0]?.message?.content?.trim() ||
+      `Entschuldigung, ich habe dich nicht verstanden. Bitte nutze unser [Kontaktformular](${CONTACT_URL}).`;
 
-    return res.json({ reply: forceMarkdownLink(raw) });
+    const cleaned = cleanReply(raw);
+    return res.json({ reply: cleaned });
 
   } catch (err) {
     console.error("Fehler im /chat:", err);
@@ -277,23 +262,37 @@ Keine Telefon/E-Mail angeben.
     });
   }
 });
-/* ---------- Chat-Verlauf abrufen ---------- */
-app.get("/api/chat/session/:id", async (req, res) => {
-  const { id } = req.params;
-  try {
-    const result = await pool.query("SELECT messages FROM chat_sessions WHERE session_id = $1", [id]);
-    if (result.rowCount === 0) return res.json({ messages: [] });
-    res.json({ messages: result.rows[0].messages });
-  } catch (err) {
-    console.error("❌ Fehler beim Laden:", err);
-    res.status(500).json({ messages: [] });
-  }
-});
+
+/* ---------- Saubere Link-Formatierung ---------- */
+function cleanReply(raw) {
+  console.log("✅ cleanReply wurde ausgeführt:", raw.slice(0, 100));
+
+  if (!raw) return "";
+
+  let cleaned = raw;
+
+  // Markdown-Links [Text](URL) → klickbare Buttons
+  cleaned = cleaned.replace(
+    /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/gi,
+    '<a href="$2" target="_blank" rel="noopener noreferrer" style="background:#007bff;color:#fff;padding:6px 10px;border-radius:6px;text-decoration:none;font-weight:bold;margin-left:5px;display:inline-block;">$1</a>'
+  );
+
+  // "Mehr Infos hier:" entfernen
+  cleaned = cleaned.replace(/Mehr Infos hier:?\s*/gi, "");
+
+  // Doppelte Leerzeichen aufräumen
+  cleaned = cleaned.replace(/\s{2,}/g, " ").trim();
+
+  return cleaned;
+}
+
+
 
 /* ---------- Chat-Verlauf speichern ---------- */
 app.post("/api/chat/session", async (req, res) => {
   const { session_id, messages } = req.body;
-  if (!session_id || !Array.isArray(messages)) return res.status(400).json({ ok: false });
+  if (!session_id || !Array.isArray(messages))
+    return res.status(400).json({ ok: false });
 
   try {
     await pool.query(
@@ -312,4 +311,4 @@ app.post("/api/chat/session", async (req, res) => {
 
 /* ---------- Server starten ---------- */
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Backend läuft auf Port ${PORT}`));
+app.listen(PORT, () => console.log(`🚀 Backend läuft auf Port ${PORT}`));

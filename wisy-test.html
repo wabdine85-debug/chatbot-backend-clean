@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wisy Bot Lokal</title>
+  <style>
+    body { font-family: Arial; background: #f4f4f4; padding: 20px; }
+    #chatContainer { background: #fff; border-radius: 10px; padding: 10px; height: 400px; overflow-y: auto; }
+    .msg { margin: 8px 0; }
+    .user { color: #1a73e8; }
+    .bot { color: #34a853; }
+    input { width: 80%; padding: 8px; }
+    button { padding: 8px 12px; background: #1a73e8; color: white; border: none; border-radius: 4px; cursor: pointer; }
+    button:hover { background: #0c5ed8; }
+  </style>
+</head>
+<body>
+  <h2>💬 Wisy Lokal-Test</h2>
+  <div id="chatContainer"></div>
+  <br>
+  <input id="chatInput" type="text" placeholder="Schreib etwas...">
+  <button id="sendBtn">Senden</button>
+
+  <script>
+    const chatContainer = document.getElementById("chatContainer");
+    const chatInput = document.getElementById("chatInput");
+    const sendBtn = document.getElementById("sendBtn");
+
+    function addMessage(text, role) {
+      const div = document.createElement("div");
+      div.className = "msg " + role;
+      div.innerHTML = `<b>${role === "user" ? "Du" : "Wisy"}:</b> ${text}`;
+      chatContainer.appendChild(div);
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+
+    async function sendMessage() {
+      const text = chatInput.value.trim();
+      if (!text) return;
+      addMessage(text, "user");
+      chatInput.value = "";
+
+      const res = await fetch("http://localhost:3000/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: text })
+      });
+      const data = await res.json();
+      addMessage(data.reply, "bot");
+    }
+
+    sendBtn.onclick = sendMessage;
+    chatInput.addEventListener("keydown", e => {
+      if (e.key === "Enter") sendMessage();
+    });
+  </script>
+</body>
+</html>

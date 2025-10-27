@@ -4,7 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Wisy Chat</title>
+
   <style>
+    /* ===============================
+       🎨 WISY CHAT – PDB FINAL EDITION
+       =============================== */
+
     body {
       font-family: Arial, sans-serif;
       background: #f2f4f8;
@@ -16,16 +21,42 @@
       margin: 0;
     }
 
-    .chat-box {
+    /* Haupt-Chatfenster */
+    #chatWrapper {
       width: 400px;
       height: 600px;
-      background: white;
-      border-radius: 12px;
+      background: #fff;
+      border-radius: 14px;
       display: flex;
       flex-direction: column;
-      box-shadow: 0 0 20px rgba(0,0,0,0.1);
+      box-shadow: 0 6px 25px rgba(0, 0, 0, 0.1);
+      position: relative;
+      transition: opacity 0.3s ease;
     }
 
+    /* Fade-Out beim Schließen */
+    #chatWrapper.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /* ❌ Close Button */
+    #closeChatBtn {
+      position: absolute;
+      top: 8px;
+      right: 10px;
+      background: none;
+      border: none;
+      font-size: 18px;
+      color: #888;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+    #closeChatBtn:hover {
+      color: #000;
+    }
+
+    /* Chat-Inhalt */
     #chatContainer {
       flex: 1;
       overflow-y: auto;
@@ -33,23 +64,28 @@
       display: flex;
       flex-direction: column;
       gap: 10px;
+      margin-top: 30px;
     }
 
+    /* Nachrichtenblasen */
     .msg {
-      padding: 10px;
+      padding: 10px 14px;
       border-radius: 10px;
       max-width: 80%;
       word-wrap: break-word;
+      line-height: 1.4;
     }
 
     .user {
       align-self: flex-end;
-      background: #d1f1ff;
+      background: #e8f6ff;
+      border: 1px solid #bee7ff;
     }
 
     .bot {
       align-self: flex-start;
-      background: #e2e2e2;
+      background: #f0f0f0;
+      border: 1px solid #ddd;
     }
 
     .sys {
@@ -58,6 +94,7 @@
       color: #888;
     }
 
+    /* Eingabebereich */
     form {
       display: flex;
       border-top: 1px solid #ddd;
@@ -69,17 +106,24 @@
       padding: 10px;
       font-size: 14px;
       border-radius: 0 0 0 12px;
+      outline: none;
     }
 
-    button {
+    button[type="submit"] {
       border: none;
       background: #007bff;
       color: white;
       padding: 10px 15px;
       border-radius: 0 0 12px 0;
       cursor: pointer;
+      transition: background 0.2s;
     }
 
+    button[type="submit"]:hover {
+      background: #0056b3;
+    }
+
+    /* Verlauf löschen Button */
     #clearChat {
       background: #ff4757;
       border-radius: 8px;
@@ -89,20 +133,158 @@
       font-size: 13px;
       border: none;
       cursor: pointer;
+      align-self: center;
+      transition: background 0.2s;
+    }
+
+    #clearChat:hover {
+      background: #d6343f;
+    }
+
+    /* === Chat Links & Buttons === */
+    .msg.bot a,
+    .chat-button {
+      display: inline-block;
+      background: #007bff;
+      color: #fff !important;
+      padding: 6px 12px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: background 0.2s;
+      margin-top: 4px;
+    }
+
+    .msg.bot a:hover,
+    .chat-button:hover {
+      background: #0056b3;
+    }
+
+    .chat-link {
+      color: #007bff;
+      text-decoration: underline;
+      transition: color 0.2s;
+    }
+
+    .chat-link:hover {
+      color: #0056b3;
+    }
+
+    /* === Floating Chat Button === */
+    .chat-toggle {
+      position: fixed;
+      bottom: 25px;
+      right: 25px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      font-size: 26px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      cursor: pointer;
+      transition: background 0.3s, transform 0.2s;
+      z-index: 9999;
+    }
+
+    .chat-toggle:hover {
+      background: #0056b3;
+      transform: scale(1.05);
+    }
+
+    /* Scrollbar (dezent) */
+    #chatContainer::-webkit-scrollbar {
+      width: 6px;
+    }
+    #chatContainer::-webkit-scrollbar-thumb {
+      background-color: rgba(0,0,0,0.2);
+      border-radius: 3px;
+    }
+
+    /* 🌙 Dark Mode automatisch */
+    @media (prefers-color-scheme: dark) {
+      body {
+        background: #111;
+        color: #eee;
+      }
+
+      #chatWrapper {
+        background: #1c1c1c;
+        color: #eee;
+        box-shadow: 0 0 15px rgba(255, 255, 255, 0.05);
+      }
+
+      .msg.bot {
+        background: #2a2a2a;
+        border: 1px solid #333;
+      }
+
+      .msg.user {
+        background: #073f7c;
+        color: #fff;
+        border: 1px solid #0b57d0;
+      }
+
+      .msg.bot a,
+      .chat-button {
+        background: #1a73e8;
+      }
+
+      .msg.bot a:hover,
+      .chat-button:hover {
+        background: #155fc0;
+      }
+
+      .chat-toggle {
+        background: #1a73e8;
+      }
+
+      .chat-toggle:hover {
+        background: #155fc0;
+      }
     }
   </style>
 </head>
+
 <body>
-  <div class="chat-box">
+  <div id="chatWrapper">
+    <button id="closeChatBtn">❌</button>
+
     <div id="chatContainer"></div>
+
     <form id="chatForm">
       <input id="chatInput" type="text" placeholder="Schreib an Wisy..." />
       <button type="submit">Senden</button>
     </form>
+
     <button id="clearChat">Verlauf löschen</button>
   </div>
 
-  <!-- Script laden -->
-  <script src="/js/wisy.js" defer></script>
+  <!-- Skript laden -->
+  <script src="/js/wisy.js?v=7" defer></script>
+
+  <!-- Floating Chat Button -->
+  <button id="toggleChatBtn" class="chat-toggle">💬</button>
+
+  <script>
+    // === Chat öffnen / schließen ===
+    const toggleChatBtn = document.getElementById("toggleChatBtn");
+
+    // 💬 Chat öffnen
+    toggleChatBtn.addEventListener("click", () => {
+      const chatWrapper = document.getElementById("chatWrapper");
+      chatWrapper.style.display = "flex";
+      chatWrapper.classList.remove("hidden");
+      toggleChatBtn.style.display = "none";
+    });
+
+    // ❌ Chat schließen → Button wieder einblenden
+    document.getElementById("closeChatBtn").addEventListener("click", () => {
+      setTimeout(() => {
+        toggleChatBtn.style.display = "block";
+      }, 400);
+    });
+  </script>
 </body>
 </html>

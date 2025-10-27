@@ -1,5 +1,5 @@
 // ===============================
-// 💬 Wisy Chat mit PostgreSQL + LocalStorage-Fallback
+// 💬 Wisy Chat – FINAL EDITION (mit klickbaren Links + sanftem Fade-Out)
 // ===============================
 
 const STORAGE_KEY = "wisyChatHistory:v2";
@@ -7,10 +7,12 @@ const SESSION_KEY = "wisySessionId";
 const CHAT_ENDPOINT = "/chat";
 
 // --- DOM ---
+const chatWrapper = document.getElementById("chatWrapper");
 const chatContainer = document.getElementById("chatContainer");
 const chatForm = document.getElementById("chatForm");
 const chatInput = document.getElementById("chatInput");
 const clearBtn = document.getElementById("clearChat");
+const closeChatBtn = document.getElementById("closeChatBtn");
 
 let chatHistory = [];
 
@@ -24,15 +26,20 @@ if (!sessionId) {
   console.log("🔁 Bestehende Session-ID:", sessionId);
 }
 
-// --- UI Helper ---
+/* ------------------------- UI ------------------------- */
 function addMessageToUI({ text, role }) {
   const el = document.createElement("div");
-  el.className = role === "user" ? "msg user" : role === "system" ? "sys" : "msg bot";
-  el.textContent = text;
+  el.className =
+    role === "user" ? "msg user" : role === "system" ? "sys" : "msg bot";
+
+  // 🔹 Server liefert bereits fertiges HTML → direkt rendern
+  el.innerHTML = text || "";
+
   chatContainer.appendChild(el);
   chatContainer.scrollTop = chatContainer.scrollHeight;
 }
 
+/* ------------------------- Speicher ------------------------- */
 function safeSaveLocal() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(chatHistory));
 }
@@ -46,7 +53,7 @@ function safeLoadLocal() {
   }
 }
 
-// --- Server Sync ---
+/* ------------------------- Server Sync ------------------------- */
 async function loadFromServer() {
   try {
     const res = await fetch(`/api/chat/session/${sessionId}`);
@@ -74,12 +81,12 @@ async function saveToServer() {
   }
 }
 
-// --- Nachrichtenlogik ---
+/* ------------------------- Nachrichtenlogik ------------------------- */
 function addMessage({ text, role }) {
   chatHistory.push({ text, role });
   addMessageToUI({ text, role });
   safeSaveLocal();
-  saveToServer(); // 👈 automatisch in PostgreSQL speichern
+  saveToServer();
 }
 
 async function sendToServer(userText) {
@@ -92,7 +99,34 @@ async function sendToServer(userText) {
   return data.reply || "Keine Antwort erhalten.";
 }
 
-// --- Init ---
+/* ------------------------- Chat schließen ------------------------- */
+if (closeChatBtn) {
+  closeChatBtn.addEventListener("click", async () => {
+    if (!confirm("Chat schließen und Verlauf löschen?")) return;
+
+    // Verlauf löschen (lokal + DB)
+    chatHistory = [];
+    localStorage.removeItem(STORAGE_KEY);
+    await saveToServer();
+
+    // UI leeren
+    if (chatContainer) chatContainer.innerHTML = "";
+
+    // Info kurz anzeigen
+    const info = document.createElement("div");
+    info.className = "sys";
+    info.textContent = "💬 Chat wurde beendet. Starte ein neues Gespräch!";
+    chatContainer.appendChild(info);
+
+    // Sanft ausblenden
+    chatWrapper.classList.add("hidden");
+    setTimeout(() => {
+      chatWrapper.style.display = "none";
+    }, 300);
+  });
+}
+
+/* ------------------------- Initialisierung ------------------------- */
 async function init() {
   console.log("🚀 Initialisierung gestartet...");
 
@@ -109,13 +143,12 @@ async function init() {
     addMessage({ role: "user", text });
     chatInput.value = "";
 
-    // Platzhalter anzeigen
     const thinking = { role: "assistant", text: "…" };
     addMessage(thinking);
 
     try {
       const reply = await sendToServer(text);
-      chatHistory.pop(); // Platzhalter entfernen
+      chatHistory.pop();
       chatContainer.lastElementChild.remove();
       addMessage({ role: "assistant", text: reply });
     } catch (err) {
@@ -129,7 +162,7 @@ async function init() {
     if (!confirm("Verlauf wirklich löschen?")) return;
     chatHistory = [];
     safeSaveLocal();
-    await saveToServer(); // auch auf Server leeren
+    await saveToServer();
     chatContainer.innerHTML = "";
     addMessage({ role: "system", text: "🧹 Verlauf gelöscht." });
   });

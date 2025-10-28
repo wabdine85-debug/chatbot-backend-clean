@@ -309,6 +309,46 @@ app.post("/api/chat/session", async (req, res) => {
   }
 });
 
+/* ---------- Chat-Verlauf abrufen (A2: nur während Session) ---------- */
+app.get("/api/chat/session/:session_id", async (req, res) => {
+  const { session_id } = req.params;
+
+  if (!session_id) return res.status(400).json({ messages: [] });
+
+  try {
+    const result = await pool.query(
+      `SELECT messages FROM chat_sessions WHERE session_id=$1`,
+      [session_id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.json({ messages: [] }); // Keine gespeicherten Daten
+    }
+
+    return res.json({ messages: result.rows[0].messages || [] });
+
+  } catch (err) {
+    console.error("❌ Fehler beim Laden:", err);
+    return res.status(500).json({ messages: [] });
+  }
+});
+
+/* ---------- Chat-Verlauf löschen (A2: bei X Button) ---------- */
+app.delete("/api/chat/session/:session_id", async (req, res) => {
+  const { session_id } = req.params;
+
+  if (!session_id) return res.status(400).json({ ok: false });
+
+  try {
+    await pool.query(`DELETE FROM chat_sessions WHERE session_id=$1`, [session_id]);
+    return res.json({ ok: true });
+  } catch (err) {
+    console.error("❌ Fehler beim Löschen:", err);
+    return res.status(500).json({ ok: false });
+  }
+});
+
+
 /* ---------- Server starten ---------- */
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`🚀 Backend läuft auf Port ${PORT}`));

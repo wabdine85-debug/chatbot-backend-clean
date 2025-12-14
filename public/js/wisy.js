@@ -127,15 +127,19 @@ function addMessage({ text, role }) {
   saveToServer();
 }
 
-async function sendToServer(userText) {
+async function sendToServer(userText, tags = []) {
   const res = await fetch(CHAT_ENDPOINT, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ message: userText })
+    body: JSON.stringify({
+      message: userText,
+      tags: tags
+    })
   });
   const data = await res.json();
   return data.reply || "Keine Antwort erhalten.";
 }
+
 
 /* ------------------------- Chat schließen ------------------------- */
 if (closeChatBtn) {
@@ -198,7 +202,8 @@ async function init() {
     addMessage(thinking);
 
     try {
-      const reply = await sendToServer(text);
+      const reply = await sendToServer(rawText, wisyTags);
+
       chatHistory.pop();
       chatContainer.lastElementChild.remove();
       addMessage({ role: "assistant", text: reply });

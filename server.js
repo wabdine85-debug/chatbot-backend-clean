@@ -487,14 +487,41 @@ const TAG_KEYWORDS = {
   filler: ["volumen", "falten"]
 };
 
+function extractTagsFromMessage(message) {
+  const text = normalize(message);
+  const tags = new Set();
+
+  treatments.forEach(t => {
+    const wisy = t.wisy;
+    if (!wisy?.triggers) return;
+
+    wisy.triggers.forEach(trigger => {
+      if (text.includes(normalize(trigger))) {
+        (wisy.probleme || []).forEach(p => tags.add(p));
+        (wisy.ziele || []).forEach(z => tags.add(z));
+      }
+    });
+  });
+
+  return Array.from(tags);
+}
 
 
 /* ---------- Wisy Chat Antwort (Matching & Buchung) ---------- */
 app.post("/chat", async (req, res) => {
 
-  // 🔹 1) Message & Tags auslesen
-  const msg = (req.body?.message || "").toLowerCase().trim();
-  const tags = Array.isArray(req.body?.tags) ? req.body.tags : [];
+ // 🔹 1) Message & Tags auslesen
+const msg = (req.body?.message || "").toString();
+
+// 🔹 2) Tags automatisch aus Text extrahieren (triggers)
+const tagsFromText = extractTagsFromMessage(msg);
+
+// 🔹 3) Tags aus Frontend (falls vorhanden)
+const tagsFromFrontend = Array.isArray(req.body?.tags) ? req.body.tags : [];
+
+// 🔹 4) Zusammenführen (ohne Duplikate)
+const tags = [...new Set([...tagsFromText, ...tagsFromFrontend])];
+
 
   // 🔹 Automatische Tags aus Text ableiten
 let autoTags = [];

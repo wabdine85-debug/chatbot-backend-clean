@@ -80,6 +80,44 @@ async function saveToServer() {
     console.warn("⚠️ Speichern auf Server fehlgeschlagen:", err);
   }
 }
+/* ------------------------- Wisy Input Processing ------------------------- */
+
+// 1️⃣ Text normalisieren
+function normalizeInput(text) {
+  return text
+    .toLowerCase()
+    .replace(/ä/g, "ae")
+    .replace(/ö/g, "oe")
+    .replace(/ü/g, "ue")
+    .replace(/ß/g, "ss")
+    .replace(/[^\w\s]/g, "")
+    .trim();
+}
+
+// 2️⃣ Synonyme & Tippfehler
+const synonymMap = {
+  "unreine haut": ["unrein", "pickel", "pikel", "mitesser"],
+  "akne": ["akne", "acne", "ackne"],
+  "trockene haut": ["trocken", "trockne", "spannt", "schuppig"],
+  "fahle haut": ["fahl", "grau", "mued"],
+  "feine linien": ["linien", "faeltchen", "faelte"]
+};
+
+// 3️⃣ Tags extrahieren
+function extractTags(text) {
+  const found = [];
+
+  for (const [tag, variations] of Object.entries(synonymMap)) {
+    for (const v of variations) {
+      if (text.includes(v)) {
+        found.push(tag);
+        break;
+      }
+    }
+  }
+
+  return found;
+}
 
 /* ------------------------- Nachrichtenlogik ------------------------- */
 function addMessage({ text, role }) {
@@ -137,11 +175,24 @@ async function init() {
   }
 
   chatForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const text = chatInput.value.trim();
-    if (!text) return;
-    addMessage({ role: "user", text });
-    chatInput.value = "";
+  e.preventDefault();
+
+  const rawText = chatInput.value.trim();
+  if (!rawText) return;
+
+  // 🔹 Schritt 3: Normalisieren + Schreibfehler erkennen
+  const normalizedText = normalizeInput(rawText);
+  const wisyTags = extractTags(normalizedText);
+
+  // 🔹 User-Nachricht anzeigen (Originaltext bleibt sichtbar)
+  addMessage({
+    role: "user",
+    text: rawText,
+    tags: wisyTags // wird später für Empfehlungen genutzt
+  });
+
+  chatInput.value = "";
+
 
     const thinking = { role: "assistant", text: "…" };
     addMessage(thinking);

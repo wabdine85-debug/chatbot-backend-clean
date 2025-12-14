@@ -30,6 +30,77 @@ const CONTACT_URL = "https://palaisdebeaute.de/pages/contact";
 const DEBUG = process.env.DEBUG === "true";
 
 /* ------------------------- Utils ------------------------- */
+
+const treatments = JSON.parse(
+  fs.readFileSync(new URL("./treatments.json", import.meta.url), "utf8")
+).treatments;
+function matchTreatments(tags = []) {
+  if (!Array.isArray(tags) || tags.length === 0) return [];
+
+  const scored = treatments.map(t => {
+    let score = 0;
+    if (!t.wisy) return { ...t, score: 0 };
+
+    tags.forEach(tag => {
+      if (t.wisy.probleme?.includes(tag)) score += 3;
+      if (t.wisy.ziele?.includes(tag)) score += 2;
+      if (t.wisy.hauttypen?.includes(tag)) score += 1;
+    });
+
+    return { ...t, score };
+  });
+
+  return scored
+    .filter(t => t.score >= 3)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 2);
+}
+
+function shouldDirectToBooking(matches) {
+  if (matches.length !== 1) return false;
+  const t = matches[0];
+  return t.wisy?.buchung_moeglich === true;
+}
+
+function buildReply(matches) {
+  if (!matches.length) {
+    return `
+      Ich möchte dir nichts Falsches empfehlen.<br><br>
+      👉 <a href="${CONTACT_URL}">
+      Kurze Beratung anfragen
+      </a>
+    `;
+  }
+
+  // ✅ EIN klares Match → DIREKT BUCHEN
+  if (shouldDirectToBooking(matches)) {
+    const t = matches[0];
+    return `
+      Basierend auf deiner Beschreibung kann <strong>${t.name}</strong> gut zu dir passen.<br><br>
+      ${t.beschreibung}<br><br>
+      💶 ${t.preis}<br><br>
+      👉 <a href="${t.url}">
+      Jetzt ${t.name} online buchen
+      </a>
+    `;
+  }
+
+  // ⚠️ Mehrere Matches → Auswahl
+  let text = `Diese Behandlungen könnten zu dir passen:<br><br>`;
+
+  matches.forEach(t => {
+    text += `
+      <strong>${t.name}</strong><br>
+      ${t.beschreibung}<br>
+      💶 ${t.preis}<br>
+      👉 <a href="${t.url}">Zur Behandlungsseite</a><br><br>
+    `;
+  });
+
+  return text;
+}
+
+
 function makeMarkdownLink(label, url) {
   return `[${label}](${url})`;
 }
@@ -348,6 +419,21 @@ app.delete("/api/chat/session/:session_id", async (req, res) => {
   }
 });
 
+/* ---------- Wisy Chat Antwort (Matching & Buchung) ---------- */
+app.post("/chat", async (req, res) => {
+  const { tags = [] } = req.body;
+
+  try {
+    const matches = matchTreatments(tags);
+    const reply = buildReply(matches);
+    return res.json({ reply });
+  } catch (err) {
+    console.error("❌ Fehler im Wisy-Chat:", err);
+    return res.status(500).json({
+      reply: "⚠️ Es ist ein Fehler aufgetreten. Bitte versuche es erneut."
+    });
+  }
+});
 
 /* ---------- Server starten ---------- */
 const PORT = process.env.PORT || 3000;

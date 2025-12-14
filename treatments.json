@@ -6,11 +6,57 @@
     "url": "https://palaisdebeaute.de/products/microneedling"
   },
   {
-    "name": "Hydrafacial",
-    "beschreibung": "Tiefenreinigung der Haut mit intensiver Feuchtigkeitsversorgung.",
-    "preis": "ab 149 €",
-    "url": "https://palaisdebeaute.de/products/hydrafacial-md"
-  },
+  "name": "Hydrafacial",
+  "beschreibung": "Tiefenreinigung der Haut mit intensiver Feuchtigkeitsversorgung.",
+  "preis": "ab 149 €",
+  "url": "https://palaisdebeaute.de/products/hydrafacial-md",
+
+  "wisy": {
+    "kategorie": "Gesichtsbehandlung",
+
+    "probleme": [
+      "unreine haut",
+      "akne",
+      "mitesser",
+      "trockene haut",
+      "fahle haut",
+      "große poren",
+      "feine linien"
+    ],
+
+    "hauttypen": [
+      "normal",
+      "trocken",
+      "mischhaut",
+      "fettig",
+      "sensibel"
+    ],
+
+    "ziele": [
+      "tiefenreinigung",
+      "feuchtigkeit",
+      "glow",
+      "hautverfeinerung"
+    ],
+
+    "schmerzlevel": "sehr gering",
+    "ausfallzeit": "keine",
+    "behandlungsdauer": "ca. 45–60 Minuten",
+    "ergebnisse": "sofort sichtbar, frischer und klarer Teint",
+    "empfohlene_intervalle": "alle 4–6 Wochen",
+
+  "buchung_moeglich": true,
+"buchung_typ": "shopify", 
+"fallback_beratung": true,
+
+"cta": {
+  "text": "Jetzt Hydrafacial online buchen",
+  "url": "https://palaisdebeaute.de/products/hydrafacial-md"
+}
+
+  }
+},
+
   {
     "name": "Morpheus8",
     "beschreibung": "Minimalinvasive Hautstraffung mit Radiofrequenz-Microneedling.",

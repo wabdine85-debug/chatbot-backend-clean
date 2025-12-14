@@ -33,9 +33,12 @@ const DEBUG = process.env.DEBUG === "true";
 
 const treatments = JSON.parse(
   fs.readFileSync(new URL("./treatments.json", import.meta.url), "utf8")
-).treatments;
+);
+
 function matchTreatments(tags) {
   if (!Array.isArray(tags)) return [];
+  if (!Array.isArray(treatments)) return [];
+
 
 
   const scored = treatments.map(t => {

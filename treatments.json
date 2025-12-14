@@ -7,6 +7,7 @@
     "wisy": {
       "kategorie": "Haarentfernung",
       "triggers": [
+        "haare",
         "alexandrit",
         "alexandrit laser",
         "laser haarentfernung",
@@ -93,13 +94,16 @@
     "wisy": {
       "kategorie": "Gesichtsbehandlung",
       "triggers": [
-        "hydrafacial",
-        "hydra facial",
-        "tiefenreinigung",
-        "glow",
-        "unreine haut",
-        "poren",
-        "feuchtigkeit"
+  "hydrafacial",
+  "hydra facial",
+  "akne",
+  "pickel",
+  "unreine haut",
+  "mitesser",
+  "poren",
+  "glow"
+
+
       ],
       "probleme": ["unreine haut", "mitesser", "trockene haut", "große poren", "fahle haut"],
       "hauttypen": ["normal", "trocken", "mischhaut", "fettig", "sensibel"],
@@ -115,13 +119,14 @@
     "wisy": {
       "kategorie": "Hautregeneration",
       "triggers": [
-        "microneedling",
-        "needling",
-        "kollagen",
-        "aknenarben",
-        "poren",
-        "hautstruktur"
-      ],
+  "microneedling",
+  "needling",
+  "akne",
+  "aknenarben",
+  "pickelmale",
+  "poren",
+  "hautstruktur"
+],
       "probleme": ["feine linien", "aknenarben", "unebenheiten", "fahle haut"],
       "hauttypen": ["normal", "mischhaut", "fettig"],
       "ziele": ["kollagenaufbau", "hautverfeinerung"],
@@ -423,6 +428,49 @@
     "ziele": ["kontur", "definition"],
     "buchung_moeglich": true
   }
+},
+{
+  "name": "Circadia Gesichtsbehandlungen",
+  "beschreibung": "Medizinisch-kosmetische Gesichtsbehandlungen mit Circadia – individuell abgestimmt auf Akne, empfindliche Haut, Anti-Aging und Hautregeneration.",
+  "preis": "ab 129 €",
+  "url": "https://palaisdebeaute.de/collections/circadia-%C2%AE-all-treatments",
+  "wisy": {
+    "kategorie": "Gesichtsbehandlung",
+    "triggers": [
+      "circadia",
+      "circadia facial",
+      "circadia behandlung",
+      "gesichtsbehandlung",
+      "akne",
+      "pickel",
+      "unreine haut",
+      "empfindliche haut",
+      "anti aging",
+      "hautregeneration"
+    ],
+    "probleme": [
+      "akne",
+      "unreine haut",
+      "empfindliche haut",
+      "fahle haut",
+      "hautalterung"
+    ],
+    "hauttypen": [
+      "normal",
+      "trocken",
+      "mischhaut",
+      "fettig",
+      "sensibel"
+    ],
+    "ziele": [
+      "hautverfeinerung",
+      "regeneration",
+      "anti aging",
+      "beruhigung"
+    ],
+    "buchung_moeglich": true
+  }
 }
+
 
 ]

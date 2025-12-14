@@ -128,17 +128,23 @@ function addMessage({ text, role }) {
 }
 
 async function sendToServer(userText, tags = []) {
+  console.log("📤 Sende an Server:", userText, tags);
+
   const res = await fetch(CHAT_ENDPOINT, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json"
+    },
     body: JSON.stringify({
       message: userText,
       tags: tags
     })
   });
+
   const data = await res.json();
   return data.reply || "Keine Antwort erhalten.";
 }
+
 
 
 /* ------------------------- Chat schließen ------------------------- */

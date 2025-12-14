@@ -246,6 +246,48 @@ app.get("/whoami", (_req, res) => {
 /* ---------- /chat ---------- */
 app.post("/chat", async (req, res) => {
   const userMessage = (req.body.message || "").toString().slice(0, 300);
+  // 🔹 Tags aus Frontend (falls vorhanden)
+const tags = Array.isArray(req.body.tags) ? req.body.tags : [];
+
+// 🔹 Behandlungen (Basis-Logik)
+const treatments = [
+  {
+    name: "Hydrafacial",
+    probleme: ["unreine haut", "trockene haut", "mitesser", "fahle haut"],
+    text: "Hydrafacial ist ideal bei unreiner und gleichzeitig trockener Haut, da die Behandlung tiefenreinigt und intensiv Feuchtigkeit spendet.",
+    url: "https://palaisdebeaute.de/products/hydrafacial-md"
+  },
+  {
+    name: "Microneedling",
+    probleme: ["akne", "grosse poren", "feine linien"],
+    text: "Microneedling unterstützt die Hauterneuerung, verfeinert Poren und verbessert das Hautbild nachhaltig.",
+    url: "https://palaisdebeaute.de/products/microneedling"
+  }
+];
+
+// 🔹 Bestes Matching ermitteln
+let bestMatch = null;
+let bestScore = 0;
+
+for (const t of treatments) {
+  const score = tags.filter(tag => t.probleme.includes(tag)).length;
+  if (score > bestScore) {
+    bestScore = score;
+    bestMatch = t;
+  }
+}
+
+// 🔹 Wenn Match gefunden → SOFORT antworten (kein OpenAI, kein Fallback)
+if (bestMatch) {
+  return res.json({
+    reply: `
+<strong>${bestMatch.name}</strong><br>
+${bestMatch.text}<br><br>
+<a href="${bestMatch.url}" class="chat-button">Jetzt Behandlung buchen</a>
+`
+  });
+}
+
   const MAX_TOKENS = 200;
 
   try {

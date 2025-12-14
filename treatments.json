@@ -1,108 +1,577 @@
 [
   {
-    "name": "Microneedling",
-    "beschreibung": "Regt die Hauterneuerung und Kollagenbildung an.",
-    "preis": "ab 139 €",
-    "url": "https://palaisdebeaute.de/products/microneedling"
-  },
-  {
-  "name": "Hydrafacial",
-  "beschreibung": "Tiefenreinigung der Haut mit intensiver Feuchtigkeitsversorgung.",
-  "preis": "ab 149 €",
-  "url": "https://palaisdebeaute.de/products/hydrafacial-md",
-
-  "wisy": {
-    "kategorie": "Gesichtsbehandlung",
-
-    "probleme": [
-      "unreine haut",
-      "akne",
-      "mitesser",
-      "trockene haut",
-      "fahle haut",
-      "große poren",
-      "feine linien"
-    ],
-
-    "hauttypen": [
-      "normal",
-      "trocken",
-      "mischhaut",
-      "fettig",
-      "sensibel"
-    ],
-
-    "ziele": [
-      "tiefenreinigung",
-      "feuchtigkeit",
-      "glow",
-      "hautverfeinerung"
-    ],
-
-    "schmerzlevel": "sehr gering",
-    "ausfallzeit": "keine",
-    "behandlungsdauer": "ca. 45–60 Minuten",
-    "ergebnisse": "sofort sichtbar, frischer und klarer Teint",
-    "empfohlene_intervalle": "alle 4–6 Wochen",
-
-  "buchung_moeglich": true,
-"buchung_typ": "shopify", 
-"fallback_beratung": true,
-
-"cta": {
-  "text": "Jetzt Hydrafacial online buchen",
-  "url": "https://palaisdebeaute.de/products/hydrafacial-md"
-}
-
-  }
-},
-
-  {
-    "name": "Morpheus8",
-    "beschreibung": "Minimalinvasive Hautstraffung mit Radiofrequenz-Microneedling.",
-    "preis": "ab 450 €",
-    "url": "https://palaisdebeaute.de/products/morpheus-8"
-  },
-  {
-    "name": "Laser Haarentfernung",
-    "beschreibung": "Dauerhafte Haarentfernung mit modernem Alexandritlaser. Die Methode ist besonders hautschonend und effektiv. Sie eignet sich auch für empfindliche Haut und verschiedene Haartypen. Schon nach wenigen Sitzungen ist eine deutliche Reduktion des Haarwuchses sichtbar.",
+    "name": "Alexandrit Laser Haarentfernung",
+    "beschreibung": "Dauerhafte Haarentfernung mit modernem Alexandritlaser.",
     "preis": "Preis nach Zone",
-    "url": "https://palaisdebeaute.de/products/alexandrit-deka"
+    "url": "https://palaisdebeaute.de/products/alexandrit-deka",
+    "wisy": {
+      "kategorie": "Haarentfernung",
+      "probleme": ["unerwünschte haare", "stoppeln", "rasur", "haarwuchs"],
+      "hauttypen": ["normal", "mischhaut", "fettig"],
+      "ziele": ["dauerhafte haarreduktion", "glatte haut"],
+      "keywords": ["alexandrit", "laser", "haarentfernung", "deka"],
+      "schmerzlevel": "gering",
+      "ausfallzeit": "keine",
+      "behandlungsdauer": "15–60 Minuten",
+      "ergebnisse": "sichtbare Haarreduktion nach mehreren Sitzungen",
+      "empfohlene_intervalle": "alle 4–6 Wochen",
+      "buchung_moeglich": true,
+      "buchung_typ": "shopify",
+      "fallback_beratung": true,
+      "cta": {
+        "text": "Lasertermin buchen",
+        "url": "https://palaisdebeaute.de/products/alexandrit-deka"
+      }
+    }
+  },
+  {
+    "name": "Diodenlaser Haarentfernung",
+    "beschreibung": "Hautschonende und effektive Haarentfernung mit Diodenlaser.",
+    "preis": "Preis nach Zone",
+    "url": "https://palaisdebeaute.de/products/dioden-laser",
+    "wisy": {
+      "kategorie": "Haarentfernung",
+      "probleme": ["unerwünschte haare", "stoppeln"],
+      "hauttypen": ["normal", "mischhaut", "fettig"],
+      "ziele": ["haarreduktion"],
+      "keywords": ["diodenlaser", "laser haarentfernung"],
+      "schmerzlevel": "gering",
+      "ausfallzeit": "keine",
+      "behandlungsdauer": "15–45 Minuten",
+      "ergebnisse": "deutlich reduzierter Haarwuchs",
+      "empfohlene_intervalle": "alle 4–6 Wochen",
+      "buchung_moeglich": true,
+      "buchung_typ": "shopify",
+      "fallback_beratung": true,
+      "cta": {
+        "text": "Diodenlaser buchen",
+        "url": "https://palaisdebeaute.de/products/dioden-laser"
+      }
+    }
+  },
+  {
+    "name": "Morpheus8™",
+    "beschreibung": "Radiofrequenz-Microneedling zur Hautstraffung und Porenverfeinerung.",
+    "preis": "ab 450 €",
+    "url": "https://palaisdebeaute.de/products/morpheus-8",
+    "wisy": {
+      "kategorie": "Hautstraffung",
+      "probleme": ["erschlaffte haut", "grobe poren", "narben"],
+      "hauttypen": ["normal", "mischhaut", "fettig"],
+      "ziele": ["hautstraffung", "strukturverbesserung"],
+      "keywords": ["morpheus8", "rf microneedling", "radiofrequenz"],
+      "schmerzlevel": "mäßig",
+      "ausfallzeit": "2–5 Tage",
+      "behandlungsdauer": "45–75 Minuten",
+      "ergebnisse": "sichtbare Straffung nach wenigen Wochen",
+      "empfohlene_intervalle": "2–3 Sitzungen",
+      "buchung_moeglich": true,
+      "buchung_typ": "shopify",
+      "fallback_beratung": true,
+      "cta": {
+        "text": "Morpheus8 Beratung",
+        "url": "https://palaisdebeaute.de/products/morpheus-8"
+      }
+    }
   },
   {
     "name": "HIFU / Ultherapy",
-    "beschreibung": "Nicht-invasive Hautstraffung durch hochintensiven fokussierten Ultraschall.",
+    "beschreibung": "Nicht-invasive Hautstraffung durch fokussierten Ultraschall.",
     "preis": "ab 399 €",
-    "url": "https://palaisdebeaute.de/products/hifuhifu-ultherapy"
+    "url": "https://palaisdebeaute.de/products/hifuhifu-ultherapy",
+    "wisy": {
+      "kategorie": "Hautstraffung",
+      "probleme": ["erschlaffte haut", "konturverlust"],
+      "hauttypen": ["normal", "trocken", "mischhaut"],
+      "ziele": ["lifting", "straffung"],
+      "keywords": ["hifu", "ultherapy", "ultraschall lifting"],
+      "schmerzlevel": "mäßig",
+      "ausfallzeit": "keine",
+      "behandlungsdauer": "60–90 Minuten",
+      "ergebnisse": "Straffung nach 8–12 Wochen",
+      "empfohlene_intervalle": "1 Behandlung",
+      "buchung_moeglich": true,
+      "buchung_typ": "shopify",
+      "fallback_beratung": true,
+      "cta": {
+        "text": "HIFU Termin buchen",
+        "url": "https://palaisdebeaute.de/products/hifuhifu-ultherapy"
+      }
+    }
   },
   {
-    "name": "PRP / Vampir Lifting",
-    "beschreibung": "Behandlung mit Eigenblutplasma zur Hautregeneration.",
+    "name": "HydraFacial® MD",
+    "beschreibung": "Tiefenreinigung, Peeling und intensive Feuchtigkeitsversorgung für sofortigen Glow.",
+    "preis": "ab 149 €",
+    "url": "https://palaisdebeaute.de/products/hydrafacial-md",
+    "wisy": {
+      "kategorie": "Gesichtsbehandlung",
+      "probleme": ["unreine haut", "mitesser", "trockene haut", "große poren", "fahle haut"],
+      "hauttypen": ["normal", "trocken", "mischhaut", "fettig", "sensibel"],
+      "ziele": ["tiefenreinigung", "feuchtigkeit", "glow", "hautverfeinerung"],
+      "keywords": ["hydrafacial", "hydra facial", "vortex"],
+      "schmerzlevel": "sehr gering",
+      "ausfallzeit": "keine",
+      "behandlungsdauer": "45–60 Minuten",
+      "ergebnisse": "sofort frischer und klarer Teint",
+      "empfohlene_intervalle": "alle 4–6 Wochen",
+      "buchung_moeglich": true,
+      "buchung_typ": "shopify",
+      "fallback_beratung": true,
+      "cta": {
+        "text": "HydraFacial buchen",
+        "url": "https://palaisdebeaute.de/products/hydrafacial-md"
+      }
+    }
+  },
+  {
+    "name": "Hydra Beauté",
+    "beschreibung": "Multifunktionale Gesichtsbehandlung für intensive Feuchtigkeit und Hautverfeinerung.",
+    "preis": "ab 139 €",
+    "url": "https://palaisdebeaute.de/products/hydra-beaute",
+    "wisy": {
+      "kategorie": "Gesichtsbehandlung",
+      "probleme": ["trockene haut", "fahle haut"],
+      "hauttypen": ["normal", "trocken", "sensibel"],
+      "ziele": ["feuchtigkeit", "hautverfeinerung", "frische"],
+      "keywords": ["hydra beaute", "feuchtigkeitsbehandlung"],
+      "schmerzlevel": "sehr gering",
+      "ausfallzeit": "keine",
+      "behandlungsdauer": "45 Minuten",
+      "ergebnisse": "gepflegte, pralle Haut",
+      "empfohlene_intervalle": "alle 4 Wochen",
+      "buchung_moeglich": true,
+      "buchung_typ": "shopify",
+      "fallback_beratung": true,
+      "cta": {
+        "text": "Hydra Beauté buchen",
+        "url": "https://palaisdebeaute.de/products/hydra-beaute"
+      }
+    }
+  },
+  {
+    "name": "Microneedling",
+    "beschreibung": "Regt die Hauterneuerung und Kollagenbildung an.",
+    "preis": "ab 139 €",
+    "url": "https://palaisdebeaute.de/products/microneedling",
+    "wisy": {
+      "kategorie": "Hautregeneration",
+      "probleme": ["feine linien", "aknenarben", "unebenheiten", "fahle haut"],
+      "hauttypen": ["normal", "mischhaut", "fettig"],
+      "ziele": ["kollagenaufbau", "hautverfeinerung"],
+      "keywords": ["microneedling", "kollagen"],
+      "schmerzlevel": "mäßig",
+      "ausfallzeit": "1–2 Tage",
+      "behandlungsdauer": "45 Minuten",
+      "ergebnisse": "sichtbar verbesserte Hautstruktur",
+      "empfohlene_intervalle": "alle 3–6 Wochen",
+      "buchung_moeglich": true,
+      "buchung_typ": "shopify",
+      "fallback_beratung": true,
+      "cta": {
+        "text": "Microneedling buchen",
+        "url": "https://palaisdebeaute.de/products/microneedling"
+      }
+    }
+  },
+  {
+    "name": "Mesotherapie",
+    "beschreibung": "Gezielte Wirkstoffversorgung zur Hautregeneration und Vitalisierung.",
+    "preis": "ab 199 €",
+    "url": "https://palaisdebeaute.de/products/mesotherapie",
+    "wisy": {
+      "kategorie": "Hautregeneration",
+      "probleme": ["fahle haut", "feine linien", "hautalterung"],
+      "hauttypen": ["normal", "trocken"],
+      "ziele": ["regeneration", "hautqualität"],
+      "keywords": ["mesotherapie", "skinbooster"],
+      "schmerzlevel": "mäßig",
+      "ausfallzeit": "1 Tag",
+      "behandlungsdauer": "30 Minuten",
+      "ergebnisse": "frischere, vitalere Haut",
+      "empfohlene_intervalle": "alle 2–4 Wochen",
+      "buchung_moeglich": true,
+      "buchung_typ": "shopify",
+      "fallback_beratung": true,
+      "cta": {
+        "text": "Mesotherapie buchen",
+        "url": "https://palaisdebeaute.de/products/mesotherapie"
+      }
+    }
+  },
+  {
+    "name": "NCTF HA 135",
+    "beschreibung": "Revitalisierende Mesotherapie mit Hyaluron, Vitaminen und Aminosäuren.",
+    "preis": "ab 249 €",
+    "url": "https://palaisdebeaute.de/products/nctf-ha-135",
+    "wisy": {
+      "kategorie": "Hautregeneration",
+      "probleme": ["hautalterung", "müde haut"],
+      "hauttypen": ["normal", "trocken"],
+      "ziele": ["zellregeneration", "hautverjüngung"],
+      "keywords": ["nctf", "ha 135", "filorga"],
+      "schmerzlevel": "mäßig",
+      "ausfallzeit": "1–2 Tage",
+      "behandlungsdauer": "30 Minuten",
+      "ergebnisse": "sichtbar vitalere Haut",
+      "empfohlene_intervalle": "kurweise (3–5 Sitzungen)",
+      "buchung_moeglich": true,
+      "buchung_typ": "shopify",
+      "fallback_beratung": true,
+      "cta": {
+        "text": "NCTF Behandlung buchen",
+        "url": "https://palaisdebeaute.de/products/nctf-ha-135"
+      }
+    }
+  },
+  {
+    "name": "PRP / Vampire Lifting",
+    "beschreibung": "Eigenbluttherapie zur natürlichen Hautregeneration und Verjüngung.",
     "preis": "ab 299 €",
-    "url": "https://palaisdebeaute.de/products/vampire-lifting"
+    "url": "https://palaisdebeaute.de/products/vampire-lifting",
+    "wisy": {
+      "kategorie": "Regeneration",
+      "probleme": ["fahle haut", "feine linien", "elastizitätsverlust"],
+      "hauttypen": ["normal", "trocken"],
+      "ziele": ["hautverjüngung", "regeneration"],
+      "keywords": ["prp", "vampire lifting", "eigenblut"],
+      "schmerzlevel": "mäßig",
+      "ausfallzeit": "1–3 Tage",
+      "behandlungsdauer": "60 Minuten",
+      "ergebnisse": "frischere, festere Haut",
+      "empfohlene_intervalle": "2–3 Sitzungen",
+      "buchung_moeglich": true,
+      "buchung_typ": "shopify",
+      "fallback_beratung": true,
+      "cta": {
+        "text": "PRP Termin buchen",
+        "url": "https://palaisdebeaute.de/products/vampire-lifting"
+      }
+    }
   },
   {
     "name": "Polynukleotide / PhilArt",
-    "beschreibung": "Innovative Hautregeneration mit Polynukleotid-Injektionen.",
+    "beschreibung": "Biostimulierende Injektionsbehandlung zur Verbesserung der Hautqualität.",
     "preis": "ab 249 €",
-    "url": "https://palaisdebeaute.de/products/polyfill-polynukleotide"
+    "url": "https://palaisdebeaute.de/products/polyfill-polynukleotide",
+    "wisy": {
+      "kategorie": "Regeneration",
+      "probleme": ["strukturverlust", "hautalterung"],
+      "hauttypen": ["normal", "trocken"],
+      "ziele": ["hautqualität", "zellregeneration"],
+      "keywords": ["polynukleotide", "philart"],
+      "schmerzlevel": "mäßig",
+      "ausfallzeit": "1–2 Tage",
+      "behandlungsdauer": "30 Minuten",
+      "ergebnisse": "elastischere, glattere Haut",
+      "empfohlene_intervalle": "2–3 Sitzungen",
+      "buchung_moeglich": true,
+      "buchung_typ": "shopify",
+      "fallback_beratung": true,
+      "cta": {
+        "text": "PhilArt Beratung buchen",
+        "url": "https://palaisdebeaute.de/products/polyfill-polynukleotide"
+      }
+    }
   },
   {
-    "name": "Botox",
-    "beschreibung": "Faltenbehandlung und Glättung durch Botulinumtoxin.",
+    "name": "Botox®",
+    "beschreibung": "Gezielte Faltenbehandlung mit Botulinumtoxin.",
     "preis": "ab 199 €",
-    "url": "https://palaisdebeaute.de/products/faltenunterspritzung"
+    "url": "https://palaisdebeaute.de/products/faltenunterspritzung",
+    "wisy": {
+      "kategorie": "Injektionen",
+      "probleme": ["mimikfalten", "stirnfalten", "zornesfalte"],
+      "hauttypen": ["alle"],
+      "ziele": ["faltenreduktion", "glättung"],
+      "keywords": ["botox", "botulinum"],
+      "schmerzlevel": "gering",
+      "ausfallzeit": "keine",
+      "behandlungsdauer": "15–30 Minuten",
+      "ergebnisse": "glatteres Hautbild nach wenigen Tagen",
+      "empfohlene_intervalle": "alle 4–6 Monate",
+      "buchung_moeglich": true,
+      "buchung_typ": "shopify",
+      "fallback_beratung": true,
+      "cta": {
+        "text": "Botox Beratung buchen",
+        "url": "https://palaisdebeaute.de/products/faltenunterspritzung"
+      }
+    }
   },
   {
-    "name": "Hyaluron",
-    "beschreibung": "Faltenunterspritzung und Volumenaufbau mit Hyaluronsäure.",
+    "name": "Hyaluron Filler",
+    "beschreibung": "Volumenaufbau und Konturverbesserung mit Hyaluronsäure.",
     "preis": "ab 249 €",
-    "url": "https://palaisdebeaute.de/products/hyaluron-1"
+    "url": "https://palaisdebeaute.de/products/hyaluron-1",
+    "wisy": {
+      "kategorie": "Injektionen",
+      "probleme": ["volumenverlust", "tiefe falten"],
+      "hauttypen": ["alle"],
+      "ziele": ["volumen", "kontur"],
+      "keywords": ["hyaluron", "filler"],
+      "schmerzlevel": "gering",
+      "ausfallzeit": "1–2 Tage",
+      "behandlungsdauer": "30–45 Minuten",
+      "ergebnisse": "sofort sichtbares Volumen",
+      "empfohlene_intervalle": "nach Bedarf",
+      "buchung_moeglich": true,
+      "buchung_typ": "shopify",
+      "fallback_beratung": true,
+      "cta": {
+        "text": "Hyaluron Beratung buchen",
+        "url": "https://palaisdebeaute.de/products/hyaluron-1"
+      }
+    }
   },
   {
-    "name": "Circadia",
-    "beschreibung": "Die Circadia-Behandlung basiert auf dem natürlichen Rhythmus der Haut. Mit wirkstoffreichen Enzym- und Peelingformulierungen werden Zellen erneuert, die Haut durchfeuchtet und der Teint sichtbar verfeinert. Ideal zur Regeneration müder, gestresster oder sonnengeschädigter Haut.",
-    "preis": "ab 175 €",
-    "url": "https://palaisdebeaute.de/collections/circadia-®-all-treatments"
+    "name": "EMS Sculpt NEO",
+    "beschreibung": "Muskelaufbau und Fettverbrennung durch elektromagnetische Impulse.",
+    "preis": "ab 149 €",
+    "url": "https://palaisdebeaute.de/products/ems-sculpt-neo",
+    "wisy": {
+      "kategorie": "Körperformung",
+      "probleme": ["fettpölsterchen", "muskelschwäche"],
+      "hauttypen": ["alle"],
+      "ziele": ["muskelaufbau", "fettreduktion", "körperstraffung"],
+      "keywords": ["ems sculpt", "muskelaufbau", "fettreduktion"],
+      "schmerzlevel": "gering",
+      "ausfallzeit": "keine",
+      "behandlungsdauer": "30 Minuten",
+      "ergebnisse": "strafferes Erscheinungsbild nach mehreren Sitzungen",
+      "empfohlene_intervalle": "mehrere Sitzungen im Abstand von wenigen Tagen",
+      "buchung_moeglich": true,
+      "buchung_typ": "shopify",
+      "fallback_beratung": true,
+      "cta": {
+        "text": "EMS Sculpt buchen",
+        "url": "https://palaisdebeaute.de/products/ems-sculpt-neo"
+      }
+    }
+  },
+  {
+    "name": "Kryolipolyse CRYO 4S",
+    "beschreibung": "Gezielte Fettreduktion durch kontrollierte Kälte.",
+    "preis": "ab 199 €",
+    "url": "https://palaisdebeaute.de/products/kryolipolyse",
+    "wisy": {
+      "kategorie": "Körperformung",
+      "probleme": ["fettdepots", "problemzonen"],
+      "hauttypen": ["alle"],
+      "ziele": ["fettreduktion", "körperkontur"],
+      "keywords": ["kryolipolyse", "fett einfrieren"],
+      "schmerzlevel": "gering",
+      "ausfallzeit": "keine",
+      "behandlungsdauer": "60 Minuten",
+      "ergebnisse": "reduzierte Fettpolster nach einigen Wochen",
+      "empfohlene_intervalle": "1–2 Behandlungen",
+      "buchung_moeglich": true,
+      "buchung_typ": "shopify",
+      "fallback_beratung": true,
+      "cta": {
+        "text": "Kryolipolyse buchen",
+        "url": "https://palaisdebeaute.de/products/kryolipolyse"
+      }
+    }
+  },
+  {
+    "name": "Ferninfrarot Tiefenwärme & Lymphdrainage",
+    "beschreibung": "Tiefenwärme zur Entspannung, Durchblutung und Aktivierung der Lymphe.",
+    "preis": "ab 39 €",
+    "url": "https://palaisdebeaute.de/products/ferninfrarot",
+    "wisy": {
+      "kategorie": "Wellness & Regeneration",
+      "probleme": ["verspannungen", "wassereinlagerungen"],
+      "hauttypen": ["alle"],
+      "ziele": ["entspannung", "durchblutung", "lymphdrainage"],
+      "keywords": ["ferninfrarot", "lymphdrainage", "tiefenwärme"],
+      "schmerzlevel": "keine",
+      "ausfallzeit": "keine",
+      "behandlungsdauer": "30–45 Minuten",
+      "ergebnisse": "entspannter Körper, verbesserte Durchblutung",
+      "empfohlene_intervalle": "nach Bedarf",
+      "buchung_moeglich": true,
+      "buchung_typ": "shopify",
+      "fallback_beratung": true,
+      "cta": {
+        "text": "Ferninfrarot buchen",
+        "url": "https://palaisdebeaute.de/products/ferninfrarot"
+      }
+    }
+  },
+  {
+    "name": "NAD+ Infusion",
+    "beschreibung": "Zellenergie- und Regenerationstherapie mit NAD+.",
+    "preis": "ab 249 €",
+    "url": "https://palaisdebeaute.de/products/nad-infusion",
+    "wisy": {
+      "kategorie": "Infusionstherapie",
+      "probleme": ["müdigkeit", "energiemangel"],
+      "hauttypen": ["alle"],
+      "ziele": ["zellenergie", "regeneration", "fokus"],
+      "keywords": ["nad", "nad infusion"],
+      "schmerzlevel": "keine",
+      "ausfallzeit": "keine",
+      "behandlungsdauer": "60–90 Minuten",
+      "ergebnisse": "gesteigerte Energie und Konzentration",
+      "empfohlene_intervalle": "kurweise",
+      "buchung_moeglich": true,
+      "buchung_typ": "shopify",
+      "fallback_beratung": true,
+      "cta": {
+        "text": "NAD+ Infusion buchen",
+        "url": "https://palaisdebeaute.de/products/nad-infusion"
+      }
+    }
+  },
+  {
+    "name": "Vitamin Infusionen",
+    "beschreibung": "Individuelle Vitamin- und Aufbauinfusionen zur Stärkung des Körpers.",
+    "preis": "ab 99 €",
+    "url": "https://palaisdebeaute.de/products/vitamin-infusion",
+    "wisy": {
+      "kategorie": "Infusionstherapie",
+      "probleme": ["vitaminmangel", "erschöpfung"],
+      "hauttypen": ["alle"],
+      "ziele": ["immunsystem", "energie", "regeneration"],
+      "keywords": ["vitamin infusion", "aufbaukur"],
+      "schmerzlevel": "keine",
+      "ausfallzeit": "keine",
+      "behandlungsdauer": "30–60 Minuten",
+      "ergebnisse": "gestärktes Allgemeinbefinden",
+      "empfohlene_intervalle": "nach Bedarf",
+      "buchung_moeglich": true,
+      "buchung_typ": "shopify",
+      "fallback_beratung": true,
+      "cta": {
+        "text": "Vitamin Infusion buchen",
+        "url": "https://palaisdebeaute.de/products/vitamin-infusion"
+      }
+    }
+  },
+  {
+    "name": "Lash Lifting",
+    "beschreibung": "Natürlicher Schwung für die Wimpern ohne Extensions.",
+    "preis": "ab 59 €",
+    "url": "https://palaisdebeaute.de/products/lash-lifting",
+    "wisy": {
+      "kategorie": "Beauty",
+      "probleme": ["gerade wimpern", "wenig ausdruck"],
+      "hauttypen": ["alle"],
+      "ziele": ["wimpernhebung", "natürlicher look"],
+      "keywords": ["lash lifting", "wimpernlifting"],
+      "schmerzlevel": "keine",
+      "ausfallzeit": "keine",
+      "behandlungsdauer": "45 Minuten",
+      "ergebnisse": "sichtbar geschwungene Wimpern",
+      "empfohlene_intervalle": "alle 6–8 Wochen",
+      "buchung_moeglich": true,
+      "buchung_typ": "shopify",
+      "fallback_beratung": true,
+      "cta": {
+        "text": "Lash Lifting buchen",
+        "url": "https://palaisdebeaute.de/products/lash-lifting"
+      }
+    }
+  },
+  {
+    "name": "Lash Lifting mit Booster",
+    "beschreibung": "Wimpernlifting mit zusätzlicher Pflege für mehr Glanz und Stärke.",
+    "preis": "ab 69 €",
+    "url": "https://palaisdebeaute.de/products/lash-lifting-booster",
+    "wisy": {
+      "kategorie": "Beauty",
+      "probleme": ["brüchige wimpern"],
+      "hauttypen": ["alle"],
+      "ziele": ["pflege", "stärkung", "wimpernhebung"],
+      "keywords": ["lash lifting booster"],
+      "schmerzlevel": "keine",
+      "ausfallzeit": "keine",
+      "behandlungsdauer": "50 Minuten",
+      "ergebnisse": "kräftigere, glänzende Wimpern",
+      "empfohlene_intervalle": "alle 6–8 Wochen",
+      "buchung_moeglich": true,
+      "buchung_typ": "shopify",
+      "fallback_beratung": true,
+      "cta": {
+        "text": "Lash Lifting mit Booster buchen",
+        "url": "https://palaisdebeaute.de/products/lash-lifting-booster"
+      }
+    }
+  },
+  {
+    "name": "Brow Lifting / Brow Lamination",
+    "beschreibung": "Formt und fixiert die Augenbrauen für einen ausdrucksstarken Look.",
+    "preis": "ab 59 €",
+    "url": "https://palaisdebeaute.de/products/brow-lifting",
+    "wisy": {
+      "kategorie": "Beauty",
+      "probleme": ["ungeformte augenbrauen"],
+      "hauttypen": ["alle"],
+      "ziele": ["form", "ausdruck"],
+      "keywords": ["brow lifting", "brow lamination"],
+      "schmerzlevel": "keine",
+      "ausfallzeit": "keine",
+      "behandlungsdauer": "45 Minuten",
+      "ergebnisse": "geformte, volle Augenbrauen",
+      "empfohlene_intervalle": "alle 6–8 Wochen",
+      "buchung_moeglich": true,
+      "buchung_typ": "shopify",
+      "fallback_beratung": true,
+      "cta": {
+        "text": "Brow Lifting buchen",
+        "url": "https://palaisdebeaute.de/products/brow-lifting"
+      }
+    }
+  },
+  {
+    "name": "Wimpern färben",
+    "beschreibung": "Intensive Färbung der Wimpern für mehr Ausdruck.",
+    "preis": "ab 19 €",
+    "url": "https://palaisdebeaute.de/products/wimpernfaerben",
+    "wisy": {
+      "kategorie": "Beauty",
+      "probleme": ["helle wimpern"],
+      "hauttypen": ["alle"],
+      "ziele": ["ausdruck"],
+      "keywords": ["wimpern färben"],
+      "schmerzlevel": "keine",
+      "ausfallzeit": "keine",
+      "behandlungsdauer": "20 Minuten",
+      "ergebnisse": "dunklere, ausdrucksstarke Wimpern",
+      "empfohlene_intervalle": "alle 4 Wochen",
+      "buchung_moeglich": true,
+      "buchung_typ": "shopify",
+      "fallback_beratung": true,
+      "cta": {
+        "text": "Wimpern färben buchen",
+        "url": "https://palaisdebeaute.de/products/wimpernfaerben"
+      }
+    }
+  },
+  {
+    "name": "Augenbrauen färben",
+    "beschreibung": "Färbung der Augenbrauen für mehr Kontur und Definition.",
+    "preis": "ab 19 €",
+    "url": "https://palaisdebeaute.de/products/augenbrauenfaerben",
+    "wisy": {
+      "kategorie": "Beauty",
+      "probleme": ["helle augenbrauen"],
+      "hauttypen": ["alle"],
+      "ziele": ["kontur", "definition"],
+      "keywords": ["augenbrauen färben"],
+      "schmerzlevel": "keine",
+      "ausfallzeit": "keine",
+      "behandlungsdauer": "20 Minuten",
+      "ergebnisse": "definierte Augenbrauen",
+      "empfohlene_intervalle": "alle 4 Wochen",
+      "buchung_moeglich": true,
+      "buchung_typ": "shopify",
+      "fallback_beratung": true,
+      "cta": {
+        "text": "Augenbrauen färben buchen",
+        "url": "https://palaisdebeaute.de/products/augenbrauenfaerben"
+      }
+    }
   }
 ]

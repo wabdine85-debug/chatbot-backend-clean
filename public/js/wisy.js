@@ -4,7 +4,8 @@
 
 const STORAGE_KEY = "wisyChatHistory:v2";
 const SESSION_KEY = "wisySessionId";
-const CHAT_ENDPOINT = "/chat";
+const CHAT_ENDPOINT = "https://chatbot-backend-clean-eord.onrender.com/chat";
+
 
 // --- DOM ---
 const chatWrapper = document.getElementById("chatWrapper");
@@ -137,7 +138,8 @@ async function sendToServer(userText, tags = []) {
     },
     body: JSON.stringify({
       message: userText,
-      tags: tags
+      tags: ["akne"]
+
     })
   });
 

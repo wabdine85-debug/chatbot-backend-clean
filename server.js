@@ -243,8 +243,11 @@ app.get("/whoami", (_req, res) => {
   });
 });
 
+
+/* ⛔️ ALTE CHAT-LOGIK – TEMPORÄR DEAKTIVIERT
+
 /* ---------- /chat ---------- */
-app.post("/chat", async (req, res) => {
+app.post("/chat_old", async (req, res) => {
   const userMessage = (req.body.message || "").toString().slice(0, 300);
   // 🔹 Tags aus Frontend (falls vorhanden)
 const tags = Array.isArray(req.body.tags) ? req.body.tags : [];
@@ -461,8 +464,14 @@ app.delete("/api/chat/session/:session_id", async (req, res) => {
   }
 });
 
+
+
+
+
 /* ---------- Wisy Chat Antwort (Matching & Buchung) ---------- */
 app.post("/chat", async (req, res) => {
+    return res.json({ reply: "🚨 MATCHING-BACKEND AKTIV 🚨" });
+
   const { tags = [] } = req.body;
 
   try {

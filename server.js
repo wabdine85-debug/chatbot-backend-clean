@@ -474,15 +474,50 @@ app.delete("/api/chat/session/:session_id", async (req, res) => {
 
 /* ---------- Wisy Chat Antwort (Matching & Buchung) ---------- */
 app.post("/chat", async (req, res) => {
-  
 
+  // 🔹 1) Message & Tags auslesen
+  const msg = (req.body?.message || "").toLowerCase().trim();
   const tags = Array.isArray(req.body?.tags) ? req.body.tags : [];
 
-
   try {
+
+    // 🔹 2) Allgemeine Fragen ZUERST beantworten
+
+    // Begrüßung
+    if (/^(hi|hallo|hey|guten tag|guten morgen|guten abend)$/.test(msg)) {
+      return res.json({
+        reply: "Hallo! 😊 Wie kann ich dir weiterhelfen?"
+      });
+    }
+
+    // Öffnungszeiten
+    if (/öffnungszeit|offnungszeit|wann.*offen|geöffnet|geoeffnet/.test(msg)) {
+      return res.json({
+        reply:
+          "Wir haben Montag, Dienstag, Donnerstag & Freitag von 10–18 Uhr geöffnet, Samstag von 10–15 Uhr. Mittwoch ist geschlossen."
+      });
+    }
+
+    // Adresse
+    if (/adresse|wo seid ihr|standort|wo finde ich euch/.test(msg)) {
+      return res.json({
+        reply: "Du findest uns in der Rheinstraße 59, 65185 Wiesbaden."
+      });
+    }
+
+    // Parkplätze
+    if (/parkplatz|parken|auto/.test(msg)) {
+      return res.json({
+        reply:
+          "Parkmöglichkeiten gibt es direkt in der Rheinstraße sowie im Parkhaus Luisenforum."
+      });
+    }
+
+    // 🔹 3) JETZT erst Matching
     const matches = matchTreatments(tags);
     const reply = buildReply(matches);
     return res.json({ reply });
+
   } catch (err) {
     console.error("❌ Fehler im Wisy-Chat:", err);
     return res.status(500).json({
@@ -490,6 +525,7 @@ app.post("/chat", async (req, res) => {
     });
   }
 });
+
 
 /* ---------- Server starten ---------- */
 const PORT = process.env.PORT || 3000;

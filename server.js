@@ -34,8 +34,9 @@ const DEBUG = process.env.DEBUG === "true";
 const treatments = JSON.parse(
   fs.readFileSync(new URL("./treatments.json", import.meta.url), "utf8")
 ).treatments;
-function matchTreatments(tags = []) {
-  if (!Array.isArray(tags) || tags.length === 0) return [];
+function matchTreatments(tags) {
+  if (!Array.isArray(tags)) return [];
+
 
   const scored = treatments.map(t => {
     let score = 0;
@@ -472,7 +473,8 @@ app.delete("/api/chat/session/:session_id", async (req, res) => {
 app.post("/chat", async (req, res) => {
   
 
-  const { tags = [] } = req.body;
+  const tags = Array.isArray(req.body?.tags) ? req.body.tags : [];
+
 
   try {
     const matches = matchTreatments(tags);

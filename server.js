@@ -470,7 +470,7 @@ app.delete("/api/chat/session/:session_id", async (req, res) => {
 
 /* ---------- Wisy Chat Antwort (Matching & Buchung) ---------- */
 app.post("/chat", async (req, res) => {
-    return res.json({ reply: "🚨 MATCHING-BACKEND AKTIV 🚨" });
+  
 
   const { tags = [] } = req.body;
 

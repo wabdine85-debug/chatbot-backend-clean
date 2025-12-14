@@ -221,14 +221,17 @@
   "wisy": {
     "kategorie": "Körperformung",
     "triggers": [
-      "ems sculpt",
-      "ems sculpt neo",
-      "muskelaufbau",
-      "fettverbrennung",
-      "fettreduktion",
-      "bauchmuskeln",
-      "körperstraffung"
-    ],
+  "ems",
+  "ems training",
+  "ems sculpt",
+  "ems sculpt neo",
+  "muskelaufbau",
+  "fettverbrennung",
+  "fettreduktion",
+  "bauchmuskeln",
+  "körperstraffung"
+]
+,
     "probleme": ["fettpölsterchen", "muskelschwäche"],
     "hauttypen": ["alle"],
     "ziele": ["muskelaufbau", "fettreduktion", "körperstraffung"],
@@ -328,12 +331,15 @@
   "wisy": {
     "kategorie": "Beauty",
     "triggers": [
-      "lash lifting",
-      "wimpernlifting",
-      "wimpern schwung",
-      "natürliche wimpern",
-      "wimpern heben"
-    ],
+  "lash",
+  "lashes",
+  "lash lifting",
+  "wimpern",
+  "wimpernlifting",
+  "wimpern schwung",
+  "wimpern heben"
+]
+,
     "probleme": ["gerade wimpern", "wenig ausdruck"],
     "hauttypen": ["alle"],
     "ziele": ["wimpernhebung", "natürlicher look"],
@@ -348,11 +354,15 @@
   "wisy": {
     "kategorie": "Beauty",
     "triggers": [
-      "lash lifting booster",
-      "wimpernpflege",
-      "brüchige wimpern",
-      "starke wimpern"
-    ],
+  "lash",
+  "lashes",
+  "lash lifting",
+  "wimpern",
+  "wimpernlifting",
+  "wimpern schwung",
+  "wimpern heben"
+]
+,
     "probleme": ["brüchige wimpern"],
     "hauttypen": ["alle"],
     "ziele": ["pflege", "stärkung", "wimpernhebung"],

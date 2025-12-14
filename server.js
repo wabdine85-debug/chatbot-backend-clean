@@ -470,22 +470,7 @@ app.delete("/api/chat/session/:session_id", async (req, res) => {
 
 
 
-// =======================
-// 🔹 TAG-KEYWORD-MAPPING
-// =======================
-const TAG_KEYWORDS = {
-  hifu: ["hautstraffung", "falten", "erschlaffte haut"],
-  ultherapy: ["hautstraffung", "falten"],
-  exosomen: ["anti-aging", "zellregeneration", "hautverjuengung"],
-  exosome: ["anti-aging", "zellregeneration"],
-  morpheus: ["hautstraffung", "falten", "narben"],
-  hydrafacial: ["unreine haut", "feuchtigkeit", "glow"],
-  microneedling: ["akne", "narben", "poren"],
-  laser: ["haarentfernung"],
-  haarentfernung: ["haarentfernung"],
-  botox: ["falten"],
-  filler: ["volumen", "falten"]
-};
+
 
 function extractTagsFromMessage(message) {
   const text = normalize(message);
@@ -509,49 +494,25 @@ function extractTagsFromMessage(message) {
 
 /* ---------- Wisy Chat Antwort (Matching & Buchung) ---------- */
 app.post("/chat", async (req, res) => {
-
- // 🔹 1) Message & Tags auslesen
-const msg = (req.body?.message || "").toString();
-
-// 🔹 2) Tags automatisch aus Text extrahieren (triggers)
-const tagsFromText = extractTagsFromMessage(msg);
-
-// 🔹 3) Tags aus Frontend (falls vorhanden)
-const tagsFromFrontend = Array.isArray(req.body?.tags) ? req.body.tags : [];
-
-// 🔹 4) Zusammenführen (ohne Duplikate)
-const tags = [...new Set([...tagsFromText, ...tagsFromFrontend])];
-
-
-  // 🔹 Automatische Tags aus Text ableiten
-let autoTags = [];
-
-for (const key in TAG_KEYWORDS) {
-  if (msg.includes(key)) {
-    autoTags.push(...TAG_KEYWORDS[key]);
-  }
-}
-
-// Manuelle + automatische Tags zusammenführen
-const finalTags = [...new Set([...tags, ...autoTags])];
-
-
   try {
+    // 1️⃣ Message lesen
+    const msgRaw = (req.body?.message || "").toString();
+    const msg = normalize(msgRaw);
 
-    // 🔹 2) Allgemeine Fragen ZUERST beantworten
+    // 2️⃣ ALLGEMEINE FRAGEN ZUERST
 
     // Begrüßung
-    if (/^(hi|hallo|hey|guten tag|guten morgen|guten abend)$/.test(msg)) {
+    if (/^(hi|hallo|hey|servus|moin)\b/.test(msg)) {
       return res.json({
         reply: "Hallo! 😊 Wie kann ich dir weiterhelfen?"
       });
     }
 
     // Öffnungszeiten
-    if (/öffnungszeit|offnungszeit|wann.*offen|geöffnet|geoeffnet/.test(msg)) {
+    if (/öffnungszeit|offnungszeit|geöffnet|geoeffnet|wann.*offen/.test(msg)) {
       return res.json({
         reply:
-          "Wir haben Montag, Dienstag, Donnerstag & Freitag von 10–18 Uhr geöffnet, Samstag von 10–15 Uhr. Mittwoch ist geschlossen."
+          "Wir haben Montag, Dienstag, Donnerstag & Freitag von 10–18 Uhr geöffnet, Samstag von 10–15 Uhr. Mittwoch geschlossen."
       });
     }
 
@@ -562,7 +523,7 @@ const finalTags = [...new Set([...tags, ...autoTags])];
       });
     }
 
-    // Parkplätze
+    // Parkplatz
     if (/parkplatz|parken|auto/.test(msg)) {
       return res.json({
         reply:
@@ -570,9 +531,20 @@ const finalTags = [...new Set([...tags, ...autoTags])];
       });
     }
 
-    // 🔹 3) JETZT erst Matching
-    const matches = matchTreatments(finalTags);
+    // 3️⃣ TAGS AUS TEXT (TRIGGERS)
+    const tagsFromText = extractTagsFromMessage(msgRaw);
 
+    // 4️⃣ TAGS AUS FRONTEND (optional)
+    const tagsFromFrontend = Array.isArray(req.body?.tags)
+      ? req.body.tags
+      : [];
+
+    const tags = [...new Set([...tagsFromText, ...tagsFromFrontend])];
+
+    // 5️⃣ MATCHING
+    const matches = matchTreatments(tags);
+
+    // 6️⃣ ANTWORT
     const reply = buildReply(matches);
     return res.json({ reply });
 
@@ -583,6 +555,7 @@ const finalTags = [...new Set([...tags, ...autoTags])];
     });
   }
 });
+
 
 
 /* ---------- Server starten ---------- */

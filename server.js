@@ -470,6 +470,23 @@ app.delete("/api/chat/session/:session_id", async (req, res) => {
 
 
 
+// =======================
+// 🔹 TAG-KEYWORD-MAPPING
+// =======================
+const TAG_KEYWORDS = {
+  hifu: ["hautstraffung", "falten", "erschlaffte haut"],
+  ultherapy: ["hautstraffung", "falten"],
+  exosomen: ["anti-aging", "zellregeneration", "hautverjuengung"],
+  exosome: ["anti-aging", "zellregeneration"],
+  morpheus: ["hautstraffung", "falten", "narben"],
+  hydrafacial: ["unreine haut", "feuchtigkeit", "glow"],
+  microneedling: ["akne", "narben", "poren"],
+  laser: ["haarentfernung"],
+  haarentfernung: ["haarentfernung"],
+  botox: ["falten"],
+  filler: ["volumen", "falten"]
+};
+
 
 
 /* ---------- Wisy Chat Antwort (Matching & Buchung) ---------- */
@@ -478,6 +495,19 @@ app.post("/chat", async (req, res) => {
   // 🔹 1) Message & Tags auslesen
   const msg = (req.body?.message || "").toLowerCase().trim();
   const tags = Array.isArray(req.body?.tags) ? req.body.tags : [];
+
+  // 🔹 Automatische Tags aus Text ableiten
+let autoTags = [];
+
+for (const key in TAG_KEYWORDS) {
+  if (msg.includes(key)) {
+    autoTags.push(...TAG_KEYWORDS[key]);
+  }
+}
+
+// Manuelle + automatische Tags zusammenführen
+const finalTags = [...new Set([...tags, ...autoTags])];
+
 
   try {
 
@@ -514,7 +544,8 @@ app.post("/chat", async (req, res) => {
     }
 
     // 🔹 3) JETZT erst Matching
-    const matches = matchTreatments(tags);
+    const matches = matchTreatments(finalTags);
+
     const reply = buildReply(matches);
     return res.json({ reply });
 

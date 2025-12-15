@@ -355,13 +355,21 @@ app.delete("/api/chat/session/:session_id", async (req, res) => {
   }
 });
 
+
 // =========================
 // Main Chat (Decision Mode – persistent)
 // =========================
 app.post("/chat", async (req, res) => {
   try {
-    const msgRaw = (req.body?.message || "").toString();
+    const raw = (req.body?.message || "").toString();
     const session_id = (req.body?.session_id || "").toString();
+
+    // 🔥 ZENTRALE NORMALISIERUNG (DAS WAR DER FEHLER)
+    const msgRaw = raw
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .trim();
 
     // 0) Session laden
     const session = await loadChatSession(session_id);
@@ -373,70 +381,67 @@ app.post("/chat", async (req, res) => {
     const tagsFromFrontend = Array.isArray(req.body?.tags) ? req.body.tags : [];
     const tags = [...new Set([...tagsFromText, ...tagsFromFrontend])];
 
-// 2) Decision Context aktiv → Achsen-Antworten & Klarstellung
-if (decision?.active && Array.isArray(decision.candidates)) {
-  const intent = decision.intent;
+    // =====================================================
+    // 2) Decision Context aktiv → Achsen & Klarstellung
+    // =====================================================
+    if (decision?.active && Array.isArray(decision.candidates)) {
+      const intent = decision.intent;
 
-  // 🔹 Achsen-Antwort erkennen
-  const axisAnswer = mapAxisAnswer(intent, msgRaw);
+      // 🔹 Achsen-Antwort erkennen (JETZT ZUVERLÄSSIG)
+      const axisAnswer = mapAxisAnswer(intent, msgRaw);
 
-  // =========================
-  // 🔥 HARD STOP BEI AXIS
-  // =========================
-  if (axisAnswer) {
+      // =========================
+      // 🔥 HARD STOP BEI AXIS
+      // =========================
+      if (axisAnswer) {
+        const clarification = getClarifyingQuestion(intent, axisAnswer);
 
-    // 🔹 letzte Klarstellungsfrage prüfen
-    const clarification = getClarifyingQuestion(intent, axisAnswer);
+        // 👉 Klarstellungsfrage IMMER stellen
+        if (clarification) {
+          decision.clarified = clarification;
+          state.decisionContext = decision;
+          await saveChatSession(session_id, session.messages || [], state);
 
-    // 👉 FALL 1: Klarstellungsfrage existiert → IMMER fragen
-    if (clarification) {
-      decision.clarified = clarification;
+          return res.json({
+            reply: clarification.question
+          });
+        }
+
+        // 👉 sonst normal verfeinern
+        const refined = refineCandidates(intent, decision.candidates, axisAnswer);
+        decision.candidates = refined;
+        state.decisionContext = decision;
+        await saveChatSession(session_id, session.messages || [], state);
+
+        return res.json({
+          reply:
+            buildReply(decision.candidates) +
+            "<br><br>Magst du mir noch **ein Detail** nennen?"
+        });
+      }
+
+      // =========================
+      // 🔹 KEINE AXIS → normaler Decision-Flow
+      // =========================
+      if (decision.candidates.length === 1) {
+        state.decisionContext = null;
+        await saveChatSession(session_id, session.messages || [], state);
+        return res.json({ reply: buildReply(decision.candidates) });
+      }
+
       state.decisionContext = decision;
       await saveChatSession(session_id, session.messages || [], state);
 
       return res.json({
-        reply: clarification.question
+        reply:
+          buildReply(decision.candidates) +
+          "<br><br>Magst du mir noch **ein Detail** nennen (z. B. Region, empfindliche Haut, sofortiger Effekt)?"
       });
     }
 
-    // 👉 FALL 2: keine Klarstellung nötig → normal verfeinern
-    const refined = refineCandidates(intent, decision.candidates, axisAnswer);
-    decision.candidates = refined;
-    state.decisionContext = decision;
-    await saveChatSession(session_id, session.messages || [], state);
-
-    return res.json({
-      reply:
-        buildReply(decision.candidates) +
-        "<br><br>Magst du mir noch **ein Detail** nennen?"
-    });
-  }
-
-  // =========================
-  // 🔹 KEINE AXIS → normaler Flow
-  // =========================
-
-  // Wenn nur noch 1 Kandidat übrig ist → entscheiden
-  if (decision.candidates.length === 1) {
-    state.decisionContext = null;
-    await saveChatSession(session_id, session.messages || [], state);
-    return res.json({ reply: buildReply(decision.candidates) });
-  }
-
-  // Mehrere Kandidaten → Fokus
-  state.decisionContext = decision;
-  await saveChatSession(session_id, session.messages || [], state);
-
-  return res.json({
-    reply:
-      buildReply(decision.candidates) +
-      "<br><br>Magst du mir noch **ein Detail** nennen (z. B. Region, empfindliche Haut, sofortiger Effekt)?"
-  });
-}
-
-
-
+    // =========================
     // 3) Normales Matching
+    // =========================
     const matches = matchTreatments(tags);
 
     // 4) Mehrere Matches → Decision starten
@@ -448,7 +453,7 @@ if (decision?.active && Array.isArray(decision.candidates)) {
       return res.json({ reply: q || buildReply(matches) });
     }
 
-    // 5) Allgemein
+    // 5) Allgemeine Fragen
     if (matches.length === 0) {
       const generalAnswer = await handleGeneralQuestions(msgRaw, askChatGPT);
       if (generalAnswer) {
@@ -469,7 +474,6 @@ if (decision?.active && Array.isArray(decision.candidates)) {
     });
   }
 });
-
 
 // =========================
 // Start

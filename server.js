@@ -469,13 +469,31 @@ if (decision?.active && Array.isArray(decision.candidates)) {
     const matches = matchTreatments(tags);
 
     // 4) Mehrere Matches → Decision starten
-    if (matches.length > 1) {
-      const intent = detectIntentFromTagsOrText(tags, msgRaw);
-      state.decisionContext = initDecisionContext(intent || "hautstruktur", matches);
-      await saveChatSession(session_id, session.messages || [], state);
-      const q = getAxisQuestion(intent);
-      return res.json({ reply: q || buildReply(matches) });
+ if (matches.length > 1) {
+  const intent =
+    detectIntentFromTagsOrText(tags, msgRaw) || "haarentfernung";
+
+  const decisionContext = initDecisionContext(intent, matches);
+
+  // 🔥 WICHTIG: decisionContext EXPLIZIT persistieren
+  state.decisionContext = decisionContext;
+
+  await saveChatSession(
+    session_id,
+    session.messages || [],
+    {
+      ...state,
+      decisionContext
     }
+  );
+
+  const q = getAxisQuestion(intent);
+
+  return res.json({
+    reply: q || buildReply(matches)
+  });
+}
+
 
     // 5) Allgemeine Fragen
     if (matches.length === 0) {

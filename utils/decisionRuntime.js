@@ -97,7 +97,7 @@ export function getAxisQuestion(intent) {
 // =========================
 // FIX: Achsen-Antworten zuverlässig erkennen
 // =========================
-export function mapAxisAnswer(intent, userText) {
+export function mapAxisAnswer(_intent, userText) {
   const input = userText
     .toLowerCase()
     .normalize("NFD")
@@ -105,35 +105,30 @@ export function mapAxisAnswer(intent, userText) {
     .trim();
 
   // =====================
-  // HAUTSTRUKTUR
+  // REGIONEN (IMMER!)
   // =====================
-  if (intent === "hautstruktur") {
-    if (input.includes("glow")) return "glow";
-    if (input.includes("por")) return "poren";
-    if (input.includes("narb")) return "narben";
-  }
+  if (input.includes("ruck") || input.includes("rueck")) return "ruecken";
+  if (input.includes("gesicht")) return "gesicht";
+  if (input.includes("bein")) return "beine";
+  if (input.includes("klein")) return "klein";
 
   // =====================
-  // HAARENTFERNUNG
+  // HAUTSTRUKTUR
   // =====================
-  if (intent === "haarentfernung") {
-    if (input.includes("ruck") || input.includes("rueck")) return "ruecken";
-    if (input.includes("gesicht")) return "gesicht";
-    if (input.includes("bein")) return "beine";
-    if (input.includes("klein")) return "klein";
-  }
+  if (input.includes("glow")) return "glow";
+  if (input.includes("por")) return "poren";
+  if (input.includes("narb")) return "narben";
 
   // =====================
   // FALTEN
   // =====================
-  if (intent === "falten") {
-    if (input.includes("stirn") || input.includes("mimik")) return "mimik";
-    if (input.includes("volumen")) return "volumen";
-    if (input.includes("erschlaff")) return "erschlaffung";
-  }
+  if (input.includes("stirn") || input.includes("mimik")) return "mimik";
+  if (input.includes("volumen")) return "volumen";
+  if (input.includes("erschlaff")) return "erschlaffung";
 
   return null;
 }
+
 
 // =========================
 // OPTION A – letzte Klarstellungsfrage

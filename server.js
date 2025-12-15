@@ -369,10 +369,17 @@ app.post("/chat", async (req, res) => {
     // =========================
     const rawMessage = (req.body?.message || "").toString();
 
-    let session_id = (req.body?.session_id || "").toString();
-    if (!session_id) {
-      session_id = randomUUID();
-    }
+   let session_id = (req.body?.session_id || "").toString();
+if (!session_id) {
+  session_id = randomUUID();
+}
+
+// 🧪 DEBUG – SESSION & STATE
+console.log("🧪 CHAT HIT", {
+  message: rawMessage,
+  session_id,
+});
+
 
     // Zentrale Normalisierung
     const msgRaw = rawMessage

@@ -1,5 +1,8 @@
 import express from "express";
 import cors from "cors";
+import { randomUUID } from "crypto";
+
+
 import dotenv from "dotenv";
 import OpenAI from "openai";
 import fs from "fs";
@@ -361,96 +364,69 @@ app.delete("/api/chat/session/:session_id", async (req, res) => {
 // =========================
 app.post("/chat", async (req, res) => {
   try {
-    const raw = (req.body?.message || "").toString();
-    const session_id = (req.body?.session_id || "").toString();
+    // =========================
+    // Input & Session
+    // =========================
+    const rawMessage = (req.body?.message || "").toString();
 
-    // 🔥 ZENTRALE NORMALISIERUNG (DAS WAR DER FEHLER)
-    const msgRaw = raw
+    let session_id = (req.body?.session_id || "").toString();
+    if (!session_id) {
+      session_id = randomUUID();
+    }
+
+    // Zentrale Normalisierung
+    const msgRaw = rawMessage
       .toLowerCase()
       .normalize("NFD")
       .replace(/[\u0300-\u036f]/g, "")
       .trim();
 
-    // 0) Session laden
+    // =========================
+    // Session laden
+    // =========================
     const session = await loadChatSession(session_id);
     const state = session.state || {};
     const decision = state.decisionContext || null;
 
-    // 1) Tags
+    // =========================
+    // Tags
+    // =========================
     const tagsFromText = extractTagsFromMessage(msgRaw);
     const tagsFromFrontend = Array.isArray(req.body?.tags) ? req.body.tags : [];
     const tags = [...new Set([...tagsFromText, ...tagsFromFrontend])];
 
-// =====================================================
-// 2) Decision Context aktiv → Achsen & Klarstellung
-// =====================================================
-if (decision?.active && Array.isArray(decision.candidates)) {
-  const intent = decision.intent;
+    // =====================================================
+    // 1) Decision aktiv → Achsen & Klarstellung
+    // =====================================================
+    if (decision?.active && Array.isArray(decision.candidates)) {
+      const intent = decision.intent;
 
-  // 🔥 HARD REGION OVERRIDE (final)
-  const normalized = msgRaw
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .trim();
+      const axisAnswer = mapAxisAnswer(intent, msgRaw);
 
-  if (normalized.includes("ruck") || normalized.includes("rueck")) {
-    decision.clarified = {
-      question: "Ist deine Haut eher **hell** oder **gebräunt**?",
-      map: {
-        hell: "alexandrit",
-        gebraeunt: "diode",
-        "gebraunt": "diode"
-      }
-    };
+      if (axisAnswer) {
+        const clarification = getClarifyingQuestion(intent, axisAnswer);
 
-    state.decisionContext = decision;
-    await saveChatSession(session_id, session.messages || [], state);
+        if (clarification) {
+          decision.clarified = clarification;
+          state.decisionContext = decision;
 
-    return res.json({ reply: decision.clarified.question });
-  }
+          await saveChatSession(session_id, session.messages || [], state);
 
-  // 🔹 Achsen-Antwort erkennen (JETZT ZUVERLÄSSIG)
-  const axisAnswer = mapAxisAnswer(intent, msgRaw);
-
-  // =========================
-  // 🔥 HARD STOP BEI AXIS
-  // =========================
-  if (axisAnswer) {
-    const clarification = getClarifyingQuestion(intent, axisAnswer);
-
-    // 👉 Klarstellungsfrage IMMER stellen
-    if (clarification) {
-      decision.clarified = clarification;
-      state.decisionContext = decision;
-      await saveChatSession(session_id, session.messages || [], state);
-
-      return res.json({
-        reply: clarification.question
-      });
-    }
-
-
-        // 👉 sonst normal verfeinern
-        const refined = refineCandidates(intent, decision.candidates, axisAnswer);
-        decision.candidates = refined;
-        state.decisionContext = decision;
-        await saveChatSession(session_id, session.messages || [], state);
-
-        return res.json({
-          reply:
-            buildReply(decision.candidates) +
-            "<br><br>Magst du mir noch **ein Detail** nennen?"
-        });
+          return res.json({
+            reply: clarification.question,
+            session_id
+          });
+        }
       }
 
-      // =========================
-      // 🔹 KEINE AXIS → normaler Decision-Flow
-      // =========================
+      // Kein Axis-Treffer → normal weiter
       if (decision.candidates.length === 1) {
         state.decisionContext = null;
         await saveChatSession(session_id, session.messages || [], state);
-        return res.json({ reply: buildReply(decision.candidates) });
+        return res.json({
+          reply: buildReply(decision.candidates),
+          session_id
+        });
       }
 
       state.decisionContext = decision;
@@ -459,55 +435,56 @@ if (decision?.active && Array.isArray(decision.candidates)) {
       return res.json({
         reply:
           buildReply(decision.candidates) +
-          "<br><br>Magst du mir noch **ein Detail** nennen (z. B. Region, empfindliche Haut, sofortiger Effekt)?"
+          "<br><br>Magst du mir noch ein Detail nennen?",
+        session_id
       });
     }
 
     // =========================
-    // 3) Normales Matching
+    // 2) Normales Matching
     // =========================
     const matches = matchTreatments(tags);
 
-    // 4) Mehrere Matches → Decision starten
- if (matches.length > 1) {
-  const intent =
-    detectIntentFromTagsOrText(tags, msgRaw) || "haarentfernung";
+    // =========================
+    // 3) Mehrere Matches → Decision starten
+    // =========================
+    if (matches.length > 1) {
+      const intent =
+        detectIntentFromTagsOrText(tags, msgRaw) || "haarentfernung";
 
-  const decisionContext = initDecisionContext(intent, matches);
+      const decisionContext = initDecisionContext(intent, matches);
+      state.decisionContext = decisionContext;
 
-  // 🔥 WICHTIG: decisionContext EXPLIZIT persistieren
-  state.decisionContext = decisionContext;
+      await saveChatSession(session_id, session.messages || [], state);
 
-  await saveChatSession(
-    session_id,
-    session.messages || [],
-    {
-      ...state,
-      decisionContext
+      const q = getAxisQuestion(intent);
+
+      return res.json({
+        reply: q || buildReply(matches),
+        session_id
+      });
     }
-  );
 
-  const q = getAxisQuestion(intent);
-
-  return res.json({
-    reply: q || buildReply(matches)
-  });
-}
-
-
-    // 5) Allgemeine Fragen
+    // =========================
+    // 4) Allgemeine Fragen
+    // =========================
     if (matches.length === 0) {
       const generalAnswer = await handleGeneralQuestions(msgRaw, askChatGPT);
       if (generalAnswer) {
         await saveChatSession(session_id, session.messages || [], state);
-        return res.json({ reply: generalAnswer });
+        return res.json({
+          reply: generalAnswer,
+          session_id
+        });
       }
     }
 
-    // 6) Fallback
+    // =========================
+    // 5) Fallback
+    // =========================
     const reply = buildReply(matches);
     await saveChatSession(session_id, session.messages || [], state);
-    return res.json({ reply });
+    return res.json({ reply, session_id });
 
   } catch (err) {
     console.error("❌ Fehler im Wisy-Chat:", err);

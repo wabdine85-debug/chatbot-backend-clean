@@ -381,31 +381,55 @@ app.post("/chat", async (req, res) => {
     const tagsFromFrontend = Array.isArray(req.body?.tags) ? req.body.tags : [];
     const tags = [...new Set([...tagsFromText, ...tagsFromFrontend])];
 
-    // =====================================================
-    // 2) Decision Context aktiv → Achsen & Klarstellung
-    // =====================================================
-    if (decision?.active && Array.isArray(decision.candidates)) {
-      const intent = decision.intent;
+// =====================================================
+// 2) Decision Context aktiv → Achsen & Klarstellung
+// =====================================================
+if (decision?.active && Array.isArray(decision.candidates)) {
+  const intent = decision.intent;
 
-      // 🔹 Achsen-Antwort erkennen (JETZT ZUVERLÄSSIG)
-      const axisAnswer = mapAxisAnswer(intent, msgRaw);
+  // 🔥 HARD REGION OVERRIDE (final)
+  const normalized = msgRaw
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim();
 
-      // =========================
-      // 🔥 HARD STOP BEI AXIS
-      // =========================
-      if (axisAnswer) {
-        const clarification = getClarifyingQuestion(intent, axisAnswer);
+  if (normalized.includes("ruck") || normalized.includes("rueck")) {
+    decision.clarified = {
+      question: "Ist deine Haut eher **hell** oder **gebräunt**?",
+      map: {
+        hell: "alexandrit",
+        gebraeunt: "diode",
+        "gebraunt": "diode"
+      }
+    };
 
-        // 👉 Klarstellungsfrage IMMER stellen
-        if (clarification) {
-          decision.clarified = clarification;
-          state.decisionContext = decision;
-          await saveChatSession(session_id, session.messages || [], state);
+    state.decisionContext = decision;
+    await saveChatSession(session_id, session.messages || [], state);
 
-          return res.json({
-            reply: clarification.question
-          });
-        }
+    return res.json({ reply: decision.clarified.question });
+  }
+
+  // 🔹 Achsen-Antwort erkennen (JETZT ZUVERLÄSSIG)
+  const axisAnswer = mapAxisAnswer(intent, msgRaw);
+
+  // =========================
+  // 🔥 HARD STOP BEI AXIS
+  // =========================
+  if (axisAnswer) {
+    const clarification = getClarifyingQuestion(intent, axisAnswer);
+
+    // 👉 Klarstellungsfrage IMMER stellen
+    if (clarification) {
+      decision.clarified = clarification;
+      state.decisionContext = decision;
+      await saveChatSession(session_id, session.messages || [], state);
+
+      return res.json({
+        reply: clarification.question
+      });
+    }
+
 
         // 👉 sonst normal verfeinern
         const refined = refineCandidates(intent, decision.candidates, axisAnswer);

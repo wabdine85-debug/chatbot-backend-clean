@@ -93,3 +93,34 @@ export function getAxisQuestion(intent) {
   const options = axis.options.map(o => `– ${o.text}`).join("<br>");
   return `${axis.question}<br><br>${options}`;
 }
+
+// =========================
+// FIX 1: Achsen-Antworten auswerten (glow, ruecken, stirn etc.)
+// =========================
+export function mapAxisAnswer(intent, userText) {
+  const input = userText.toLowerCase();
+
+  // Hautstruktur
+  if (intent === "hautstruktur") {
+    if (input.includes("glow")) return "glow";
+    if (input.includes("por")) return "poren";
+    if (input.includes("narb")) return "narben";
+  }
+
+  // Haarentfernung
+  if (intent === "haarentfernung") {
+    if (input.includes("rück") || input.includes("rueck")) return "ruecken";
+    if (input.includes("gesicht")) return "gesicht";
+    if (input.includes("bein")) return "beine";
+    if (input.includes("klein")) return "klein";
+  }
+
+  // Falten
+  if (intent === "falten") {
+    if (input.includes("stirn") || input.includes("mimik")) return "mimik";
+    if (input.includes("volumen")) return "volumen";
+    if (input.includes("erschlaff")) return "erschlaffung";
+  }
+
+  return null;
+}

@@ -410,15 +410,12 @@ if (decision?.active && Array.isArray(decision.candidates)) {
           }
         }
       }
-
-      // Antwort unklar → Beratung
-      state.decisionContext = null;
-      await saveChatSession(session_id, session.messages || [], state);
-      return res.json({
-        reply:
-          "Damit ich dich wirklich korrekt beraten kann, empfehle ich dir eine kurze persönliche Beratung 🙂"
-      });
-    }
+// 🔁 Klarstellung läuft noch → gleiche Frage erneut stellen
+await saveChatSession(session_id, session.messages || [], state);
+return res.json({
+  reply: decision.clarified.question
+});
+}
 
     // Falls keine Klarstellungsfrage nötig → normal verfeinern
     const refined = refineCandidates(intent, decision.candidates, axisAnswer);

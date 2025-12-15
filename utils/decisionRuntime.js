@@ -124,3 +124,44 @@ export function mapAxisAnswer(intent, userText) {
 
   return null;
 }
+// =========================
+// OPTION A – letzte Klarstellungsfrage
+// =========================
+export function getClarifyingQuestion(intent, axisAnswer) {
+  if (intent === "hautstruktur" && axisAnswer === "glow") {
+    return {
+      question:
+        "Ist dir ein **sofort sichtbarer Glow** wichtiger oder eine **langfristige Hautverbesserung**?",
+      map: {
+        sofort: "hydrafacial",
+        langfristig: "circadia"
+      }
+    };
+  }
+
+  if (intent === "haarentfernung" && axisAnswer === "ruecken") {
+    return {
+      question:
+        "Ist deine Haut eher **hell** oder **gebräunt**?",
+      map: {
+        hell: "alexandrit",
+        gebraeunt: "diode",
+        gebräunt: "diode"
+      }
+    };
+  }
+
+  if (intent === "falten" && axisAnswer === "mimik") {
+    return {
+      question:
+        "Geht es dir um Falten **bei Bewegung** oder auch im **Ruhezustand**?",
+      map: {
+        bewegung: "botox",
+        ruhe: "hyaluron",
+        ruhestand: "hyaluron"
+      }
+    };
+  }
+
+  return null;
+}

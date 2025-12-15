@@ -5,8 +5,20 @@ import OpenAI from "openai";
 import fs from "fs";
 import os from "os";
 import pkg from "pg";
-
 import { handleGeneralQuestions } from "./utils/handleGeneralQuestions.js";
+import {
+  initDecisionContext,
+  isRefinementInput,
+  getNextDecisionQuestion,
+  refineCandidates
+} from "./utils/decisionContext.js";
+import {
+  detectIntentFromTagsOrText,
+  initDecisionContext,
+  isShortRefinement,
+  refineCandidates,
+  getAxisQuestion
+} from "./utils/decisionRuntime.js";
 
 // =========================
 // ENV
@@ -210,6 +222,50 @@ function extractTagsFromMessage(message) {
   return Array.from(tags);
 }
 
+async function loadChatSession(session_id) {
+  if (!session_id) return { messages: [], state: {} };
+
+  const result = await pool.query(
+    `SELECT messages FROM chat_sessions WHERE session_id=$1`,
+    [session_id]
+  );
+
+  if (result.rows.length === 0) return { messages: [], state: {} };
+
+  const stored = result.rows[0].messages;
+
+  // Rückwärtskompatibel: früher war es ein Array
+  if (Array.isArray(stored)) {
+    return { messages: stored, state: {} };
+  }
+
+  // Neu: Objekt {messages, state}
+  if (stored && typeof stored === "object") {
+    return {
+      messages: Array.isArray(stored.messages) ? stored.messages : [],
+      state: stored.state && typeof stored.state === "object" ? stored.state : {}
+    };
+  }
+
+  return { messages: [], state: {} };
+}
+
+async function saveChatSession(session_id, messages, state) {
+  if (!session_id) return;
+
+  const payload = { messages, state };
+
+  await pool.query(
+    `INSERT INTO chat_sessions (session_id, messages)
+     VALUES ($1, $2)
+     ON CONFLICT (session_id)
+     DO UPDATE SET messages=$2, updated_at=NOW()`,
+    [session_id, JSON.stringify(payload)]
+  );
+}
+
+
+
 // =========================
 // Routes
 // =========================
@@ -305,29 +361,80 @@ app.delete("/api/chat/session/:session_id", async (req, res) => {
 });
 
 // =========================
-// Main Chat (Matching -> General -> Reply)
+// Main Chat (Decision Mode – persistent)
 // =========================
 app.post("/chat", async (req, res) => {
   try {
     const msgRaw = (req.body?.message || "").toString();
+    const session_id = (req.body?.session_id || "").toString();
 
-    // 1) Tags aus Text + Frontend
+    // 0) Session laden
+    const session = await loadChatSession(session_id);
+    const state = session.state || {};
+    const decision = state.decisionContext || null;
+
+    // 1) Tags
     const tagsFromText = extractTagsFromMessage(msgRaw);
     const tagsFromFrontend = Array.isArray(req.body?.tags) ? req.body.tags : [];
     const tags = [...new Set([...tagsFromText, ...tagsFromFrontend])];
 
-    // 2) Matching hat Vorrang
-    const matches = matchTreatments(tags);
+    // 2) Decision Context aktiv → Refinement
+    if (decision?.active && Array.isArray(decision.candidates)) {
+      const intent = decision.intent;
 
-    // 3) Allgemeines nur wenn kein Match
-    if (matches.length === 0) {
-      const generalAnswer = await handleGeneralQuestions(msgRaw, askChatGPT);
-      if (generalAnswer) return res.json({ reply: generalAnswer });
+      if (isShortRefinement(msgRaw)) {
+        const refined = refineCandidates(intent, decision.candidates, msgRaw);
+
+        if (refined.length >= 2 && (refined[0].score - refined[1].score) >= 2) {
+          state.decisionContext = null;
+          const reply = buildReply([refined[0]]);
+          await saveChatSession(session_id, session.messages || [], state);
+          return res.json({ reply });
+        }
+      }
+
+      if (!decision.asked) {
+        const q = getAxisQuestion(intent);
+        decision.asked = true;
+        state.decisionContext = decision;
+        await saveChatSession(session_id, session.messages || [], state);
+        return res.json({ reply: q || buildReply(decision.candidates) });
+      }
+
+      await saveChatSession(session_id, session.messages || [], state);
+      return res.json({
+        reply:
+          buildReply(decision.candidates) +
+          "<br><br>Bitte nenne mir 1 Detail (z. B. Region, Glow vs Narben, Mimikfalten vs Volumen)."
+      });
     }
 
-    // 4) Reply aus Matches
+    // 3) Normales Matching
+    const matches = matchTreatments(tags);
+
+    // 4) Mehrere Matches → Decision starten
+    if (matches.length > 1) {
+      const intent = detectIntentFromTagsOrText(tags, msgRaw);
+      state.decisionContext = initDecisionContext(intent || "hautstruktur", matches);
+      await saveChatSession(session_id, session.messages || [], state);
+      const q = getAxisQuestion(intent);
+      return res.json({ reply: q || buildReply(matches) });
+    }
+
+    // 5) Allgemein
+    if (matches.length === 0) {
+      const generalAnswer = await handleGeneralQuestions(msgRaw, askChatGPT);
+      if (generalAnswer) {
+        await saveChatSession(session_id, session.messages || [], state);
+        return res.json({ reply: generalAnswer });
+      }
+    }
+
+    // 6) Fallback
     const reply = buildReply(matches);
+    await saveChatSession(session_id, session.messages || [], state);
     return res.json({ reply });
+
   } catch (err) {
     console.error("❌ Fehler im Wisy-Chat:", err);
     return res.status(500).json({
@@ -335,6 +442,7 @@ app.post("/chat", async (req, res) => {
     });
   }
 });
+
 
 // =========================
 // Start

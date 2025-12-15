@@ -494,6 +494,10 @@ function extractTagsFromMessage(message) {
   return Array.from(tags);
 }
 
+async function askChatGPT(message) {
+  return "Gerne 😊 Kannst du mir dein Anliegen kurz beschreiben?";
+}
+
 
 /* ---------- Wisy Chat Antwort (Matching & Buchung) ---------- */
 app.post("/chat", async (req, res) => {

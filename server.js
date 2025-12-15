@@ -411,6 +411,8 @@ return res.json({
     buildReply(decision.candidates) +
     "<br><br>Magst du mir noch **ein Detail** nennen (z. B. Region, empfindliche Haut, sofortiger Effekt)?"
 });
+} 
+
 
 
 

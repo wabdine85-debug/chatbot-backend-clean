@@ -11,7 +11,8 @@ import {
   initDecisionContext,
   refineCandidates,
   getAxisQuestion,
-  mapAxisAnswer
+  mapAxisAnswer,
+  getClarifyingQuestion
 } from "./utils/decisionRuntime.js";
 
 // =========================
@@ -372,48 +373,79 @@ app.post("/chat", async (req, res) => {
     const tagsFromFrontend = Array.isArray(req.body?.tags) ? req.body.tags : [];
     const tags = [...new Set([...tagsFromText, ...tagsFromFrontend])];
 
-   // 2) Decision Context aktiv → Achsen-Antworten & Refinement
+   // 2) Decision Context aktiv → Achsen-Antworten & Klarstellung
 if (decision?.active && Array.isArray(decision.candidates)) {
   const intent = decision.intent;
 
-  // 🔹 FIX 2a: Achsen-Antwort erkennen (glow, ruecken, stirn ...)
+  // 🔹 Achsen-Antwort erkennen (glow, ruecken, stirn ...)
   const axisAnswer = mapAxisAnswer(intent, msgRaw);
 
   if (axisAnswer) {
-    const refined = refineCandidates(intent, decision.candidates, axisAnswer);
+    // 🔹 OPTION A: letzte Klarstellungsfrage
+    const clarification = getClarifyingQuestion(intent, axisAnswer);
 
-    // klarer Gewinner → Entscheidung treffen
-    if (refined.length >= 2 && (refined[0].score - refined[1].score) >= 1) {
-      state.decisionContext = null;
+    // Wenn Klarstellungsfrage nötig ist → stellen
+    if (clarification && !decision.clarified) {
+      decision.clarified = clarification;
+      state.decisionContext = decision;
       await saveChatSession(session_id, session.messages || [], state);
-      return res.json({ reply: buildReply([refined[0]]) });
+      return res.json({ reply: clarification.question });
     }
 
-    // sonst Kandidaten aktualisieren und weiterfragen
+    // Wenn Klarstellung aktiv ist → auswerten
+    if (decision.clarified) {
+      const input = msgRaw.toLowerCase();
+      const map = decision.clarified.map;
+
+      for (const key in map) {
+        if (input.includes(key)) {
+          const winner = decision.candidates.find(c =>
+            ((c.treatment || c.name || "") + "").toLowerCase().includes(map[key])
+          );
+
+          if (winner) {
+            state.decisionContext = null;
+            await saveChatSession(session_id, session.messages || [], state);
+            return res.json({ reply: buildReply([winner]) });
+          }
+        }
+      }
+
+      // Antwort unklar → Beratung
+      state.decisionContext = null;
+      await saveChatSession(session_id, session.messages || [], state);
+      return res.json({
+        reply:
+          "Damit ich dich wirklich korrekt beraten kann, empfehle ich dir eine kurze persönliche Beratung 🙂"
+      });
+    }
+
+    // Falls keine Klarstellungsfrage nötig → normal verfeinern
+    const refined = refineCandidates(intent, decision.candidates, axisAnswer);
     decision.candidates = refined;
     state.decisionContext = decision;
     await saveChatSession(session_id, session.messages || [], state);
   }
 
-// 🔹 Nach Achsen-Antwort: entscheiden oder gezielt eingrenzen
-if (decision.candidates.length === 1) {
-  state.decisionContext = null;
+  // ✅ WICHTIG: Hier kommt IMMER ein Return, damit wir NICHT ins normale Matching fallen
+
+  // Wenn nur noch 1 Kandidat übrig ist → entscheiden
+  if (decision.candidates.length === 1) {
+    state.decisionContext = null;
+    await saveChatSession(session_id, session.messages || [], state);
+    return res.json({ reply: buildReply(decision.candidates) });
+  }
+
+  // Mehrere Kandidaten → Fokus (keine Achse erneut stellen)
+  state.decisionContext = decision;
   await saveChatSession(session_id, session.messages || [], state);
-  return res.json({ reply: buildReply(decision.candidates) });
+
+  return res.json({
+    reply:
+      buildReply(decision.candidates) +
+      "<br><br>Magst du mir noch **ein Detail** nennen (z. B. Region, empfindliche Haut, sofortiger Effekt)?"
+  });
 }
-
-// 🔹 Mehrere Kandidaten → KEINE neue Achsenfrage, sondern Fokus
-state.decisionContext = decision;
-await saveChatSession(session_id, session.messages || [], state);
-
-return res.json({
-  reply:
-    buildReply(decision.candidates) +
-    "<br><br>Magst du mir noch **ein Detail** nennen (z. B. Region, empfindliche Haut, sofortiger Effekt)?"
-});
-} 
-
-
 
 
     // 3) Normales Matching

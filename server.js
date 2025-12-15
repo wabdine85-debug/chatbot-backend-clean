@@ -9,9 +9,9 @@ import { handleGeneralQuestions } from "./utils/handleGeneralQuestions.js";
 import {
   detectIntentFromTagsOrText,
   initDecisionContext,
-  isShortRefinement,
   refineCandidates,
-  getAxisQuestion
+  getAxisQuestion,
+  mapAxisAnswer
 } from "./utils/decisionRuntime.js";
 
 // =========================
@@ -372,36 +372,47 @@ app.post("/chat", async (req, res) => {
     const tagsFromFrontend = Array.isArray(req.body?.tags) ? req.body.tags : [];
     const tags = [...new Set([...tagsFromText, ...tagsFromFrontend])];
 
-    // 2) Decision Context aktiv → Refinement
-    if (decision?.active && Array.isArray(decision.candidates)) {
-      const intent = decision.intent;
+   // 2) Decision Context aktiv → Achsen-Antworten & Refinement
+if (decision?.active && Array.isArray(decision.candidates)) {
+  const intent = decision.intent;
 
-      if (isShortRefinement(msgRaw)) {
-        const refined = refineCandidates(intent, decision.candidates, msgRaw);
+  // 🔹 FIX 2a: Achsen-Antwort erkennen (glow, ruecken, stirn ...)
+  const axisAnswer = mapAxisAnswer(intent, msgRaw);
 
-        if (refined.length >= 2 && (refined[0].score - refined[1].score) >= 2) {
-          state.decisionContext = null;
-          const reply = buildReply([refined[0]]);
-          await saveChatSession(session_id, session.messages || [], state);
-          return res.json({ reply });
-        }
-      }
+  if (axisAnswer) {
+    const refined = refineCandidates(intent, decision.candidates, axisAnswer);
 
-      if (!decision.asked) {
-        const q = getAxisQuestion(intent);
-        decision.asked = true;
-        state.decisionContext = decision;
-        await saveChatSession(session_id, session.messages || [], state);
-        return res.json({ reply: q || buildReply(decision.candidates) });
-      }
-
+    // klarer Gewinner → Entscheidung treffen
+    if (refined.length >= 2 && (refined[0].score - refined[1].score) >= 1) {
+      state.decisionContext = null;
       await saveChatSession(session_id, session.messages || [], state);
-      return res.json({
-        reply:
-          buildReply(decision.candidates) +
-          "<br><br>Bitte nenne mir 1 Detail (z. B. Region, Glow vs Narben, Mimikfalten vs Volumen)."
-      });
+      return res.json({ reply: buildReply([refined[0]]) });
     }
+
+    // sonst Kandidaten aktualisieren und weiterfragen
+    decision.candidates = refined;
+    state.decisionContext = decision;
+    await saveChatSession(session_id, session.messages || [], state);
+  }
+
+  // 🔹 Falls noch keine Achsenfrage gestellt wurde → jetzt stellen
+  if (!decision.asked) {
+    const q = getAxisQuestion(intent);
+    decision.asked = true;
+    state.decisionContext = decision;
+    await saveChatSession(session_id, session.messages || [], state);
+    return res.json({ reply: q || buildReply(decision.candidates) });
+  }
+
+  // 🔹 Kein Abbruch mehr! Immer sinnvoll weiterführen
+  await saveChatSession(session_id, session.messages || [], state);
+  return res.json({
+    reply:
+      buildReply(decision.candidates) +
+      "<br><br>Bitte nenne mir 1 Detail (z. B. Region / Glow vs Narben / Mimikfalten vs Volumen)."
+  });
+}
+
 
     // 3) Normales Matching
     const matches = matchTreatments(tags);

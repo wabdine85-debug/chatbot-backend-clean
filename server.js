@@ -373,58 +373,48 @@ app.post("/chat", async (req, res) => {
     const tagsFromFrontend = Array.isArray(req.body?.tags) ? req.body.tags : [];
     const tags = [...new Set([...tagsFromText, ...tagsFromFrontend])];
 
-   // 2) Decision Context aktiv → Achsen-Antworten & Klarstellung
+// 2) Decision Context aktiv → Achsen-Antworten & Klarstellung
 if (decision?.active && Array.isArray(decision.candidates)) {
   const intent = decision.intent;
 
-  // 🔹 Achsen-Antwort erkennen (glow, ruecken, stirn ...)
+  // 🔹 Achsen-Antwort erkennen
   const axisAnswer = mapAxisAnswer(intent, msgRaw);
 
+  // =========================
+  // 🔥 HARD STOP BEI AXIS
+  // =========================
   if (axisAnswer) {
-    // 🔹 OPTION A: letzte Klarstellungsfrage
+
+    // 🔹 letzte Klarstellungsfrage prüfen
     const clarification = getClarifyingQuestion(intent, axisAnswer);
 
-    // Wenn Klarstellungsfrage nötig ist → stellen
-    if (clarification && !decision.clarified) {
+    // 👉 FALL 1: Klarstellungsfrage existiert → IMMER fragen
+    if (clarification) {
       decision.clarified = clarification;
       state.decisionContext = decision;
       await saveChatSession(session_id, session.messages || [], state);
-      return res.json({ reply: clarification.question });
+
+      return res.json({
+        reply: clarification.question
+      });
     }
 
-    // Wenn Klarstellung aktiv ist → auswerten
-    if (decision.clarified) {
-      const input = msgRaw.toLowerCase();
-      const map = decision.clarified.map;
-
-      for (const key in map) {
-        if (input.includes(key)) {
-          const winner = decision.candidates.find(c =>
-            ((c.treatment || c.name || "") + "").toLowerCase().includes(map[key])
-          );
-
-          if (winner) {
-            state.decisionContext = null;
-            await saveChatSession(session_id, session.messages || [], state);
-            return res.json({ reply: buildReply([winner]) });
-          }
-        }
-      }
-// 🔁 Klarstellung läuft noch → gleiche Frage erneut stellen
-await saveChatSession(session_id, session.messages || [], state);
-return res.json({
-  reply: decision.clarified.question
-});
-}
-
-    // Falls keine Klarstellungsfrage nötig → normal verfeinern
+    // 👉 FALL 2: keine Klarstellung nötig → normal verfeinern
     const refined = refineCandidates(intent, decision.candidates, axisAnswer);
     decision.candidates = refined;
     state.decisionContext = decision;
     await saveChatSession(session_id, session.messages || [], state);
+
+    return res.json({
+      reply:
+        buildReply(decision.candidates) +
+        "<br><br>Magst du mir noch **ein Detail** nennen?"
+    });
   }
 
-  // ✅ WICHTIG: Hier kommt IMMER ein Return, damit wir NICHT ins normale Matching fallen
+  // =========================
+  // 🔹 KEINE AXIS → normaler Flow
+  // =========================
 
   // Wenn nur noch 1 Kandidat übrig ist → entscheiden
   if (decision.candidates.length === 1) {
@@ -433,7 +423,7 @@ return res.json({
     return res.json({ reply: buildReply(decision.candidates) });
   }
 
-  // Mehrere Kandidaten → Fokus (keine Achse erneut stellen)
+  // Mehrere Kandidaten → Fokus
   state.decisionContext = decision;
   await saveChatSession(session_id, session.messages || [], state);
 
@@ -443,6 +433,7 @@ return res.json({
       "<br><br>Magst du mir noch **ein Detail** nennen (z. B. Region, empfindliche Haut, sofortiger Effekt)?"
   });
 }
+
 
 
     // 3) Normales Matching

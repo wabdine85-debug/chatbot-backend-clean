@@ -395,23 +395,23 @@ if (decision?.active && Array.isArray(decision.candidates)) {
     await saveChatSession(session_id, session.messages || [], state);
   }
 
-  // 🔹 Falls noch keine Achsenfrage gestellt wurde → jetzt stellen
-  if (!decision.asked) {
-    const q = getAxisQuestion(intent);
-    decision.asked = true;
-    state.decisionContext = decision;
-    await saveChatSession(session_id, session.messages || [], state);
-    return res.json({ reply: q || buildReply(decision.candidates) });
-  }
-
-  // 🔹 Kein Abbruch mehr! Immer sinnvoll weiterführen
+// 🔹 Nach Achsen-Antwort: entscheiden oder gezielt eingrenzen
+if (decision.candidates.length === 1) {
+  state.decisionContext = null;
   await saveChatSession(session_id, session.messages || [], state);
-  return res.json({
-    reply:
-      buildReply(decision.candidates) +
-      "<br><br>Bitte nenne mir 1 Detail (z. B. Region / Glow vs Narben / Mimikfalten vs Volumen)."
-  });
+  return res.json({ reply: buildReply(decision.candidates) });
 }
+
+// 🔹 Mehrere Kandidaten → KEINE neue Achsenfrage, sondern Fokus
+state.decisionContext = decision;
+await saveChatSession(session_id, session.messages || [], state);
+
+return res.json({
+  reply:
+    buildReply(decision.candidates) +
+    "<br><br>Magst du mir noch **ein Detail** nennen (z. B. Region, empfindliche Haut, sofortiger Effekt)?"
+});
+
 
 
     // 3) Normales Matching

@@ -7,12 +7,6 @@ import os from "os";
 import pkg from "pg";
 import { handleGeneralQuestions } from "./utils/handleGeneralQuestions.js";
 import {
-  initDecisionContext,
-  isRefinementInput,
-  getNextDecisionQuestion,
-  refineCandidates
-} from "./utils/decisionContext.js";
-import {
   detectIntentFromTagsOrText,
   initDecisionContext,
   isShortRefinement,

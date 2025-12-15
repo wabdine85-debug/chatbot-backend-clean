@@ -95,27 +95,37 @@ export function getAxisQuestion(intent) {
 }
 
 // =========================
-// FIX 1: Achsen-Antworten auswerten (glow, ruecken, stirn etc.)
+// FIX: Achsen-Antworten zuverlässig erkennen
 // =========================
 export function mapAxisAnswer(intent, userText) {
-  const input = userText.toLowerCase();
+  const input = userText
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim();
 
-  // Hautstruktur
+  // =====================
+  // HAUTSTRUKTUR
+  // =====================
   if (intent === "hautstruktur") {
     if (input.includes("glow")) return "glow";
     if (input.includes("por")) return "poren";
     if (input.includes("narb")) return "narben";
   }
 
-  // Haarentfernung
+  // =====================
+  // HAARENTFERNUNG
+  // =====================
   if (intent === "haarentfernung") {
-    if (input.includes("rück") || input.includes("rueck")) return "ruecken";
+    if (input.includes("ruck") || input.includes("rueck")) return "ruecken";
     if (input.includes("gesicht")) return "gesicht";
     if (input.includes("bein")) return "beine";
     if (input.includes("klein")) return "klein";
   }
 
-  // Falten
+  // =====================
+  // FALTEN
+  // =====================
   if (intent === "falten") {
     if (input.includes("stirn") || input.includes("mimik")) return "mimik";
     if (input.includes("volumen")) return "volumen";
@@ -124,6 +134,7 @@ export function mapAxisAnswer(intent, userText) {
 
   return null;
 }
+
 // =========================
 // OPTION A – letzte Klarstellungsfrage
 // =========================

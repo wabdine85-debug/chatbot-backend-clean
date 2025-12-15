@@ -5,6 +5,9 @@ import dotenv from "dotenv";
 import OpenAI from "openai";
 import fs from "fs";
 import os from "os";
+import { isGeneralQuestion } from "./utils/generalQuestions.js";
+import { handleGeneralQuestions } from "./utils/handleGeneralQuestions.js";
+
 
 // Nur lokal .env laden (nicht auf Render)
 if (process.env.NODE_ENV !== "production") {
@@ -499,37 +502,6 @@ app.post("/chat", async (req, res) => {
     const msgRaw = (req.body?.message || "").toString();
     const msg = normalize(msgRaw);
 
-    // 2️⃣ ALLGEMEINE FRAGEN ZUERST
-
-    // Begrüßung
-    if (/^(hi|hallo|hey|servus|moin)\b/.test(msg)) {
-      return res.json({
-        reply: "Hallo! 😊 Wie kann ich dir weiterhelfen?"
-      });
-    }
-
-    // Öffnungszeiten
-    if (/öffnungszeit|offnungszeit|geöffnet|geoeffnet|wann.*offen/.test(msg)) {
-      return res.json({
-        reply:
-          "Wir haben Montag, Dienstag, Donnerstag & Freitag von 10–18 Uhr geöffnet, Samstag von 10–15 Uhr. Mittwoch geschlossen."
-      });
-    }
-
-    // Adresse
-    if (/adresse|wo seid ihr|standort|wo finde ich euch/.test(msg)) {
-      return res.json({
-        reply: "Du findest uns in der Rheinstraße 59, 65185 Wiesbaden."
-      });
-    }
-
-    // Parkplatz
-    if (/parkplatz|parken|auto/.test(msg)) {
-      return res.json({
-        reply:
-          "Parkmöglichkeiten gibt es direkt in der Rheinstraße sowie im Parkhaus Luisenforum."
-      });
-    }
 
     // 3️⃣ TAGS AUS TEXT (TRIGGERS)
     const tagsFromText = extractTagsFromMessage(msgRaw);
@@ -541,12 +513,24 @@ app.post("/chat", async (req, res) => {
 
     const tags = [...new Set([...tagsFromText, ...tagsFromFrontend])];
 
-    // 5️⃣ MATCHING
-    const matches = matchTreatments(tags);
+// 5️⃣ MATCHING
+const matches = matchTreatments(tags);
 
-    // 6️⃣ ANTWORT
-    const reply = buildReply(matches);
-    return res.json({ reply });
+// 🔹 NUR wenn KEIN Behandlungs-Match
+if (matches.length === 0) {
+  const generalAnswer = await handleGeneralQuestions(msgRaw, askChatGPT);
+
+  if (generalAnswer) {
+    return res.json({
+      reply: generalAnswer
+    });
+  }
+}
+
+// 6️⃣ Behandlungs-Antwort
+const reply = buildReply(matches);
+return res.json({ reply });
+
 
   } catch (err) {
     console.error("❌ Fehler im Wisy-Chat:", err);

@@ -136,11 +136,12 @@ async function sendToServer(userText, tags = []) {
     headers: {
       "Content-Type": "application/json"
     },
-    body: JSON.stringify({
-      message: userText,
-      tags: ["akne"]
+   body: JSON.stringify({
+  message: userText,
+  tags,
+  session_id: sessionId
+})
 
-    })
   });
 
   const data = await res.json();

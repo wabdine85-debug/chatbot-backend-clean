@@ -127,19 +127,23 @@ function buildReply(matches) {
     `;
   }
 
+  // ✅ EIN klares Match
   if (matches.length === 1 && matches[0]?.url) {
     const t = matches[0];
+    const title = t.treatment || t.name || t.title || "Behandlung";
+
     return `
-      Basierend auf deiner Beschreibung kann <strong>${t.treatment}</strong> gut passen.<br><br>
+      Basierend auf deiner Beschreibung kann <strong>${title}</strong> gut passen.<br><br>
       👉 <a href="${t.url}" target="_blank">Mehr Infos & Termin</a>
     `;
   }
 
+  // ✅ MEHRERE Matches
   const items = matches
-    .map(
-      (t) =>
-        `• <a href="${t.url}" target="_blank">${t.treatment}</a>`
-    )
+    .map((t) => {
+      const title = t.treatment || t.name || t.title || "Behandlung";
+      return `• <a href="${t.url}" target="_blank">${title}</a>`;
+    })
     .join("<br>");
 
   return `

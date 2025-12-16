@@ -4,7 +4,8 @@
 
 const STORAGE_KEY = "wisyChatHistory:v2";
 const SESSION_KEY = "wisySessionId";
-const CHAT_ENDPOINT = "https://chatbot-backend-clean-eord.onrender.com/chat";
+const CHAT_ENDPOINT = "https://chatbot-backend-clean-eord.onrender.com/api/chat";
+
 
 
 // --- DOM ---

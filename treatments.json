@@ -96,6 +96,7 @@
     "url": "https://palaisdebeaute.de/products/hydrafacial-md",
     "wisy": {
       "kategorie": "Gesichtsbehandlung",
+      "prioritaet": 6,
       "triggers": [
   "hydrafacial",
   "hydra facial",
@@ -121,6 +122,7 @@
     "url": "https://palaisdebeaute.de/products/microneedling",
     "wisy": {
       "kategorie": "Hautregeneration",
+      "prioritaet": 5,
       "triggers": [
   "microneedling",
   "needling",
@@ -506,14 +508,16 @@
       "duenne haut"
     ],
     "probleme": [
-      "hautalterung",
-      "falten",
-      "fahle haut",
-      "muede haut",
-      "elastizitaetsverlust",
-      "trockene haut",
-      "duenne haut"
-    ],
+  "hautalterung",
+  "falten",
+  "fahle haut",
+  "muede haut",
+  "muede",
+  "duenne haut",
+  "elastizitaetsverlust",
+  "trockene haut"
+]
+,
     "hauttypen": [
       "normal",
       "trocken",
@@ -551,14 +555,17 @@
       "regenerative therapie"
     ],
     "probleme": [
-      "hautalterung",
-      "falten",
-      "fahle haut",
-      "muede haut",
-      "elastizitaetsverlust",
-      "trockene haut",
-      "regenerationsschwaeche"
-    ],
+  "hautalterung",
+  "falten",
+  "fahle haut",
+  "muede haut",
+  "muede",
+  "erschoepfte haut",
+  "elastizitaetsverlust",
+  "trockene haut",
+  "regenerationsschwaeche"
+]
+,
     "hauttypen": [
       "normal",
       "trocken",

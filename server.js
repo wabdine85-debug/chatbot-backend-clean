@@ -537,13 +537,31 @@ if (!tags.length) {
       }
     }
 
-    // Keine Behandlung → allgemeine Frage
-    if (matches.length === 0) {
-      const generalAnswer = await handleGeneralQuestions(msgRaw, askChatGPT);
-      if (generalAnswer) {
-        return res.json({ reply: generalAnswer });
-      }
-    }
+   // Keine Behandlung → erst KLARSTELLUNGSFRAGE, dann allgemeine Frage
+if (matches.length === 0) {
+
+  // 🔹 Unspezifische Aussagen → nachfragen statt abbrechen
+  if (/haut|problem|beschwerden|unwohl/i.test(msgRaw)) {
+    return res.json({
+      reply: `
+      Gerne helfe ich dir weiter 😊<br><br>
+      Kannst du dein Anliegen etwas genauer beschreiben?<br>
+      Zum Beispiel:<br>
+      • Akne oder unreine Haut<br>
+      • Falten / Hautalterung<br>
+      • Rötungen / empfindliche Haut<br>
+      • Haare an einer bestimmten Körperzone
+      `
+    });
+  }
+
+  // 🔹 echte allgemeine Fragen (Adresse, Parkplatz, Kontakt etc.)
+  const generalAnswer = await handleGeneralQuestions(msgRaw, askChatGPT);
+  if (generalAnswer) {
+    return res.json({ reply: generalAnswer });
+  }
+}
+
 
     // ✅ IMMER Antwort zurückgeben
     const reply = buildReply(matches);

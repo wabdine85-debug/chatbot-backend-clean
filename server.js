@@ -255,7 +255,8 @@ app.get("/whoami", (_req, res) => {
 
 /* ---------- /chat ---------- */
 app.post("/chat_old", async (req, res) => {
-  const userMessage = (req.body.message || "").toString().slice(0, 300);
+const msgRaw = (req.body?.message || "").toString().slice(0, 300);
+
   // 🔹 Tags aus Frontend (falls vorhanden)
 const tags = Array.isArray(req.body.tags) ? req.body.tags : [];
 
@@ -302,8 +303,8 @@ ${bestMatch.text}<br><br>
 
   try {
     const intent = detectIntent(msgRaw);
+const nmsg = normalize(msgRaw);
 
-    const nmsg = normalize(userMessage);
 
     // 👉 Begrüßung
     if (intent.isGreet) {
@@ -329,7 +330,8 @@ ${bestMatch.text}<br><br>
 
     // 👉 Treatments
     const treatments = loadTreatments();
-    const best = smartFindTreatment(userMessage, treatments);
+    const best = smartFindTreatment(msgRaw, treatments);
+
 
     if (best) {
       const desc = (best.beschreibung || "")
@@ -363,7 +365,8 @@ Keine Telefon/E-Mail angeben.
 
     const messages = [
       { role: "system", content: SYSTEM_PROMPT },
-      { role: "user", content: userMessage }
+      { role: "user", content: msgRaw }
+
     ];
 
     const completion = await client.chat.completions.create({
@@ -504,7 +507,7 @@ async function askChatGPT(message) {
 app.post("/chat", async (req, res) => {
   try {
     const msgRaw = (req.body?.message || "").toString();
-    const msg = normalize(msgRaw); 
+    
 
 
     // Tags extrahieren

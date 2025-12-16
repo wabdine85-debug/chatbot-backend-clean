@@ -537,10 +537,10 @@ if (!tags.length) {
       }
     }
 
-// Keine Behandlung → erst KLARSTELLUNGSFRAGE, dann allgemeine Frage
+// 🔹 KEIN Match → erst Klarstellung, dann General, dann Fallback
 if (matches.length === 0) {
 
-  // 🔹 Unspezifische Aussagen → nachfragen statt abbrechen
+  // 🔹 Unspezifische Hautaussagen → Rückfrage
   if (/haut|problem|beschwerden|unwohl/i.test(msg)) {
     return res.json({
       reply: `
@@ -555,17 +555,20 @@ if (matches.length === 0) {
     });
   }
 
+  // 🔹 echte allgemeine Fragen
   const generalAnswer = await handleGeneralQuestions(msgRaw, askChatGPT);
   if (generalAnswer) {
     return res.json({ reply: generalAnswer });
   }
+
+  // 🔹 letzter Fallback
+  return res.json({ reply: buildReply([]) });
 }
 
+// ✅ Match vorhanden → normale Antwort
+const reply = buildReply(matches);
+return res.json({ reply });
 
-
-    // ✅ IMMER Antwort zurückgeben
-    const reply = buildReply(matches);
-    return res.json({ reply });
 
   } catch (err) {
     console.error("❌ Fehler im Wisy-Chat:", err);

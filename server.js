@@ -1,19 +1,17 @@
 import express from "express";
 import cors from "cors";
 
-import { loadOrCreateSession, saveSession } from "./wisySessions.js";
-
-
 import dotenv from "dotenv";
 import OpenAI from "openai";
 import fs from "fs";
 import os from "os";
-import pkg from "pg";
+
+import { loadOrCreateSession, saveSession } from "./wisySessions.js";
+
 import { handleGeneralQuestions } from "./utils/handleGeneralQuestions.js";
 import {
   detectIntentFromTagsOrText,
   initDecisionContext,
-  refineCandidates,
   getAxisQuestion,
   mapAxisAnswer,
   getClarifyingQuestion
@@ -26,18 +24,6 @@ if (process.env.NODE_ENV !== "production") {
   dotenv.config();
 }
 
-const DEBUG = process.env.DEBUG === "true";
-
-// =========================
-// DB (Chat Sessions)
-// =========================
-const { Pool } = pkg;
-
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: { rejectUnauthorized: false }
-});
-
 // =========================
 // App
 // =========================
@@ -46,9 +32,6 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static("public"));
 
-// =========================
-// Constants
-// =========================
 const CONTACT_URL = "https://palaisdebeaute.de/pages/contact";
 
 // =========================
@@ -57,7 +40,6 @@ const CONTACT_URL = "https://palaisdebeaute.de/pages/contact";
 const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 async function askChatGPT(message) {
-  // harte Absicherung: nur allgemeine Fragen
   const completion = await client.chat.completions.create({
     model: "gpt-4o-mini",
     temperature: 0.3,
@@ -67,46 +49,56 @@ async function askChatGPT(message) {
         content: `
 Du bist Wisy, der digitale Assistent von PDB Aesthetic Room in Wiesbaden.
 
-WICHTIGE REGELN:
-- Du beantwortest NUR allgemeine Fragen.
-- Du empfiehlst KEINE Behandlungen.
-- Du nennst KEINE Preise.
-- Du vergleichst KEINE Methoden.
-- Wenn eine Frage nach "welche Behandlung" / "was hilft gegen ..." klingt, verweise freundlich auf Beratung/Kontakt.
-
-Erlaubt:
-- Begrüßung
-- Öffnungszeiten
-- Adresse & Parkplatz
-- Gutscheine
-- Termin/ Beratung Ablauf
-- Allgemeine Infos zum Institut
-
-Ton:
-- professionell
-- ruhig
-- ästhetisch-medizinisch
-- nicht werblich
+REGELN:
+- Nur allgemeine Fragen beantworten
+- Keine Behandlungen empfehlen
+- Keine Preise nennen
+- Bei Behandlungsfragen → Beratung verweisen
 `
       },
       { role: "user", content: message }
     ]
   });
 
-  const text = completion.choices?.[0]?.message?.content || "";
-  return cleanReply(text);
+  return completion.choices?.[0]?.message?.content || "";
 }
 
 // =========================
-// Treatments + Matching
+// Treatments
 // =========================
 const treatments = JSON.parse(
   fs.readFileSync(new URL("./treatments.json", import.meta.url), "utf8")
 );
 
+function normalize(s = "") {
+  return String(s)
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim();
+}
+
+function extractTagsFromMessage(message) {
+  const text = normalize(message);
+  const tags = new Set();
+
+  treatments.forEach((t) => {
+    const wisy = t.wisy;
+    if (!wisy?.triggers) return;
+
+    wisy.triggers.forEach((trigger) => {
+      if (text.includes(normalize(trigger))) {
+        (wisy.probleme || []).forEach((p) => tags.add(p));
+        (wisy.ziele || []).forEach((z) => tags.add(z));
+      }
+    });
+  });
+
+  return Array.from(tags);
+}
+
 function matchTreatments(tags) {
   if (!Array.isArray(tags)) return [];
-  if (!Array.isArray(treatments)) return [];
 
   const scored = treatments.map((t) => {
     let score = 0;
@@ -127,13 +119,6 @@ function matchTreatments(tags) {
     .slice(0, 2);
 }
 
-function shouldDirectToBooking(matches) {
-  if (!Array.isArray(matches)) return false;
-  if (matches.length !== 1) return false;
-  const t = matches[0];
-  return Boolean(t?.url);
-}
-
 function buildReply(matches) {
   if (!matches?.length) {
     return `
@@ -142,377 +127,127 @@ function buildReply(matches) {
     `;
   }
 
-  // ✅ EIN klares Match → DIREKT BUCHEN
-  if (shouldDirectToBooking(matches)) {
+  if (matches.length === 1 && matches[0]?.url) {
     const t = matches[0];
-    const title = t.treatment || t.name || "Behandlung";
-    const url = t.url || CONTACT_URL;
-
     return `
-      Basierend auf deiner Beschreibung kann <strong>${title}</strong> gut passen.<br><br>
-      👉 <a href="${url}" target="_blank" rel="noopener noreferrer">Mehr Infos & Termin</a>
+      Basierend auf deiner Beschreibung kann <strong>${t.treatment}</strong> gut passen.<br><br>
+      👉 <a href="${t.url}" target="_blank">Mehr Infos & Termin</a>
     `;
   }
 
-  // ✅ Mehrere Matches → Auswahl anzeigen
   const items = matches
-    .map((t) => {
-      const title = t.treatment || t.name || "Behandlung";
-      const url = t.url || CONTACT_URL;
-      return `• <a href="${url}" target="_blank" rel="noopener noreferrer">${title}</a>`;
-    })
+    .map(
+      (t) =>
+        `• <a href="${t.url}" target="_blank">${t.treatment}</a>`
+    )
     .join("<br>");
 
   return `
     Ich habe 2 passende Möglichkeiten gefunden:<br><br>
     ${items}<br><br>
-    Wenn du willst, sag mir kurz: <strong>Hauttyp</strong> & <strong>Hauptziel</strong> (z. B. Akne / Glow / Straffung).
+    Magst du mir noch sagen, was dir wichtiger ist (z. B. Akne, Glow, Straffung)?
   `;
 }
 
 // =========================
-// Text utils
-// =========================
-function normalize(s = "") {
-  return String(s)
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .trim();
-}
-
-/**
- * optional: hübschere Links + Cleanup für GPT Output
- */
-function cleanReply(text = "") {
-  let cleaned = String(text);
-
-  // Markdown Links [Text](url) → HTML Link
-  cleaned = cleaned.replace(
-    /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/gi,
-    '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>'
-  );
-
-  cleaned = cleaned.replace(/Mehr Infos hier:?\s*/gi, "");
-  cleaned = cleaned.replace(/\s{2,}/g, " ").trim();
-
-  return cleaned;
-}
-
-// =========================
-// Tags aus Text (dein Trigger System)
-// =========================
-function extractTagsFromMessage(message) {
-  const text = normalize(message);
-  const tags = new Set();
-
-  treatments.forEach((t) => {
-    const wisy = t.wisy;
-    if (!wisy?.triggers) return;
-
-    wisy.triggers.forEach((trigger) => {
-      if (text.includes(normalize(trigger))) {
-        (wisy.probleme || []).forEach((p) => tags.add(p));
-        (wisy.ziele || []).forEach((z) => tags.add(z));
-      }
-    });
-  });
-
-  return Array.from(tags);
-}
-
-async function loadChatSession(session_id) {
-  if (!session_id) return { messages: [], state: {} };
-
-  const result = await pool.query(
-    `SELECT messages FROM chat_sessions WHERE session_id=$1`,
-    [session_id]
-  );
-
-  if (result.rows.length === 0) return { messages: [], state: {} };
-
-  const stored = result.rows[0].messages;
-
-  // Rückwärtskompatibel: früher war es ein Array
-  if (Array.isArray(stored)) {
-    return { messages: stored, state: {} };
-  }
-
-  // Neu: Objekt {messages, state}
-  if (stored && typeof stored === "object") {
-    return {
-      messages: Array.isArray(stored.messages) ? stored.messages : [],
-      state: stored.state && typeof stored.state === "object" ? stored.state : {}
-    };
-  }
-
-  return { messages: [], state: {} };
-}
-
-async function saveChatSession(session_id, messages, state) {
-  if (!session_id) return;
-
-  const payload = { messages, state };
-
-  await pool.query(
-    `INSERT INTO chat_sessions (session_id, messages)
-     VALUES ($1, $2)
-     ON CONFLICT (session_id)
-     DO UPDATE SET messages=$2, updated_at=NOW()`,
-    [session_id, JSON.stringify(payload)]
-  );
-}
-
-
-
-// =========================
-// Routes
+// ROUTES
 // =========================
 app.get("/", (_req, res) => res.send("OK"));
 
 app.get("/whoami", (_req, res) => {
-  const p = new URL("./treatments.json", import.meta.url).pathname;
-  let stats = { count: 0, names: [] };
-
-  try {
-    const raw = JSON.parse(
-      fs.readFileSync(new URL("./treatments.json", import.meta.url), "utf8")
-    );
-    stats = {
-      count: raw.length || 0,
-      names: raw.slice(0, 3).map((x) => x.treatment || x.name)
-    };
-  } catch {}
-
   res.json({
     service: "wisy-backend",
-    pid: process.pid,
     host: os.hostname(),
-    cwd: process.cwd(),
-    treatmentsPath: p,
-    treatmentsSample: stats,
     time: new Date().toISOString()
   });
 });
 
 // =========================
-// Chat Verlauf speichern / laden / löschen (DB)
+// MAIN CHAT (FINAL)
 // =========================
-app.post("/api/chat/session", async (req, res) => {
-  const { session_id, messages } = req.body;
-
-  if (!session_id || !Array.isArray(messages)) {
-    return res.status(400).json({ ok: false });
-  }
-
+app.post("/api/chat", async (req, res) => {
   try {
-    await pool.query(
-      `INSERT INTO chat_sessions (session_id, messages)
-       VALUES ($1, $2)
-       ON CONFLICT (session_id)
-       DO UPDATE SET messages=$2, updated_at=NOW()`,
-      [session_id, JSON.stringify(messages)]
-    );
+    const rawMessage = String(req.body?.message || "");
+    const incomingSessionId = req.body?.session_id || null;
 
-    return res.json({ ok: true });
-  } catch (err) {
-    console.error("❌ Fehler beim Speichern:", err);
-    return res.status(500).json({ ok: false });
-  }
-});
-
-app.get("/api/chat/session/:session_id", async (req, res) => {
-  const { session_id } = req.params;
-
-  if (!session_id) return res.status(400).json({ messages: [] });
-
-  try {
-    const result = await pool.query(
-      `SELECT messages FROM chat_sessions WHERE session_id=$1`,
-      [session_id]
-    );
-
-    if (result.rows.length === 0) {
-      return res.json({ messages: [] });
-    }
-
-    return res.json({ messages: result.rows[0].messages || [] });
-  } catch (err) {
-    console.error("❌ Fehler beim Laden:", err);
-    return res.status(500).json({ messages: [] });
-  }
-});
-
-app.delete("/api/chat/session/:session_id", async (req, res) => {
-  const { session_id } = req.params;
-
-  if (!session_id) return res.status(400).json({ ok: false });
-
-  try {
-    await pool.query(`DELETE FROM chat_sessions WHERE session_id=$1`, [
-      session_id
-    ]);
-    return res.json({ ok: true });
-  } catch (err) {
-    console.error("❌ Fehler beim Löschen:", err);
-    return res.status(500).json({ ok: false });
-  }
-});
-
-
-// =========================
-// Main Chat (Decision Mode – DB persistent)
-// =========================
-app.post("/chat", async (req, res) => {
-  try {
-    const rawMessage = (req.body?.message || "").toString();
-    const incomingSessionId = (req.body?.session_id || "").toString() || null;
-
-    // ✅ SESSION KOMMT AUSSCHLIESSLICH AUS DER DB
     const session = await loadOrCreateSession(incomingSessionId);
-
     const session_id = session.session_id;
     const state = session.state || {};
     const decision = state.decisionContext || null;
     const messages = Array.isArray(session.messages) ? session.messages : [];
 
-    console.log("🧪 CHAT HIT", {
-      message: rawMessage,
-      session_id
-    });
+    const msgRaw = normalize(rawMessage);
 
-    // Normalisierung
-    const msgRaw = rawMessage
-      .toLowerCase()
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .trim();
+    console.log("🧪 CHAT HIT", { msgRaw, session_id });
 
-    // =========================
-    // 1) TAGS
-    // =========================
     const tagsFromText = extractTagsFromMessage(msgRaw);
-    const tagsFromFrontend = Array.isArray(req.body?.tags) ? req.body.tags : [];
-    const tags = [...new Set([...tagsFromText, ...tagsFromFrontend])];
+    const tags = [...new Set(tagsFromText)];
 
-    // =========================
-    // 2) DECISION CONTEXT AKTIV
-    // =========================
+    // ===== Decision Mode =====
     if (decision?.active && Array.isArray(decision.candidates)) {
-      const intent = decision.intent;
-      const axisAnswer = mapAxisAnswer(intent, msgRaw);
-
+      const axisAnswer = mapAxisAnswer(decision.intent, msgRaw);
       if (axisAnswer) {
-        const clarification = getClarifyingQuestion(intent, axisAnswer);
-
+        const clarification = getClarifyingQuestion(decision.intent, axisAnswer);
         if (clarification) {
           decision.clarified = clarification;
           state.decisionContext = decision;
-
           await saveSession(session_id, messages, state);
-
-          return res.json({
-            reply: clarification.question,
-            session_id
-          });
+          return res.json({ reply: clarification.question, session_id });
         }
       }
-
-      // Nur noch ein Kandidat
-      if (decision.candidates.length === 1) {
-        state.decisionContext = null;
-
-        await saveSession(session_id, messages, state);
-
-        return res.json({
-          reply: buildReply(decision.candidates),
-          session_id
-        });
-      }
-
-      // Weiter fokussieren
-      state.decisionContext = decision;
-
-      await saveSession(session_id, messages, state);
-
-      return res.json({
-        reply:
-          buildReply(decision.candidates) +
-          "<br><br>Magst du mir noch ein Detail nennen?",
-        session_id
-      });
     }
 
-    // =========================
-    // 3) NORMALES MATCHING
-    // =========================
+    // ===== Matching =====
     const matches = matchTreatments(tags);
 
-    // =========================
-    // 4) MEHRERE MATCHES → DECISION START
-    // =========================
     if (matches.length > 1) {
       const intent =
         detectIntentFromTagsOrText(tags, msgRaw) || "haarentfernung";
-
-      const decisionContext = initDecisionContext(intent, matches);
-      state.decisionContext = decisionContext;
-
+      state.decisionContext = initDecisionContext(intent, matches);
       await saveSession(session_id, messages, state);
-
-      const q = getAxisQuestion(intent);
-
       return res.json({
-        reply: q || buildReply(matches),
+        reply: getAxisQuestion(intent),
         session_id
       });
     }
 
-    // =========================
-    // 5) ALLGEMEINE FRAGEN → GPT
-    // =========================
-    if (matches.length === 0) {
-      const generalAnswer = await handleGeneralQuestions(
-        msgRaw,
-        askChatGPT
-      );
-
-      if (generalAnswer) {
-        await saveSession(session_id, messages, state);
-
-        return res.json({
-          reply: generalAnswer,
-          session_id
-        });
-      }
+    if (matches.length === 1) {
+      state.decisionContext = null;
+      await saveSession(session_id, messages, state);
+      return res.json({ reply: buildReply(matches), session_id });
     }
 
-    // =========================
-    // 6) FALLBACK
-    // =========================
-    const reply = buildReply(matches);
+    // ===== GENERAL (GPT) =====
+    const generalAnswer = await handleGeneralQuestions(
+      msgRaw,
+      askChatGPT
+    );
 
+    if (generalAnswer) {
+      await saveSession(session_id, messages, state);
+      return res.json({ reply: generalAnswer, session_id });
+    }
+
+    // ===== Fallback =====
     await saveSession(session_id, messages, state);
-
     return res.json({
-      reply,
+      reply: buildReply([]),
       session_id
     });
 
   } catch (err) {
-    console.error("❌ Fehler im Wisy-Chat:", err);
-
+    console.error("❌ CHAT ERROR", err);
     return res.status(500).json({
-      reply: "⚠️ Es ist ein technischer Fehler aufgetreten.",
+      reply: "Technischer Fehler",
       session_id: null
     });
   }
 });
 
-
-
 // =========================
-// Start
+// START
 // =========================
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`🚀 Backend läuft auf Port ${PORT}`));
+app.listen(PORT, () =>
+  console.log(`🚀 Wisy Backend läuft auf Port ${PORT}`)
+);

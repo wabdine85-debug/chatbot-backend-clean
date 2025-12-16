@@ -17,15 +17,9 @@ const closeChatBtn = document.getElementById("closeChatBtn");
 
 let chatHistory = [];
 
-// --- Session-ID erzeugen oder laden ---
-let sessionId = localStorage.getItem(SESSION_KEY);
-if (!sessionId) {
-  sessionId = crypto.randomUUID();
-  localStorage.setItem(SESSION_KEY, sessionId);
-  console.log("🆕 Neue Session-ID:", sessionId);
-} else {
-  console.log("🔁 Bestehende Session-ID:", sessionId);
-}
+// 🔥 Session wird IMMER vom Backend vergeben
+let sessionId = localStorage.getItem(SESSION_KEY) || null;
+
 
 /* ------------------------- UI ------------------------- */
 function addMessageToUI({ text, role }) {

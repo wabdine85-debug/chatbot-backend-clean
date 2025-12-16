@@ -503,6 +503,8 @@ async function askChatGPT(message) {
 app.post("/chat", async (req, res) => {
   try {
     const msgRaw = (req.body?.message || "").toString();
+    const msg = normalize(msgRaw); 
+
 
     // Tags extrahieren
     const tagsFromText = extractTagsFromMessage(msgRaw);

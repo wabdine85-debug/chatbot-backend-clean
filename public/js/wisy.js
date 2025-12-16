@@ -125,26 +125,33 @@ function addMessage({ text, role }) {
 async function sendToServer(userText, tags = []) {
   console.log("📤 Sende an Server:", userText, sessionId);
 
-  const res = await fetch(CHAT_ENDPOINT, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      message: userText,
-      tags,
-      session_id: sessionId
-    })
-  });
+const res = await fetch(CHAT_ENDPOINT, {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    message: userText,
+    tags,
+    session_id: sessionId
+  })
+});
 
-  const data = await res.json();
+let data;
+try {
+  data = await res.json();
+} catch (e) {
+  console.error("❌ JSON parse error", e);
+  return "Technischer Fehler. Bitte kurz erneut versuchen.";
+}
 
-  // 🔥 WICHTIG: Session-ID vom Backend übernehmen
-  if (data.session_id && data.session_id !== sessionId) {
-    sessionId = data.session_id;
-    localStorage.setItem(SESSION_KEY, sessionId);
-    console.log("🔁 Session-ID vom Backend übernommen:", sessionId);
-  }
+// 🔥 Session-ID vom Backend übernehmen
+if (data.session_id && data.session_id !== sessionId) {
+  sessionId = data.session_id;
+  localStorage.setItem(SESSION_KEY, sessionId);
+  console.log("🔁 Session-ID vom Backend übernommen:", sessionId);
+}
 
-  return data.reply || "Keine Antwort erhalten.";
+return data.reply || "Keine Antwort erhalten.";
+
 }
 
 

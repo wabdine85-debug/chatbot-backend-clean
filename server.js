@@ -48,11 +48,14 @@ function matchTreatments(tags) {
     let score = 0;
     if (!t.wisy) return { ...t, score: 0 };
 
-    tags.forEach(tag => {
-      if (t.wisy.probleme?.includes(tag)) score += 3;
-      if (t.wisy.ziele?.includes(tag)) score += 2;
-      if (t.wisy.hauttypen?.includes(tag)) score += 1;
-    });
+  tags.forEach(tag => {
+  if (tag.length <= 4) return;
+
+  if (t.wisy.probleme?.includes(tag)) score += 3;
+  if (t.wisy.ziele?.includes(tag)) score += 2;
+  if (t.wisy.hauttypen?.includes(tag)) score += 1;
+});
+
 
     return { ...t, score };
   });

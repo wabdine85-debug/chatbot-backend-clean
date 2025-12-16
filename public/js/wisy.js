@@ -48,33 +48,7 @@ function safeLoadLocal() {
   }
 }
 
-/* ------------------------- Server Sync ------------------------- */
-async function loadFromServer() {
-  try {
-    const res = await fetch(`/api/chat/session/${sessionId}`);
-    if (!res.ok) throw new Error("Server-Fehler beim Laden");
-    const data = await res.json();
-    chatHistory = data.messages || [];
-    console.log("📂 Verlauf aus DB geladen:", chatHistory);
-    chatHistory.forEach(m => addMessageToUI(m));
-  } catch (err) {
-    console.warn("⚠️ Konnte Verlauf nicht vom Server laden:", err);
-    chatHistory = safeLoadLocal();
-    chatHistory.forEach(m => addMessageToUI(m));
-  }
-}
 
-async function saveToServer() {
-  try {
-    await fetch("/api/chat/session", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ session_id: sessionId, messages: chatHistory })
-    });
-  } catch (err) {
-    console.warn("⚠️ Speichern auf Server fehlgeschlagen:", err);
-  }
-}
 /* ------------------------- Wisy Input Processing ------------------------- */
 
 // 1️⃣ Text normalisieren

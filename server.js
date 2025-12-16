@@ -502,6 +502,9 @@ async function askChatGPT(message) {
 /* ---------- Wisy Chat Antwort (Matching & Buchung) ---------- */
 app.post("/chat", async (req, res) => {
   try {
+
+    console.log("🧪 /chat HIT", req.body);
+
     // 1️⃣ Message lesen
     const msgRaw = (req.body?.message || "").toString();
     const msg = normalize(msgRaw);
@@ -519,6 +522,9 @@ app.post("/chat", async (req, res) => {
 
 // 5️⃣ MATCHING
 let matches = matchTreatments(tags);
+
+console.log("🧪 TAGS:", tags);
+console.log("🧪 MATCHES:", matches.map(m => ({ name: m.name, score: m.score })));
 
 
 // 🔹 Haarentfernung: Priorität berücksichtigen (Alexandrit > Dioden)
@@ -543,6 +549,7 @@ if (matches.length > 1) {
 // 🔹 NUR wenn KEIN Behandlungs-Match
 if (matches.length === 0) {
   const generalAnswer = await handleGeneralQuestions(msgRaw, askChatGPT);
+console.log("🧪 REPLY BUILD");
 
   if (generalAnswer) {
     return res.json({
@@ -551,10 +558,10 @@ if (matches.length === 0) {
   }
 }
 
-// 6️⃣ Behandlungs-Antwort
+// 6️⃣ Behandlungs-Antwort (WICHTIG – hat gefehlt!)
 const reply = buildReply(matches);
+console.log("🧪 FINAL REPLY");
 return res.json({ reply });
-
 
   } catch (err) {
     console.error("❌ Fehler im Wisy-Chat:", err);
@@ -563,6 +570,7 @@ return res.json({ reply });
     });
   }
 });
+
 
 
 

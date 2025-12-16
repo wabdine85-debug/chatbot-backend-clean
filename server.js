@@ -537,11 +537,11 @@ if (!tags.length) {
       }
     }
 
-   // Keine Behandlung → erst KLARSTELLUNGSFRAGE, dann allgemeine Frage
+// Keine Behandlung → erst KLARSTELLUNGSFRAGE, dann allgemeine Frage
 if (matches.length === 0) {
 
   // 🔹 Unspezifische Aussagen → nachfragen statt abbrechen
-  if (/haut|problem|beschwerden|unwohl/i.test(msgRaw)) {
+  if (/haut|problem|beschwerden|unwohl/i.test(msg)) {
     return res.json({
       reply: `
       Gerne helfe ich dir weiter 😊<br><br>
@@ -555,12 +555,12 @@ if (matches.length === 0) {
     });
   }
 
-  // 🔹 echte allgemeine Fragen (Adresse, Parkplatz, Kontakt etc.)
   const generalAnswer = await handleGeneralQuestions(msgRaw, askChatGPT);
   if (generalAnswer) {
     return res.json({ reply: generalAnswer });
   }
 }
+
 
 
     // ✅ IMMER Antwort zurückgeben

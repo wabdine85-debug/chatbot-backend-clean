@@ -301,7 +301,8 @@ ${bestMatch.text}<br><br>
   const MAX_TOKENS = 200;
 
   try {
-    const intent = detectIntent(userMessage);
+    const intent = detectIntent(msgRaw);
+
     const nmsg = normalize(userMessage);
 
     // 👉 Begrüßung
@@ -543,7 +544,8 @@ if (!tags.length) {
 if (matches.length === 0) {
 
   // 🔹 Unspezifische Hautaussagen → Rückfrage
-  if (/haut|problem|beschwerden|unwohl/i.test(msg)) {
+ if (/haut|problem|beschwerden|unwohl/i.test(normalize(msgRaw))) {
+
     return res.json({
       reply: `
       Gerne helfe ich dir weiter 😊<br><br>

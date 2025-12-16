@@ -547,8 +547,7 @@ if (!tags.length) {
 if (matches.length === 0) {
 
   // 🔹 Unspezifische Hautaussagen → Rückfrage
- if (/haut|problem|beschwerden|unwohl/i.test(normalize(msgRaw))) {
-
+  if (/haut|problem|beschwerden|unwohl/i.test(normalize(msgRaw))) {
     return res.json({
       reply: `
       Gerne helfe ich dir weiter 😊<br><br>
@@ -562,19 +561,17 @@ if (matches.length === 0) {
     });
   }
 
-  // 🔹 echte allgemeine Fragen
   const generalAnswer = await handleGeneralQuestions(msgRaw, askChatGPT);
   if (generalAnswer) {
     return res.json({ reply: generalAnswer });
   }
 
-  // 🔹 letzter Fallback
   return res.json({ reply: buildReply([]) });
 }
 
 // ✅ Match vorhanden → normale Antwort
-const reply = buildReply(matches);
-return res.json({ reply });
+return res.json({ reply: buildReply(matches) });
+
 
 
   } catch (err) {

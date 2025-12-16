@@ -48,6 +48,31 @@ function safeLoadLocal() {
   }
 }
 
+async function sendToServer(userText, tags = []) {
+  // 🔥 IMMER AKTUELLE SESSION-ID LADEN
+  sessionId = localStorage.getItem(SESSION_KEY) || sessionId || null;
+
+  console.log("📤 Sende an Server:", userText, sessionId);
+
+  const res = await fetch(CHAT_ENDPOINT, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      message: userText,
+      tags,
+      session_id: sessionId
+    })
+  });
+
+  const data = await res.json();
+
+  if (data.session_id) {
+    sessionId = data.session_id;
+    localStorage.setItem(SESSION_KEY, sessionId);
+  }
+
+  return data.reply || "Keine Antwort erhalten.";
+}
 
 /* ------------------------- Wisy Input Processing ------------------------- */
 

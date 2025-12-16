@@ -439,24 +439,34 @@
   "url": "https://palaisdebeaute.de/collections/circadia-%C2%AE-all-treatments",
   "wisy": {
     "kategorie": "Gesichtsbehandlung",
+    "prioritaet": 9,
     "triggers": [
       "circadia",
       "circadia facial",
       "circadia behandlung",
       "gesichtsbehandlung",
       "akne",
+      "akne behandlung",
       "pickel",
       "unreine haut",
+      "unrein",
       "empfindliche haut",
+      "empfindlich",
+      "roetungen",
       "anti aging",
-      "hautregeneration"
+      "hautregeneration",
+      "hautprobleme"
     ],
     "probleme": [
       "akne",
       "unreine haut",
+      "unrein",
+      "pickel",
       "empfindliche haut",
+      "roetungen",
       "fahle haut",
-      "hautalterung"
+      "hautalterung",
+      "hautprobleme"
     ],
     "hauttypen": [
       "normal",
@@ -473,7 +483,100 @@
     ],
     "buchung_moeglich": true
   }
+},
+{
+  "name": "PolyFill® Polynukleotide",
+  "beschreibung": "Innovative Injektionsbehandlung mit Polynukleotiden zur intensiven Hautregeneration, Verbesserung der Hautqualität und Förderung der natürlichen Zellaktivität.",
+  "preis": "ab 299 €",
+  "url": "https://palaisdebeaute.de/products/polyfill-polynukleotide",
+  "wisy": {
+    "kategorie": "Medical Aesthetic",
+    "prioritaet": 8,
+    "triggers": [
+      "polyfill",
+      "polynukleotide",
+      "polynukleotid",
+      "skin booster",
+      "skinbooster",
+      "hautregeneration",
+      "hautverjuengung",
+      "anti aging",
+      "falten",
+      "muede haut",
+      "duenne haut"
+    ],
+    "probleme": [
+      "hautalterung",
+      "falten",
+      "fahle haut",
+      "muede haut",
+      "elastizitaetsverlust",
+      "trockene haut",
+      "duenne haut"
+    ],
+    "hauttypen": [
+      "normal",
+      "trocken",
+      "mischhaut",
+      "sensibel"
+    ],
+    "ziele": [
+      "hautregeneration",
+      "hautverjuengung",
+      "verbesserung der hautqualitaet",
+      "mehr elastizitaet",
+      "frischer teint"
+    ],
+    "buchung_moeglich": true
+  }
+},
+{
+  "name": "Exosomen Therapie",
+  "beschreibung": "Hochwirksame regenerative Behandlung mit Exosomen zur Förderung der Zellregeneration, Verbesserung der Hautqualität und sichtbaren Hautverjüngung.",
+  "preis": "ab 349 €",
+  "url": "https://palaisdebeaute.de/products/exosomen-therapie-zellregeneration-hautverjungung",
+  "wisy": {
+    "kategorie": "Medical Aesthetic",
+    "prioritaet": 9,
+    "triggers": [
+      "exosomen",
+      "exosomen therapie",
+      "exosome",
+      "zellregeneration",
+      "hautverjuengung",
+      "anti aging",
+      "hautregeneration",
+      "falten",
+      "muede haut",
+      "regenerative therapie"
+    ],
+    "probleme": [
+      "hautalterung",
+      "falten",
+      "fahle haut",
+      "muede haut",
+      "elastizitaetsverlust",
+      "trockene haut",
+      "regenerationsschwaeche"
+    ],
+    "hauttypen": [
+      "normal",
+      "trocken",
+      "mischhaut",
+      "sensibel"
+    ],
+    "ziele": [
+      "zellregeneration",
+      "hautverjuengung",
+      "verbesserung der hautqualitaet",
+      "mehr elastizitaet",
+      "frischer teint"
+    ],
+    "buchung_moeglich": true
+  }
 }
+
+
 
 
 ]

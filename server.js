@@ -180,8 +180,25 @@ app.post("/api/chat", async (req, res) => {
 
     console.log("🧪 CHAT HIT", { msgRaw, session_id });
 
+   
     const tagsFromText = extractTagsFromMessage(msgRaw);
-    const tags = [...new Set(tagsFromText)];
+const tags = [...new Set(tagsFromText)];
+
+console.log("🧠 TAGS:", tags);
+
+// ===== GENERAL (GPT) =====
+if (tags.length === 0) {
+  const generalAnswer = await handleGeneralQuestions(
+    msgRaw,
+    askChatGPT
+  );
+
+  if (generalAnswer) {
+    await saveSession(session_id, messages, state);
+    return res.json({ reply: generalAnswer, session_id });
+  }
+}
+
 
     // ===== Decision Mode =====
     if (decision?.active && Array.isArray(decision.candidates)) {

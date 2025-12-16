@@ -364,50 +364,42 @@ app.delete("/api/chat/session/:session_id", async (req, res) => {
 // =========================
 app.post("/chat", async (req, res) => {
   try {
-    // =========================
-    // Input & Session
-    // =========================
     const rawMessage = (req.body?.message || "").toString();
 
-   let session_id = (req.body?.session_id || "").toString();
-if (!session_id) {
-  session_id = randomUUID();
-}
+    // 🔥 Session-ID erzwingen (Server ist Master)
+    let session_id = (req.body?.session_id || "").toString();
+    if (!session_id) {
+      session_id = randomUUID();
+    }
 
-// 🧪 DEBUG – SESSION & STATE
-console.log("🧪 CHAT HIT", {
-  message: rawMessage,
-  session_id,
-});
+    // Debug (kannst du später entfernen)
+    console.log("🧪 CHAT HIT", {
+      message: rawMessage,
+      session_id
+    });
 
-
-    // Zentrale Normalisierung
+    // Normalisierung
     const msgRaw = rawMessage
       .toLowerCase()
       .normalize("NFD")
       .replace(/[\u0300-\u036f]/g, "")
       .trim();
 
-    // =========================
-    // Session laden
-    // =========================
+    // 0) Session laden
     const session = await loadChatSession(session_id);
     const state = session.state || {};
     const decision = state.decisionContext || null;
 
-    // =========================
-    // Tags
-    // =========================
+    // 1) Tags
     const tagsFromText = extractTagsFromMessage(msgRaw);
     const tagsFromFrontend = Array.isArray(req.body?.tags) ? req.body.tags : [];
     const tags = [...new Set([...tagsFromText, ...tagsFromFrontend])];
 
     // =====================================================
-    // 1) Decision aktiv → Achsen & Klarstellung
+    // 2) Decision Context aktiv → Achsen & Klarstellung
     // =====================================================
     if (decision?.active && Array.isArray(decision.candidates)) {
       const intent = decision.intent;
-
       const axisAnswer = mapAxisAnswer(intent, msgRaw);
 
       if (axisAnswer) {
@@ -426,16 +418,18 @@ console.log("🧪 CHAT HIT", {
         }
       }
 
-      // Kein Axis-Treffer → normal weiter
+      // Wenn nur noch ein Kandidat
       if (decision.candidates.length === 1) {
         state.decisionContext = null;
         await saveChatSession(session_id, session.messages || [], state);
+
         return res.json({
           reply: buildReply(decision.candidates),
           session_id
         });
       }
 
+      // Mehrere Kandidaten → weiter fokussieren
       state.decisionContext = decision;
       await saveChatSession(session_id, session.messages || [], state);
 
@@ -448,13 +442,11 @@ console.log("🧪 CHAT HIT", {
     }
 
     // =========================
-    // 2) Normales Matching
+    // 3) Normales Matching
     // =========================
     const matches = matchTreatments(tags);
 
-    // =========================
-    // 3) Mehrere Matches → Decision starten
-    // =========================
+    // 4) Mehrere Matches → Decision starten
     if (matches.length > 1) {
       const intent =
         detectIntentFromTagsOrText(tags, msgRaw) || "haarentfernung";
@@ -472,13 +464,12 @@ console.log("🧪 CHAT HIT", {
       });
     }
 
-    // =========================
-    // 4) Allgemeine Fragen
-    // =========================
+    // 5) Allgemeine Fragen
     if (matches.length === 0) {
       const generalAnswer = await handleGeneralQuestions(msgRaw, askChatGPT);
       if (generalAnswer) {
         await saveChatSession(session_id, session.messages || [], state);
+
         return res.json({
           reply: generalAnswer,
           session_id
@@ -486,20 +477,24 @@ console.log("🧪 CHAT HIT", {
       }
     }
 
-    // =========================
-    // 5) Fallback
-    // =========================
+    // 6) Fallback
     const reply = buildReply(matches);
     await saveChatSession(session_id, session.messages || [], state);
-    return res.json({ reply, session_id });
+
+    return res.json({
+      reply,
+      session_id
+    });
 
   } catch (err) {
     console.error("❌ Fehler im Wisy-Chat:", err);
     return res.status(500).json({
-      reply: "⚠️ Es ist ein Fehler aufgetreten. Bitte versuche es erneut."
+      reply: "⚠️ Es ist ein Fehler aufgetreten. Bitte versuche es erneut.",
+      session_id: null
     });
   }
 });
+
 
 // =========================
 // Start

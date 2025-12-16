@@ -501,75 +501,13 @@ async function askChatGPT(message) {
 
 /* ---------- Wisy Chat Antwort (Matching & Buchung) ---------- */
 app.post("/chat", async (req, res) => {
-  try {
+  console.log("🧪 /chat HIT", req.body);
 
-    console.log("🧪 /chat HIT", req.body);
-
-    // 1️⃣ Message lesen
-    const msgRaw = (req.body?.message || "").toString();
-    const msg = normalize(msgRaw);
-
-
-    // 3️⃣ TAGS AUS TEXT (TRIGGERS)
-    const tagsFromText = extractTagsFromMessage(msgRaw);
-
-    // 4️⃣ TAGS AUS FRONTEND (optional)
-    const tagsFromFrontend = Array.isArray(req.body?.tags)
-      ? req.body.tags
-      : [];
-
-    const tags = [...new Set([...tagsFromText, ...tagsFromFrontend])];
-
-// 5️⃣ MATCHING
-let matches = matchTreatments(tags);
-
-console.log("🧪 TAGS:", tags);
-console.log("🧪 MATCHES:", matches.map(m => ({ name: m.name, score: m.score })));
-
-
-// 🔹 Haarentfernung: Priorität berücksichtigen (Alexandrit > Dioden)
-if (matches.length > 1) {
-  const hairMatches = matches.filter(
-    m => m.wisy?.kategorie === "Haarentfernung"
-  );
-
-  if (hairMatches.length > 0) {
-    hairMatches.sort((a, b) => {
-  if (b.score !== a.score) return b.score - a.score;
-  return (b.wisy?.prioritaet || 0) - (a.wisy?.prioritaet || 0);
-})
-
-
-    // 👉 NUR das beste Haarentfernungs-Treatment behalten
-    matches = [hairMatches[0]];
-  }
-}
-
-
-// 🔹 NUR wenn KEIN Behandlungs-Match
-if (matches.length === 0) {
-  const generalAnswer = await handleGeneralQuestions(msgRaw, askChatGPT);
-console.log("🧪 REPLY BUILD");
-
-  if (generalAnswer) {
-    return res.json({
-      reply: generalAnswer
-    });
-  }
-}
-
-// 6️⃣ Behandlungs-Antwort (WICHTIG – hat gefehlt!)
-const reply = buildReply(matches);
-console.log("🧪 FINAL REPLY");
-return res.json({ reply });
-
-  } catch (err) {
-    console.error("❌ Fehler im Wisy-Chat:", err);
-    return res.status(500).json({
-      reply: "⚠️ Es ist ein Fehler aufgetreten. Bitte versuche es erneut."
-    });
-  }
+  return res.json({
+    reply: "🟢 CHAT ROUTE ERREICHT"
+  });
 });
+
 
 
 

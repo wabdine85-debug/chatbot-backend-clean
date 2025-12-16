@@ -5,22 +5,24 @@
     "preis": "Preis nach Zone",
     "url": "https://palaisdebeaute.de/products/alexandrit-deka",
     "wisy": {
-      "kategorie": "Haarentfernung",
-      "triggers": [
-        "haare",
-        "alexandrit",
-        "alexandrit laser",
-        "laser haarentfernung",
-        "haarentfernung",
-        "haare entfernen",
-        "dauerhafte haarentfernung",
-        "deka"
-      ],
-      "probleme": ["unerwünschte haare", "haare", "haar", "stoppeln", "rasur", "haarwuchs", "rücken", "ruecken"],
-      "hauttypen": ["normal", "mischhaut", "fettig"],
-      "ziele": ["dauerhafte haarreduktion", "glatte haut"],
-      "buchung_moeglich": true
-    }
+  "kategorie": "Haarentfernung",
+  "prioritaet": 10,
+  "triggers": [
+    "haare",
+    "alexandrit",
+    "alexandrit laser",
+    "laser haarentfernung",
+    "haarentfernung",
+    "haare entfernen",
+    "dauerhafte haarentfernung",
+    "deka"
+  ],
+  "probleme": ["unerwünschte haare", "haare", "haar", "stoppeln", "rasur", "haarwuchs", "rücken", "ruecken"],
+  "hauttypen": ["normal", "mischhaut", "fettig"],
+  "ziele": ["dauerhafte haarreduktion", "glatte haut"],
+  "buchung_moeglich": true
+}
+
   },
   {
     "name": "Diodenlaser Haarentfernung",
@@ -29,6 +31,7 @@
     "url": "https://palaisdebeaute.de/products/dioden-laser",
     "wisy": {
       "kategorie": "Haarentfernung",
+      "prioritaet": 1,
       "triggers": [
         "diodenlaser",
         "dioden laser",

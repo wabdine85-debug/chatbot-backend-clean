@@ -508,6 +508,16 @@ app.post("/chat", async (req, res) => {
     const tagsFromText = extractTagsFromMessage(msgRaw);
     const tagsFromFrontend = Array.isArray(req.body?.tags) ? req.body.tags : [];
     const tags = [...new Set([...tagsFromText, ...tagsFromFrontend])];
+// 🔹 Fallback: wenn keine Tags → Wörter aus Text nutzen
+if (!tags.length) {
+  tags.push(
+    ...msgRaw
+      .toLowerCase()
+      .replace(/ä/g,"ae").replace(/ö/g,"oe").replace(/ü/g,"ue").replace(/ß/g,"ss")
+      .split(/\s+/)
+      .filter(w => w.length >= 3)
+  );
+}
 
     // Matching (bestehende Logik!)
     let matches = matchTreatments(tags);

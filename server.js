@@ -173,93 +173,48 @@ app.post("/api/chat", async (req, res) => {
     const session = await loadOrCreateSession(incomingSessionId);
     const session_id = session.session_id;
     const state = session.state || {};
-    const decision = state.decisionContext || null;
     const messages = Array.isArray(session.messages) ? session.messages : [];
 
     const msgRaw = normalize(rawMessage);
 
-    console.log("🧪 CHAT HIT", { msgRaw, session_id });
+    // TAGS IMMER DEFINIEREN (Crash-Fix)
+    let tags = [];
+    try {
+      const tagsFromText = extractTagsFromMessage(msgRaw);
+      tags = Array.isArray(tagsFromText) ? tagsFromText : [];
+    } catch (e) {
+      console.error("❌ TAG ERROR", e);
+      tags = [];
+    }
 
-   
-    const tagsFromText = extractTagsFromMessage(msgRaw);
-const tags = [...new Set(tagsFromText)];
+    console.log("🧪 CHAT HIT", { msgRaw, session_id, tags });
 
-console.log("🧠 TAGS:", tags);
+    // ===== MATCHING =====
+    const matches = matchTreatments(tags);
 
-// ===== GENERAL (GPT) =====
-if (tags.length === 0) {
-  const generalAnswer = await handleGeneralQuestions(
-    msgRaw,
-    askChatGPT
-  );
-
-  if (generalAnswer) {
-    await saveSession(session_id, messages, state);
-    return res.json({ reply: generalAnswer, session_id });
-  }
-}
-
-
-    // ===== Decision Mode =====
-    if (decision?.active && Array.isArray(decision.candidates)) {
-      const axisAnswer = mapAxisAnswer(decision.intent, msgRaw);
-      if (axisAnswer) {
-        const clarification = getClarifyingQuestion(decision.intent, axisAnswer);
-        if (clarification) {
-          decision.clarified = clarification;
-          state.decisionContext = decision;
-          await saveSession(session_id, messages, state);
-          return res.json({ reply: clarification.question, session_id });
-        }
+    // ===== GENERAL (GPT) NUR WENN KEINE TAGS =====
+    if (tags.length === 0) {
+      const generalAnswer = await handleGeneralQuestions(msgRaw, askChatGPT);
+      if (generalAnswer) {
+        await saveSession(session_id, messages, state);
+        return res.json({ reply: generalAnswer, session_id });
       }
     }
 
-    // ===== Matching =====
-    const matches = matchTreatments(tags);
-
-    if (matches.length > 1) {
-      const intent =
-        detectIntentFromTagsOrText(tags, msgRaw) || "haarentfernung";
-      state.decisionContext = initDecisionContext(intent, matches);
-      await saveSession(session_id, messages, state);
-      return res.json({
-        reply: getAxisQuestion(intent),
-        session_id
-      });
-    }
-
-    if (matches.length === 1) {
-      state.decisionContext = null;
-      await saveSession(session_id, messages, state);
-      return res.json({ reply: buildReply(matches), session_id });
-    }
-
-    // ===== GENERAL (GPT) =====
-    const generalAnswer = await handleGeneralQuestions(
-      msgRaw,
-      askChatGPT
-    );
-
-    if (generalAnswer) {
-      await saveSession(session_id, messages, state);
-      return res.json({ reply: generalAnswer, session_id });
-    }
-
-    // ===== Fallback =====
+    // ===== FALLBACK =====
+    const reply = buildReply(matches);
     await saveSession(session_id, messages, state);
-    return res.json({
-      reply: buildReply([]),
-      session_id
-    });
+    return res.json({ reply, session_id });
 
   } catch (err) {
-    console.error("❌ CHAT ERROR", err);
-    return res.status(500).json({
-      reply: "Technischer Fehler",
-      session_id: null
+    console.error("❌ CHAT CRASH", err);
+    return res.status(200).json({
+      reply: "Technischer Fehler (debug active)",
+      session_id: req.body?.session_id || null
     });
   }
 });
+
 
 // =========================
 // START

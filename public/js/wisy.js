@@ -129,22 +129,27 @@ function addMessage({ text, role }) {
 }
 
 async function sendToServer(userText, tags = []) {
-  console.log("📤 Sende an Server:", userText, tags);
+  console.log("📤 Sende an Server:", userText, sessionId);
 
   const res = await fetch(CHAT_ENDPOINT, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-   body: JSON.stringify({
-  message: userText,
-  tags,
-  session_id: sessionId
-})
-
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      message: userText,
+      tags,
+      session_id: sessionId
+    })
   });
 
   const data = await res.json();
+
+  // 🔥 WICHTIG: Session-ID vom Backend übernehmen
+  if (data.session_id && data.session_id !== sessionId) {
+    sessionId = data.session_id;
+    localStorage.setItem(SESSION_KEY, sessionId);
+    console.log("🔁 Session-ID vom Backend übernommen:", sessionId);
+  }
+
   return data.reply || "Keine Antwort erhalten.";
 }
 

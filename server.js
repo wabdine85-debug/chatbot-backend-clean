@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
-import { randomUUID } from "crypto";
+
+import { loadOrCreateSession, saveSession } from "./wisySessions.js";
 
 
 import dotenv from "dotenv";
@@ -360,19 +361,21 @@ app.delete("/api/chat/session/:session_id", async (req, res) => {
 
 
 // =========================
-// Main Chat (Decision Mode – persistent)
+// Main Chat (Decision Mode – DB persistent)
 // =========================
 app.post("/chat", async (req, res) => {
   try {
     const rawMessage = (req.body?.message || "").toString();
+    const incomingSessionId = (req.body?.session_id || "").toString() || null;
 
-    // 🔥 Session-ID erzwingen (Server ist Master)
-    let session_id = (req.body?.session_id || "").toString();
-    if (!session_id) {
-      session_id = randomUUID();
-    }
+    // ✅ SESSION KOMMT AUSSCHLIESSLICH AUS DER DB
+    const session = await loadOrCreateSession(incomingSessionId);
 
-    // Debug (kannst du später entfernen)
+    const session_id = session.session_id;
+    const state = session.state || {};
+    const decision = state.decisionContext || null;
+    const messages = Array.isArray(session.messages) ? session.messages : [];
+
     console.log("🧪 CHAT HIT", {
       message: rawMessage,
       session_id
@@ -385,19 +388,16 @@ app.post("/chat", async (req, res) => {
       .replace(/[\u0300-\u036f]/g, "")
       .trim();
 
-    // 0) Session laden
-    const session = await loadChatSession(session_id);
-    const state = session.state || {};
-    const decision = state.decisionContext || null;
-
-    // 1) Tags
+    // =========================
+    // 1) TAGS
+    // =========================
     const tagsFromText = extractTagsFromMessage(msgRaw);
     const tagsFromFrontend = Array.isArray(req.body?.tags) ? req.body.tags : [];
     const tags = [...new Set([...tagsFromText, ...tagsFromFrontend])];
 
-    // =====================================================
-    // 2) Decision Context aktiv → Achsen & Klarstellung
-    // =====================================================
+    // =========================
+    // 2) DECISION CONTEXT AKTIV
+    // =========================
     if (decision?.active && Array.isArray(decision.candidates)) {
       const intent = decision.intent;
       const axisAnswer = mapAxisAnswer(intent, msgRaw);
@@ -409,7 +409,7 @@ app.post("/chat", async (req, res) => {
           decision.clarified = clarification;
           state.decisionContext = decision;
 
-          await saveChatSession(session_id, session.messages || [], state);
+          await saveSession(session_id, messages, state);
 
           return res.json({
             reply: clarification.question,
@@ -418,10 +418,11 @@ app.post("/chat", async (req, res) => {
         }
       }
 
-      // Wenn nur noch ein Kandidat
+      // Nur noch ein Kandidat
       if (decision.candidates.length === 1) {
         state.decisionContext = null;
-        await saveChatSession(session_id, session.messages || [], state);
+
+        await saveSession(session_id, messages, state);
 
         return res.json({
           reply: buildReply(decision.candidates),
@@ -429,9 +430,10 @@ app.post("/chat", async (req, res) => {
         });
       }
 
-      // Mehrere Kandidaten → weiter fokussieren
+      // Weiter fokussieren
       state.decisionContext = decision;
-      await saveChatSession(session_id, session.messages || [], state);
+
+      await saveSession(session_id, messages, state);
 
       return res.json({
         reply:
@@ -442,11 +444,13 @@ app.post("/chat", async (req, res) => {
     }
 
     // =========================
-    // 3) Normales Matching
+    // 3) NORMALES MATCHING
     // =========================
     const matches = matchTreatments(tags);
 
-    // 4) Mehrere Matches → Decision starten
+    // =========================
+    // 4) MEHRERE MATCHES → DECISION START
+    // =========================
     if (matches.length > 1) {
       const intent =
         detectIntentFromTagsOrText(tags, msgRaw) || "haarentfernung";
@@ -454,7 +458,7 @@ app.post("/chat", async (req, res) => {
       const decisionContext = initDecisionContext(intent, matches);
       state.decisionContext = decisionContext;
 
-      await saveChatSession(session_id, session.messages || [], state);
+      await saveSession(session_id, messages, state);
 
       const q = getAxisQuestion(intent);
 
@@ -464,11 +468,17 @@ app.post("/chat", async (req, res) => {
       });
     }
 
-    // 5) Allgemeine Fragen
+    // =========================
+    // 5) ALLGEMEINE FRAGEN → GPT
+    // =========================
     if (matches.length === 0) {
-      const generalAnswer = await handleGeneralQuestions(msgRaw, askChatGPT);
+      const generalAnswer = await handleGeneralQuestions(
+        msgRaw,
+        askChatGPT
+      );
+
       if (generalAnswer) {
-        await saveChatSession(session_id, session.messages || [], state);
+        await saveSession(session_id, messages, state);
 
         return res.json({
           reply: generalAnswer,
@@ -477,9 +487,12 @@ app.post("/chat", async (req, res) => {
       }
     }
 
-    // 6) Fallback
+    // =========================
+    // 6) FALLBACK
+    // =========================
     const reply = buildReply(matches);
-    await saveChatSession(session_id, session.messages || [], state);
+
+    await saveSession(session_id, messages, state);
 
     return res.json({
       reply,
@@ -488,12 +501,14 @@ app.post("/chat", async (req, res) => {
 
   } catch (err) {
     console.error("❌ Fehler im Wisy-Chat:", err);
+
     return res.status(500).json({
-      reply: "⚠️ Es ist ein Fehler aufgetreten. Bitte versuche es erneut.",
+      reply: "⚠️ Es ist ein technischer Fehler aufgetreten.",
       session_id: null
     });
   }
 });
+
 
 
 // =========================

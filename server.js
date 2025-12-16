@@ -518,7 +518,8 @@ app.post("/chat", async (req, res) => {
     const tags = [...new Set([...tagsFromText, ...tagsFromFrontend])];
 
 // 5️⃣ MATCHING
-let matches = matchTreatmentsFromText(treatments, msgRaw);
+let matches = matchTreatments(tags);
+
 
 // 🔹 Haarentfernung: Priorität berücksichtigen (Alexandrit > Dioden)
 if (matches.length > 1) {
@@ -528,9 +529,10 @@ if (matches.length > 1) {
 
   if (hairMatches.length > 0) {
     hairMatches.sort((a, b) => {
-      if (b.score !== a.score) return b.score - a.score;
-      return (b.wisy?.prioritaet || 0) - (a.wisy?.prioritaet || 0);
-    });
+  if (b.score !== a.score) return b.score - a.score;
+  return (b.wisy?.prioritaet || 0) - (a.wisy?.prioritaet || 0);
+})
+
 
     // 👉 NUR das beste Haarentfernungs-Treatment behalten
     matches = [hairMatches[0]];

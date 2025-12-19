@@ -7,6 +7,7 @@ import fs from "fs";
 import os from "os";
 import { isGeneralQuestion } from "./utils/generalQuestions.js";
 import { handleGeneralQuestions } from "./utils/handleGeneralQuestions.js";
+import { matchTreatments } from "./treatments.js";
 
 
 // Nur lokal .env laden (nicht auf Render)
@@ -601,11 +602,27 @@ app.post("/api/chat/match", (req, res) => {
 });
 
 
-// ===============================
-// 🤖 WISY – Test Route
-// ===============================
 app.post("/api/chat/match", (req, res) => {
-  res.json({ test: "route works" });
+  try {
+    const message = req.body?.message || "";
+    const session_id = req.body?.session_id;
+
+    // 👉 hier nutzen wir treatments.js
+    const result = matchTreatments(message);
+
+    if (result) {
+      return res.json({
+        reply: result.reply,
+        buttons: result.buttons || [],
+        session_id
+      });
+    }
+
+    return res.json({ match: false });
+  } catch (err) {
+    console.error("MATCH ROUTE ERROR:", err);
+    return res.status(500).json({ error: "match route crashed" });
+  }
 });
 
 /* ---------- Server starten ---------- */

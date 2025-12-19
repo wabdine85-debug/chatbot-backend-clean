@@ -594,12 +594,33 @@ return res.json({ reply: buildReply(matches) });
 // ===============================
 app.post("/api/chat/match", (req, res) => {
   try {
-    return res.json({ test: "route works" });
+    const message = req.body?.message || "";
+    const session_id = req.body?.session_id;
+
+    // einfache Tags aus dem Text
+    const tags = message.toLowerCase().split(/\s+/);
+
+    // DEINE bestehende Funktion nutzen
+    const matches = matchTreatments(tags);
+
+    if (Array.isArray(matches) && matches.length > 0) {
+      return res.json({
+        reply: "Diese Behandlungen könnten zu dir passen:",
+        buttons: matches.map(t => ({
+          label: t.name,
+          url: t.url
+        })),
+        session_id
+      });
+    }
+
+    return res.json({ match: false });
   } catch (err) {
     console.error("MATCH ROUTE ERROR:", err);
     return res.status(500).json({ error: "match route crashed" });
   }
 });
+
 
 app.post("/api/chat/match", (req, res) => {
   try {

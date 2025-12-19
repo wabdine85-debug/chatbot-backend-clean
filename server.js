@@ -592,28 +592,14 @@ return res.json({ reply: buildReply(matches) });
 // 🤖 WISY – Treatment Match API
 // ===============================
 app.post("/api/chat/match", (req, res) => {
-  const { message, session_id } = req.body;
-
-  // TEMP TEST (ohne treatments.js)
-  if (!message) {
-    return res.json({ match: false });
+  try {
+    return res.json({ test: "route works" });
+  } catch (err) {
+    console.error("MATCH ROUTE ERROR:", err);
+    return res.status(500).json({ error: "match route crashed" });
   }
-
-  if (message.toLowerCase().includes("hifu")) {
-    return res.json({
-      reply: "HIFU Test-Antwort aus Backend",
-      buttons: [
-        {
-          label: "Zur HIFU-Seite",
-          url: "https://palaisdebeaute.de/products/hifu"
-        }
-      ],
-      session_id
-    });
-  }
-
-  return res.json({ match: false });
 });
+
 
 // ===============================
 // 🤖 WISY – Test Route

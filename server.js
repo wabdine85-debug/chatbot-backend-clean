@@ -7,7 +7,7 @@ import fs from "fs";
 import os from "os";
 import { isGeneralQuestion } from "./utils/generalQuestions.js";
 import { handleGeneralQuestions } from "./utils/handleGeneralQuestions.js";
-import { matchTreatments } from "./treatments.js";
+
 
 
 // Nur lokal .env laden (nicht auf Render)
@@ -601,19 +601,22 @@ app.post("/api/chat/match", (req, res) => {
   }
 });
 
-
 app.post("/api/chat/match", (req, res) => {
   try {
     const message = req.body?.message || "";
     const session_id = req.body?.session_id;
 
-    // 👉 hier nutzen wir treatments.js
-    const result = matchTreatments(message);
+    // HIER deine bestehende Logik nutzen
+    const tags = message.toLowerCase().split(/\s+/);
+    const result = matchTreatments(tags);
 
-    if (result) {
+    if (result && result.length > 0) {
       return res.json({
-        reply: result.reply,
-        buttons: result.buttons || [],
+        reply: "Diese Behandlungen könnten zu dir passen:",
+        buttons: result.map(t => ({
+          label: t.name,
+          url: t.url
+        })),
         session_id
       });
     }
@@ -624,6 +627,7 @@ app.post("/api/chat/match", (req, res) => {
     return res.status(500).json({ error: "match route crashed" });
   }
 });
+
 
 /* ---------- Server starten ---------- */
 const PORT = process.env.PORT || 3000;

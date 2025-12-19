@@ -55,6 +55,8 @@ function matchTreatments(tags) {
   if (t.wisy.probleme?.includes(tag)) score += 3;
   if (t.wisy.ziele?.includes(tag)) score += 2;
   if (t.wisy.hauttypen?.includes(tag)) score += 1;
+  if (t.wisy.triggers?.includes(tag)) score += 5;
+
 });
 
 

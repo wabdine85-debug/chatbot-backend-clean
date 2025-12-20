@@ -629,7 +629,6 @@ app.post("/api/chat/match", (req, res) => {
     const message = req.body?.message || "";
     const session_id = req.body?.session_id;
 
-    // HIER deine bestehende Logik nutzen
     const tags = message.toLowerCase().split(/\s+/);
     const result = matchTreatments(tags);
 
@@ -644,12 +643,26 @@ app.post("/api/chat/match", (req, res) => {
       });
     }
 
-    return res.json({ match: false });
+    // ✅ FALLBACK (Punkt 2 – GENAU HIER)
+    return res.json({
+      reply: "Ich berate dich gerne persönlich 😊\nGeht es um Hautprobleme, Anti-Aging oder Haarentfernung?",
+      buttons: [
+        { label: "✨ Hautprobleme", value: "hautprobleme" },
+        { label: "💆‍♀️ Anti-Aging", value: "anti-aging" },
+        { label: "🔥 Haarentfernung", value: "haarentfernung" }
+      ],
+      session_id
+    });
+
   } catch (err) {
-    console.error("MATCH ROUTE ERROR:", err);
-    return res.status(500).json({ error: "match route crashed" });
+    console.error("MATCH ERROR:", err);
+    return res.status(500).json({
+      reply: "Es ist ein technischer Fehler aufgetreten. Bitte versuche es erneut.",
+      session_id
+    });
   }
 });
+
 
 
 /* ---------- Server starten ---------- */

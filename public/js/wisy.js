@@ -1,60 +1,41 @@
 // ===============================
-// 💬 Wisy Chat – FINAL EDITION (mit klickbaren Links + sanftem Fade-Out)
+// 💬 Wisy Chat – FINAL (OPTION A)
+// Reload = leer | ❌ löscht | Chat-Button öffnet wieder
+// Shopify-safe: bricht sauber ab, wenn DOM nicht vorhanden ist
 // ===============================
 
-const STORAGE_KEY = "wisyChatHistory:v2";
-const SESSION_KEY = "wisySessionId";
 const CHAT_ENDPOINT = "https://chatbot-backend-clean-eord.onrender.com/chat";
 
-
-
-
-// --- DOM ---
-const chatWrapper = document.getElementById("chatWrapper");
-const chatContainer = document.getElementById("chatContainer");
-const chatForm = document.getElementById("chatForm");
-const chatInput = document.getElementById("chatInput");
-const clearBtn = document.getElementById("clearChat");
-const closeChatBtn = document.getElementById("closeChatBtn");
-
+// ---------------- STATE (NUR RAM) ----------------
 let chatHistory = [];
+let sessionId = null;
 
-// 🔥 Session wird IMMER vom Backend vergeben
-let sessionId = localStorage.getItem(SESSION_KEY) || null;
+// ---------------- DOM (wird erst in init() gesetzt) ----------------
+let chatWrapper, chatContainer, chatForm, chatInput, closeChatBtn, openChatBtn;
 
-
-/* ------------------------- UI ------------------------- */
+// ---------------- UI ----------------
 function addMessageToUI({ text, role }) {
+  if (!chatContainer) return; // extra safety
+
   const el = document.createElement("div");
   el.className =
-    role === "user" ? "msg user" : role === "system" ? "sys" : "msg bot";
+    role === "user" ? "msg user" :
+    role === "system" ? "sys" :
+    "msg bot";
 
-  // 🔹 Server liefert bereits fertiges HTML → direkt rendern
   el.innerHTML = text || "";
-
   chatContainer.appendChild(el);
   chatContainer.scrollTop = chatContainer.scrollHeight;
 }
 
-/* ------------------------- Speicher ------------------------- */
-function safeSaveLocal() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(chatHistory));
+function addMessage({ text, role }) {
+  chatHistory.push({ text, role });
+  addMessageToUI({ text, role });
 }
 
-function safeLoadLocal() {
-  try {
-    const data = localStorage.getItem(STORAGE_KEY);
-    return data ? JSON.parse(data) : [];
-  } catch {
-    return [];
-  }
-}
-
+// ---------------- SERVER ----------------
 async function sendToServer(userText, tags = []) {
-  // 🔥 IMMER AKTUELLE SESSION-ID LADEN
-  sessionId = localStorage.getItem(SESSION_KEY) || sessionId || null;
-
-  console.log("📤 Sende an Server:", userText, sessionId);
+  console.log("📤 Sende:", userText, "session:", sessionId);
 
   const res = await fetch(CHAT_ENDPOINT, {
     method: "POST",
@@ -66,21 +47,25 @@ async function sendToServer(userText, tags = []) {
     })
   });
 
-  const data = await res.json();
+  let data;
+  try {
+    data = await res.json();
+  } catch (e) {
+    console.error("❌ JSON parse error", e);
+    return "⚠️ Technischer Fehler. Bitte kurz erneut versuchen.";
+  }
 
   if (data.session_id) {
-    sessionId = data.session_id;
-    localStorage.setItem(SESSION_KEY, sessionId);
+    sessionId = data.session_id; // 🔥 nur im RAM
+    console.log("🆕 session_id gesetzt:", sessionId);
   }
 
   return data.reply || "Keine Antwort erhalten.";
 }
 
-/* ------------------------- Wisy Input Processing ------------------------- */
-
-// 1️⃣ Text normalisieren
+// ---------------- TEXT LOGIK ----------------
 function normalizeInput(text) {
-  return text
+  return (text || "")
     .toLowerCase()
     .replace(/ä/g, "ae")
     .replace(/ö/g, "oe")
@@ -90,7 +75,6 @@ function normalizeInput(text) {
     .trim();
 }
 
-// 2️⃣ Synonyme & Tippfehler
 const synonymMap = {
   "unreine haut": ["unrein", "pickel", "pikel", "mitesser"],
   "akne": ["akne", "acne", "ackne"],
@@ -99,150 +83,118 @@ const synonymMap = {
   "feine linien": ["linien", "faeltchen", "faelte"]
 };
 
-// 3️⃣ Tags extrahieren
 function extractTags(text) {
   const found = [];
-
-  for (const [tag, variations] of Object.entries(synonymMap)) {
-    for (const v of variations) {
+  for (const [tag, list] of Object.entries(synonymMap)) {
+    for (const v of list) {
       if (text.includes(v)) {
         found.push(tag);
         break;
       }
     }
   }
-
   return found;
 }
 
-/* ------------------------- Nachrichtenlogik ------------------------- */
-function addMessage({ text, role }) {
-  chatHistory.push({ text, role });
-  addMessageToUI({ text, role });
-  safeSaveLocal();
-  saveToServer();
-}
+// ---------------- MAIN INIT ----------------
+function init() {
+  console.log("🚀 Wisy Init – Option A");
 
-async function sendToServer(userText, tags = []) {
-  console.log("📤 Sende an Server:", userText, sessionId);
+  // DOM erst JETZT greifen (Shopify-safe)
+  chatWrapper   = document.getElementById("chatWrapper");
+  chatContainer = document.getElementById("chatContainer");
+  chatForm      = document.getElementById("chatForm");
+  chatInput     = document.getElementById("chatInput");
+  closeChatBtn  = document.getElementById("closeChatBtn");
+  openChatBtn   = document.getElementById("openChatBtn"); // 👈 dein Chatbutton
 
-const res = await fetch(CHAT_ENDPOINT, {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({
-    message: userText,
-    tags,
-    session_id: sessionId
-  })
-});
-
-let data;
-try {
-  data = await res.json();
-} catch (e) {
-  console.error("❌ JSON parse error", e);
-  return "Technischer Fehler. Bitte kurz erneut versuchen.";
-}
-
-// 🔥 Session-ID vom Backend übernehmen
-if (data.session_id && data.session_id !== sessionId) {
-  sessionId = data.session_id;
-  localStorage.setItem(SESSION_KEY, sessionId);
-  console.log("🔁 Session-ID vom Backend übernommen:", sessionId);
-}
-
-return data.reply || "Keine Antwort erhalten.";
-
-}
-
-
-
-/* ------------------------- Chat schließen ------------------------- */
-if (closeChatBtn) {
-  closeChatBtn.addEventListener("click", async () => {
-    if (!confirm("Chat schließen und Verlauf löschen?")) return;
-
-    // Verlauf löschen (lokal + DB)
-    chatHistory = [];
-    localStorage.removeItem(STORAGE_KEY);
-    await saveToServer();
-
-    // UI leeren
-    if (chatContainer) chatContainer.innerHTML = "";
-
-    // Info kurz anzeigen
-    const info = document.createElement("div");
-    info.className = "sys";
-    info.textContent = "💬 Chat wurde beendet. Starte ein neues Gespräch!";
-    chatContainer.appendChild(info);
-
-    // Sanft ausblenden
-    chatWrapper.classList.add("hidden");
-    setTimeout(() => {
-      chatWrapper.style.display = "none";
-    }, 300);
-  });
-}
-
-/* ------------------------- Initialisierung ------------------------- */
-async function init() {
-  console.log("🚀 Initialisierung gestartet...");
-
-  await loadFromServer();
-
-  if (chatHistory.length === 0) {
-    addMessage({ role: "system", text: "👋 Willkommen! Dein Chat wird sicher gespeichert." });
+  // Wenn Chat nicht auf dieser Seite existiert: sauber raus
+  if (!chatWrapper || !chatContainer || !chatForm || !chatInput) {
+    console.warn("⚠️ Wisy: Chat-DOM nicht gefunden – Script abgebrochen");
+    return;
   }
 
-  chatForm.addEventListener("submit", async (e) => {
-  e.preventDefault();
+  // Chat startet IMMER neu (Reload = leer)
+  chatHistory = [];
+  sessionId = null;
 
-  const rawText = chatInput.value.trim();
-  if (!rawText) return;
-
-  // 🔹 Schritt 3: Normalisieren + Schreibfehler erkennen
-  const normalizedText = normalizeInput(rawText);
-  const wisyTags = extractTags(normalizedText);
-
-  // 🔹 User-Nachricht anzeigen (Originaltext bleibt sichtbar)
   addMessage({
-    role: "user",
-    text: rawText,
-    tags: wisyTags // wird später für Empfehlungen genutzt
+    role: "system",
+    text: "👋 Willkommen! Wie kann ich dir helfen?"
   });
 
-  chatInput.value = "";
+  // ---------- SEND ----------
+  chatForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
 
+    const rawText = chatInput.value.trim();
+    if (!rawText) return;
 
-    const thinking = { role: "assistant", text: "…" };
-    addMessage(thinking);
+    const normalized = normalizeInput(rawText);
+    const tags = extractTags(normalized);
+
+    addMessage({ role: "user", text: rawText });
+    chatInput.value = "";
+
+    // typing indicator
+    addMessage({ role: "assistant", text: "…" });
 
     try {
-      const reply = await sendToServer(rawText, wisyTags);
+      const reply = await sendToServer(rawText, tags);
 
+      // remove thinking
       chatHistory.pop();
-      chatContainer.lastElementChild.remove();
+      if (chatContainer.lastElementChild) chatContainer.lastElementChild.remove();
+
       addMessage({ role: "assistant", text: reply });
     } catch (err) {
+      console.error("❌ send error", err);
+
       chatHistory.pop();
-      chatContainer.lastElementChild.remove();
+      if (chatContainer.lastElementChild) chatContainer.lastElementChild.remove();
+
       addMessage({ role: "assistant", text: "⚠️ Fehler beim Abrufen der Antwort." });
     }
   });
 
-  clearBtn.addEventListener("click", async () => {
-    if (!confirm("Verlauf wirklich löschen?")) return;
-    chatHistory = [];
-    safeSaveLocal();
-    await saveToServer();
-    chatContainer.innerHTML = "";
-    addMessage({ role: "system", text: "🧹 Verlauf gelöscht." });
-  });
+  // ---------- ❌ CLOSE (Hard reset + hide) ----------
+  if (closeChatBtn) {
+    closeChatBtn.addEventListener("click", () => {
+      if (!confirm("Chat schließen und Verlauf löschen?")) return;
 
-  window.addEventListener("beforeunload", () => {
-    safeSaveLocal();
-    saveToServer();
-  });
+      chatHistory = [];
+      sessionId = null;
+      chatContainer.innerHTML = "";
+
+      addMessage({
+        role: "system",
+        text: "💬 Chat beendet. Starte ein neues Gespräch!"
+      });
+
+      // Nur per CSS verstecken (nicht display:none)
+      chatWrapper.classList.add("hidden");
+    });
+  }
+
+  // ---------- 💬 OPEN BUTTON ----------
+  if (openChatBtn) {
+    openChatBtn.addEventListener("click", () => {
+      // Beim Öffnen IMMER frische Session + leerer Verlauf (Option A)
+      chatHistory = [];
+      sessionId = null;
+      chatContainer.innerHTML = "";
+
+      chatWrapper.classList.remove("hidden");
+
+      addMessage({
+        role: "system",
+        text: "👋 Willkommen! Wie kann ich dir helfen?"
+      });
+
+      // Fokus in Input
+      setTimeout(() => chatInput.focus(), 50);
+    });
+  }
 }
 
 document.addEventListener("DOMContentLoaded", init);

@@ -594,35 +594,15 @@ return res.json({ reply: buildReply(matches) });
 // ===============================
 // 🤖 WISY – Treatment Match API
 // ===============================
-app.post("/api/chat/match", (req, res) => {
-  try {
-    const message = req.body?.message || "";
-    const session_id = req.body?.session_id;
 
-    // einfache Tags aus dem Text
-    const tags = message.toLowerCase().split(/\s+/);
+const TEXT_SINGLE =
+  "Basierend auf deiner Anfrage könnte folgende Behandlung für dich geeignet sein:";
 
-    // DEINE bestehende Funktion nutzen
-    const matches = matchTreatments(tags);
+const TEXT_MULTI =
+  "Basierend auf deiner Anfrage kommen folgende Behandlungen infrage:";
 
-    if (Array.isArray(matches) && matches.length > 0) {
-      return res.json({
-        reply: "Diese Behandlungen könnten zu dir passen:",
-        buttons: matches.map(t => ({
-          label: t.name,
-          url: t.url
-        })),
-        session_id
-      });
-    }
-
-    return res.json({ match: false });
-  } catch (err) {
-    console.error("MATCH ROUTE ERROR:", err);
-    return res.status(500).json({ error: "match route crashed" });
-  }
-});
-
+const TEXT_FALLBACK =
+  "Damit ich dich gezielt beraten kann, beschreibe bitte kurz dein Anliegen.";
 
 app.post("/api/chat/match", (req, res) => {
   try {
@@ -632,9 +612,13 @@ app.post("/api/chat/match", (req, res) => {
     const tags = message.toLowerCase().split(/\s+/);
     const result = matchTreatments(tags);
 
-    if (result && result.length > 0) {
+    // ✅ Treffer
+    if (Array.isArray(result) && result.length > 0) {
+      const replyText =
+        result.length === 1 ? TEXT_SINGLE : TEXT_MULTI;
+
       return res.json({
-        reply: "Diese Behandlungen könnten zu dir passen:",
+        reply: replyText,
         buttons: result.map(t => ({
           label: t.name,
           url: t.url
@@ -643,13 +627,13 @@ app.post("/api/chat/match", (req, res) => {
       });
     }
 
-    // ✅ FALLBACK (Punkt 2 – GENAU HIER)
+    // ✅ Fallback
     return res.json({
-      reply: "Ich berate dich gerne persönlich 😊\nGeht es um Hautprobleme, Anti-Aging oder Haarentfernung?",
+      reply: TEXT_FALLBACK,
       buttons: [
-        { label: "✨ Hautprobleme", value: "hautprobleme" },
-        { label: "💆‍♀️ Anti-Aging", value: "anti-aging" },
-        { label: "🔥 Haarentfernung", value: "haarentfernung" }
+        { label: "Haut & Gesicht", value: "haut" },
+        { label: "Anti-Aging & Straffung", value: "anti aging" },
+        { label: "Haarentfernung", value: "haarentfernung" }
       ],
       session_id
     });
@@ -662,6 +646,7 @@ app.post("/api/chat/match", (req, res) => {
     });
   }
 });
+
 
 
 

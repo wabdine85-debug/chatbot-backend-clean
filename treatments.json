@@ -1,593 +1,765 @@
 [
-  {
-    "name": "Alexandrit Laser Haarentfernung",
-    "beschreibung": "Dauerhafte Haarentfernung mit modernem Alexandritlaser.",
-    "preis": "Preis nach Zone",
-    "url": "https://palaisdebeaute.de/products/alexandrit-deka",
-    "wisy": {
-  "kategorie": "Haarentfernung",
-  "prioritaet": 10,
+{
+  "id": "alexandrit-laser",
+  "name": "Alexandrit Laser Haarentfernung",
+  "url": "https://palaisdebeaute.de/products/alexandrit-deka",
+  "category": "Haarentfernung",
+  "priority": 10,
+
   "triggers": [
-    "haare",
     "alexandrit",
     "alexandrit laser",
-    "laser haarentfernung",
-    "haarentfernung",
-    "haare entfernen",
-    "dauerhafte haarentfernung",
-    "deka"
+    "deka",
+    "motus",
+    "laser haarentfernung"
   ],
-  "probleme": ["unerwünschte haare", "haare", "haar", "stoppeln", "rasur", "haarwuchs", "rücken", "ruecken"],
-  "hauttypen": ["normal", "mischhaut", "fettig"],
-  "ziele": ["dauerhafte haarreduktion", "glatte haut"],
-  "buchung_moeglich": true
+
+  "synonyms": [
+    "dauerhafte haarentfernung",
+    "haare entfernen",
+    "haarwuchs stoppen",
+    "stoppeln",
+    "rasur vermeiden"
+  ],
+
+  "areas": [
+    "gesicht",
+    "beine",
+    "arme",
+    "achseln",
+    "intim",
+    "rücken",
+    "ruecken"
+  ],
+
+  "intent": [
+    "haarfrei",
+    "glatte haut",
+    "dauerhaft"
+  ],
+
+  "bookable": true
+
+  },
+  {
+  "id": "diodenlaser",
+  "name": "Diodenlaser Haarentfernung",
+  "url": "https://palaisdebeaute.de/products/dioden-laser",
+  "category": "Haarentfernung",
+  "priority": 4,
+
+  "triggers": [
+    "diodenlaser",
+    "dioden laser"
+  ],
+
+  "synonyms": [
+    "haarentfernung",
+    "haare entfernen"
+  ],
+
+  "areas": [
+    "beine",
+    "arme",
+    "achseln"
+  ],
+
+  "intent": [
+    "haarreduktion"
+  ],
+
+  "bookable": true
+
+  },
+  {
+  "id": "morpheus8",
+  "name": "Morpheus8™",
+  "url": "https://palaisdebeaute.de/products/morpheus-8",
+  "category": "Hautstraffung",
+  "priority": 8,
+
+  "triggers": [
+    "morpheus",
+    "morpheus8",
+    "rf microneedling"
+  ],
+
+  "synonyms": [
+    "radiofrequenz",
+    "microneedling",
+    "hautstraffung",
+    "poren",
+    "narben"
+  ],
+
+  "areas": [
+    "gesicht",
+    "hals",
+    "dekolleté",
+    "bauch"
+  ],
+
+  "intent": [
+    "straffung",
+    "struktur verbessern",
+    "anti aging"
+  ],
+
+  "bookable": true
 }
+,
+  {
+  "id": "hifu",
+  "name": "HIFU / Ultherapy",
+  "url": "https://palaisdebeaute.de/products/hifuhifu-ultherapy",
+  "category": "Hautstraffung",
+  "priority": 9,
 
-  },
-  {
-    "name": "Diodenlaser Haarentfernung",
-    "beschreibung": "Hautschonende und effektive Haarentfernung mit Diodenlaser.",
-    "preis": "Preis nach Zone",
-    "url": "https://palaisdebeaute.de/products/dioden-laser",
-    "wisy": {
-      "kategorie": "Haarentfernung",
-      "prioritaet": 1,
-      "triggers": [
-        "diodenlaser",
-        "dioden laser",
-        "laser haarentfernung",
-        "haare entfernen",
-        "haarentfernung"
-      ],
-      "probleme": ["unerwünschte haare", "stoppeln"],
-      "hauttypen": ["normal", "mischhaut", "fettig"],
-      "ziele": ["haarreduktion"],
-      "buchung_moeglich": true
-    }
-  },
-  {
-    "name": "Morpheus8™",
-    "beschreibung": "Radiofrequenz-Microneedling zur Hautstraffung und Porenverfeinerung.",
-    "preis": "ab 450 €",
-    "url": "https://palaisdebeaute.de/products/morpheus-8",
-    "wisy": {
-      "kategorie": "Hautstraffung",
-      "triggers": [
-        "morpheus",
-        "morpheus8",
-        "radiofrequenz",
-        "rf microneedling",
-        "hautstraffung",
-        "falten",
-        "poren"
-      ],
-      "probleme": ["erschlaffte haut", "grobe poren", "narben"],
-      "hauttypen": ["normal", "mischhaut", "fettig"],
-      "ziele": ["hautstraffung", "strukturverbesserung"],
-      "buchung_moeglich": true
-    }
-  },
-  {
-    "name": "HIFU / Ultherapy",
-    "beschreibung": "Nicht-invasive Hautstraffung durch fokussierten Ultraschall.",
-    "preis": "ab 399 €",
-    "url": "https://palaisdebeaute.de/products/hifuhifu-ultherapy",
-    "wisy": {
-      "kategorie": "Hautstraffung",
-      "triggers": [
-        "hifu",
-        "ultherapy",
-        "ultraschall lifting",
-        "ultraschall",
-        "hautstraffung",
-        "lifting",
-        "erschlaffte haut"
-      ],
-      "probleme": ["erschlaffte haut", "konturverlust"],
-      "hauttypen": ["normal", "trocken", "mischhaut"],
-      "ziele": ["lifting", "straffung"],
-      "buchung_moeglich": true
-    }
-  },
-  {
-    "name": "HydraFacial® MD",
-    "beschreibung": "Tiefenreinigung, Peeling und intensive Feuchtigkeitsversorgung für sofortigen Glow.",
-    "preis": "ab 149 €",
-    "url": "https://palaisdebeaute.de/products/hydrafacial-md",
-    "wisy": {
-      "kategorie": "Gesichtsbehandlung",
-      "prioritaet": 6,
-      "triggers": [
-  "hydrafacial",
-  "hydra facial",
-  "akne",
-  "pickel",
-  "unreine haut",
-  "mitesser",
-  "poren",
-  "glow"
+  "triggers": [
+    "hifu",
+    "ultherapy",
+    "ultraschall lifting"
+  ],
 
+  "synonyms": [
+    "lifting ohne op",
+    "hautstraffung",
+    "erschlaffte haut"
+  ],
 
-      ],
-      "probleme": ["unreine haut", "mitesser", "trockene haut", "große poren", "fahle haut"],
-      "hauttypen": ["normal", "trocken", "mischhaut", "fettig", "sensibel"],
-      "ziele": ["tiefenreinigung", "feuchtigkeit", "glow", "hautverfeinerung"],
-      "buchung_moeglich": true
-    }
-  },
+  "areas": [
+    "gesicht",
+    "hals",
+    "kieferlinie"
+  ],
+
+  "intent": [
+    "lifting",
+    "kontur"
+  ],
+
+  "bookable": true
+}
+,
   {
-    "name": "Microneedling",
-    "beschreibung": "Regt die Hauterneuerung und Kollagenbildung an.",
-    "preis": "ab 139 €",
-    "url": "https://palaisdebeaute.de/products/microneedling",
-    "wisy": {
-      "kategorie": "Hautregeneration",
-      "prioritaet": 5,
-      "triggers": [
-  "microneedling",
-  "needling",
-  "akne",
-  "aknenarben",
-  "pickelmale",
-  "poren",
-  "hautstruktur"
-],
-      "probleme": ["feine linien", "aknenarben", "unebenheiten", "fahle haut"],
-      "hauttypen": ["normal", "mischhaut", "fettig"],
-      "ziele": ["kollagenaufbau", "hautverfeinerung"],
-      "buchung_moeglich": true
-    }
-  },
+  "id": "hydrafacial",
+  "name": "HydraFacial® MD",
+  "url": "https://palaisdebeaute.de/products/hydrafacial-md",
+  "category": "Gesichtsbehandlung",
+  "priority": 6,
+
+  "triggers": [
+    "hydrafacial",
+    "hydra facial"
+  ],
+
+  "synonyms": [
+    "tiefenreinigung",
+    "akne",
+    "unreine haut",
+    "mitesser",
+    "glow",
+    "poren reinigen"
+  ],
+
+  "areas": [
+    "gesicht"
+  ],
+
+  "intent": [
+    "reinigung",
+    "frische haut",
+    "pflege"
+  ],
+
+  "bookable": true
+}
+,
+{
+  "id": "microneedling",
+  "name": "Microneedling",
+  "url": "https://palaisdebeaute.de/products/microneedling",
+  "category": "Hautregeneration",
+  "priority": 5,
+
+  "triggers": [
+    "microneedling",
+    "needling"
+  ],
+
+  "synonyms": [
+    "akne",
+    "aknenarben",
+    "pickelmale",
+    "poren",
+    "hautstruktur",
+    "unebenheiten",
+    "fahle haut"
+  ],
+
+  "areas": [
+    "gesicht",
+    "hals",
+    "dekolleté"
+  ],
+
+  "intent": [
+    "kollagenaufbau",
+    "hautverfeinerung",
+    "regeneration"
+  ],
+
+  "bookable": true
+}
+,
   {
-    "name": "Mesotherapie",
-    "beschreibung": "Gezielte Wirkstoffversorgung zur Hautregeneration und Vitalisierung.",
-    "preis": "ab 199 €",
-    "url": "https://palaisdebeaute.de/products/mesotherapie",
-    "wisy": {
-      "kategorie": "Hautregeneration",
-      "triggers": [
-        "mesotherapie",
-        "skinbooster",
-        "vitamine",
-        "hautregeneration",
-        "frische haut"
-      ],
-      "probleme": ["fahle haut", "feine linien", "hautalterung"],
-      "hauttypen": ["normal", "trocken"],
-      "ziele": ["regeneration", "hautqualität"],
-      "buchung_moeglich": true
-    }
-  },
+  "id": "mesotherapie",
+  "name": "Mesotherapie",
+  "url": "https://palaisdebeaute.de/products/mesotherapie",
+  "category": "Hautregeneration",
+  "priority": 6,
+
+  "triggers": [
+    "mesotherapie",
+    "skinbooster"
+  ],
+
+  "synonyms": [
+    "vitamine",
+    "frische haut",
+    "hautregeneration",
+    "fahle haut",
+    "feine linien"
+  ],
+
+  "areas": [
+    "gesicht",
+    "hals",
+    "dekolleté"
+  ],
+
+  "intent": [
+    "regeneration",
+    "hautqualität",
+    "vitalisierung"
+  ],
+
+  "bookable": true
+}
+,
+ {
+  "id": "prp",
+  "name": "PRP / Vampire Lifting",
+  "url": "https://palaisdebeaute.de/products/vampire-lifting",
+  "category": "Regeneration",
+  "priority": 8,
+
+  "triggers": [
+    "prp",
+    "vampire lifting",
+    "eigenblut"
+  ],
+
+  "synonyms": [
+    "hautverjuengung",
+    "regeneration",
+    "anti aging",
+    "elastizitätsverlust",
+    "fahle haut"
+  ],
+
+  "areas": [
+    "gesicht",
+    "hals"
+  ],
+
+  "intent": [
+    "verjüngung",
+    "regeneration",
+    "straffung"
+  ],
+
+  "bookable": true
+}
+,
   {
-    "name": "PRP / Vampire Lifting",
-    "beschreibung": "Eigenbluttherapie zur natürlichen Hautregeneration und Verjüngung.",
-    "preis": "ab 299 €",
-    "url": "https://palaisdebeaute.de/products/vampire-lifting",
-    "wisy": {
-      "kategorie": "Regeneration",
-      "triggers": [
-        "prp",
-        "vampire lifting",
-        "eigenblut",
-        "hautverjuengung",
-        "regeneration",
-        "anti aging"
-      ],
-      "probleme": ["fahle haut", "feine linien", "elastizitätsverlust"],
-      "hauttypen": ["normal", "trocken"],
-      "ziele": ["hautverjüngung", "regeneration"],
-      "buchung_moeglich": true
-    }
-  },
-  {
-    "name": "Botox®",
-    "beschreibung": "Gezielte Faltenbehandlung mit Botulinumtoxin.",
-    "preis": "ab 199 €",
-    "url": "https://palaisdebeaute.de/products/faltenunterspritzung",
-    "wisy": {
-      "kategorie": "Injektionen",
-      "triggers": [
-        "botox",
-        "botulinum",
-        "falten",
-        "stirnfalten",
-        "zornesfalte",
-        "mimikfalten"
-      ],
-      "probleme": ["mimikfalten", "stirnfalten", "zornesfalte"],
-      "hauttypen": ["alle"],
-      "ziele": ["faltenreduktion", "glättung"],
-      "buchung_moeglich": true
-    }
-  },
-  {
-    "name": "Hyaluron Filler",
-    "beschreibung": "Volumenaufbau und Konturverbesserung mit Hyaluronsäure.",
-    "preis": "ab 249 €",
-    "url": "https://palaisdebeaute.de/products/hyaluron-1",
-    "wisy": {
-      "kategorie": "Injektionen",
-      "triggers": [
-        "hyaluron",
-        "filler",
-        "lippen",
-        "volumen",
-        "kontur",
-        "aufspritzen"
-      ],
-      "probleme": ["volumenverlust", "tiefe falten"],
-      "hauttypen": ["alle"],
-      "ziele": ["volumen", "kontur"],
-      "buchung_moeglich": true
-    }
-  }
+  "id": "botox",
+  "name": "Botox®",
+  "url": "https://palaisdebeaute.de/products/faltenunterspritzung",
+  "category": "Injektionen",
+  "priority": 9,
+
+  "triggers": [
+    "botox",
+    "botulinum"
+  ],
+
+  "synonyms": [
+    "falten",
+    "mimikfalten",
+    "stirnfalten",
+    "zornesfalte",
+    "krähenfüße"
+  ],
+
+  "areas": [
+    "stirn",
+    "augen",
+    "zwischen den augen"
+  ],
+
+  "intent": [
+    "falten glätten",
+    "entspannen",
+    "verjüngen"
+  ],
+
+  "bookable": true
+},
+ {
+  "id": "hyaluron",
+  "name": "Hyaluron Filler",
+  "url": "https://palaisdebeaute.de/products/hyaluron-1",
+  "category": "Injektionen",
+  "priority": 8,
+
+  "triggers": [
+    "hyaluron",
+    "filler"
+  ],
+
+  "synonyms": [
+    "lippen",
+    "volumen",
+    "kontur",
+    "aufspritzen",
+    "volumenverlust"
+  ],
+
+  "areas": [
+    "lippen",
+    "wangen",
+    "kieferlinie",
+    "nasolabial"
+  ],
+
+  "intent": [
+    "volumenaufbau",
+    "kontur",
+    "definition"
+  ],
+
+  "bookable": true
+}
 
 ,
 {
+  "id": "ems-sculpt-neo",
   "name": "EMS Sculpt NEO",
-  "beschreibung": "Muskelaufbau und Fettverbrennung durch elektromagnetische Impulse.",
-  "preis": "ab 149 €",
   "url": "https://palaisdebeaute.de/products/ems-sculpt-neo",
-  "wisy": {
-    "kategorie": "Körperformung",
-    "triggers": [
-  "ems",
-  "ems training",
-  "ems sculpt",
-  "ems sculpt neo",
-  "muskelaufbau",
-  "fettverbrennung",
-  "fettreduktion",
-  "bauchmuskeln",
-  "körperstraffung"
-]
+  "category": "Körperformung",
+  "priority": 9,
+
+  "triggers": [
+    "ems sculpt",
+    "ems sculpt neo",
+    "ems"
+  ],
+
+  "synonyms": [
+    "ems training",
+    "muskelaufbau",
+    "fettverbrennung",
+    "fettreduktion",
+    "körperstraffung",
+    "bauchmuskeln"
+  ],
+
+  "areas": [
+    "bauch",
+    "po",
+    "beine",
+    "arme"
+  ],
+
+  "intent": [
+    "muskelaufbau",
+    "fettreduktion",
+    "straffung"
+  ],
+
+  "bookable": true
+}
 ,
-    "probleme": ["fettpölsterchen", "muskelschwäche"],
-    "hauttypen": ["alle"],
-    "ziele": ["muskelaufbau", "fettreduktion", "körperstraffung"],
-    "buchung_moeglich": true
-  }
-},
 {
+  "id": "kryolipolyse",
   "name": "Kryolipolyse CRYO 4S",
-  "beschreibung": "Gezielte Fettreduktion durch kontrollierte Kälte.",
-  "preis": "ab 199 €",
   "url": "https://palaisdebeaute.de/products/kryolipolyse",
-  "wisy": {
-    "kategorie": "Körperformung",
-    "triggers": [
-      "kryolipolyse",
-      "fett einfrieren",
-      "fett wegfrieren",
-      "problemzonen",
-      "fettreduktion",
-      "fettdepots"
-    ],
-    "probleme": ["fettdepots", "problemzonen"],
-    "hauttypen": ["alle"],
-    "ziele": ["fettreduktion", "körperkontur"],
-    "buchung_moeglich": true
-  }
-},
+  "category": "Körperformung",
+  "priority": 8,
+
+  "triggers": [
+    "kryolipolyse"
+  ],
+
+  "synonyms": [
+    "fett einfrieren",
+    "fett wegfrieren",
+    "fettreduktion",
+    "fettdepots",
+    "problemzonen"
+  ],
+
+  "areas": [
+    "bauch",
+    "hüften",
+    "oberschenkel",
+    "rücken"
+  ],
+
+  "intent": [
+    "fettreduktion",
+    "kontur"
+  ],
+
+  "bookable": true
+}
+,
 {
+  "id": "ferninfrarot-lymph",
   "name": "Ferninfrarot Tiefenwärme & Lymphdrainage",
-  "beschreibung": "Tiefenwärme zur Entspannung, Durchblutung und Aktivierung der Lymphe.",
-  "preis": "ab 39 €",
   "url": "https://palaisdebeaute.de/products/ferninfrarot",
-  "wisy": {
-    "kategorie": "Wellness & Regeneration",
-    "triggers": [
-      "ferninfrarot",
-      "tiefenwärme",
-      "lymphdrainage",
-      "entspannung",
-      "durchblutung",
-      "wassereinlagerungen"
-    ],
-    "probleme": ["verspannungen", "wassereinlagerungen"],
-    "hauttypen": ["alle"],
-    "ziele": ["entspannung", "durchblutung", "lymphdrainage"],
-    "buchung_moeglich": true
-  }
-},
+  "category": "Wellness & Regeneration",
+  "priority": 4,
+
+  "triggers": [
+    "ferninfrarot",
+    "tiefenwärme"
+  ],
+
+  "synonyms": [
+    "lymphdrainage",
+    "entspannung",
+    "durchblutung",
+    "wassereinlagerungen",
+    "verspannungen"
+  ],
+
+  "areas": [
+    "körper",
+    "rücken",
+    "beine"
+  ],
+
+  "intent": [
+    "entspannung",
+    "regeneration",
+    "entlastung"
+  ],
+
+  "bookable": true
+}
+,
 {
+  "id": "nad-infusion",
   "name": "NAD+ Infusion",
-  "beschreibung": "Zellenergie- und Regenerationstherapie mit NAD+.",
-  "preis": "ab 249 €",
   "url": "https://palaisdebeaute.de/products/nad-infusion",
-  "wisy": {
-    "kategorie": "Infusionstherapie",
-    "triggers": [
-      "nad",
-      "nad infusion",
-      "energie",
-      "müdigkeit",
-      "erschöpfung",
-      "konzentration",
-      "zellenergie"
-    ],
-    "probleme": ["müdigkeit", "energiemangel"],
-    "hauttypen": ["alle"],
-    "ziele": ["zellenergie", "regeneration", "fokus"],
-    "buchung_moeglich": true
-  }
-},
+  "category": "Infusionstherapie",
+  "priority": 8,
+
+  "triggers": [
+    "nad",
+    "nad infusion"
+  ],
+
+  "synonyms": [
+    "zellenergie",
+    "energie",
+    "erschöpfung",
+    "müdigkeit",
+    "konzentration"
+  ],
+
+  "areas": [
+    "körper"
+  ],
+
+  "intent": [
+    "energie",
+    "regeneration",
+    "fokus"
+  ],
+
+  "bookable": true
+}
+,
 {
+  "id": "vitamin-infusion",
   "name": "Vitamin Infusionen",
-  "beschreibung": "Individuelle Vitamin- und Aufbauinfusionen zur Stärkung des Körpers.",
-  "preis": "ab 99 €",
   "url": "https://palaisdebeaute.de/products/vitamin-infusion",
-  "wisy": {
-    "kategorie": "Infusionstherapie",
-    "triggers": [
-      "vitamin infusion",
-      "vitamine",
-      "immunsystem",
-      "aufbaukur",
-      "energie",
-      "vitaminmangel"
-    ],
-    "probleme": ["vitaminmangel", "erschöpfung"],
-    "hauttypen": ["alle"],
-    "ziele": ["immunsystem", "energie", "regeneration"],
-    "buchung_moeglich": true
-  }
-},
+  "category": "Infusionstherapie",
+  "priority": 6,
+
+  "triggers": [
+    "vitamin infusion",
+    "vitamin infusionen"
+  ],
+
+  "synonyms": [
+    "vitamine",
+    "immunsystem",
+    "aufbaukur",
+    "vitaminmangel",
+    "energie"
+  ],
+
+  "areas": [
+    "körper"
+  ],
+
+  "intent": [
+    "stärkung",
+    "energie",
+    "regeneration"
+  ],
+
+  "bookable": true
+}
+,
 {
+  "id": "lash-lifting",
   "name": "Lash Lifting",
-  "beschreibung": "Natürlicher Schwung für die Wimpern ohne Extensions.",
-  "preis": "ab 59 €",
   "url": "https://palaisdebeaute.de/products/lash-lifting",
-  "wisy": {
-    "kategorie": "Beauty",
-    "triggers": [
-  "lash",
-  "lashes",
-  "lash lifting",
-  "wimpern",
-  "wimpernlifting",
-  "wimpern schwung",
-  "wimpern heben"
-]
+  "category": "Beauty",
+  "priority": 4,
+
+  "triggers": [
+    "lash lifting",
+    "wimpernlifting"
+  ],
+
+  "synonyms": [
+    "wimpern",
+    "wimpern schwung",
+    "wimpern heben",
+    "natürlicher look"
+  ],
+
+  "areas": [
+    "augen"
+  ],
+
+  "intent": [
+    "wimpernhebung",
+    "betonung"
+  ],
+
+  "bookable": true
+}
 ,
-    "probleme": ["gerade wimpern", "wenig ausdruck"],
-    "hauttypen": ["alle"],
-    "ziele": ["wimpernhebung", "natürlicher look"],
-    "buchung_moeglich": true
-  }
-},
 {
+  "id": "lash-lifting-booster",
   "name": "Lash Lifting mit Booster",
-  "beschreibung": "Wimpernlifting mit zusätzlicher Pflege für mehr Glanz und Stärke.",
-  "preis": "ab 69 €",
   "url": "https://palaisdebeaute.de/products/lash-lifting-booster",
-  "wisy": {
-    "kategorie": "Beauty",
-    "triggers": [
-  "lash",
-  "lashes",
-  "lash lifting",
-  "wimpern",
-  "wimpernlifting",
-  "wimpern schwung",
-  "wimpern heben"
-]
+  "category": "Beauty",
+  "priority": 5,
+
+  "triggers": [
+    "lash lifting booster"
+  ],
+
+  "synonyms": [
+    "wimpernpflege",
+    "stärkung",
+    "glanz",
+    "pflege"
+  ],
+
+  "areas": [
+    "augen"
+  ],
+
+  "intent": [
+    "pflege",
+    "wimpernstärkung"
+  ],
+
+  "bookable": true
+}
 ,
-    "probleme": ["brüchige wimpern"],
-    "hauttypen": ["alle"],
-    "ziele": ["pflege", "stärkung", "wimpernhebung"],
-    "buchung_moeglich": true
-  }
-},
 {
-  "name": "Brow Lifting / Brow Lamination",
-  "beschreibung": "Formt und fixiert die Augenbrauen für einen ausdrucksstarken Look.",
-  "preis": "ab 59 €",
-  "url": "https://palaisdebeaute.de/products/brow-lifting",
-  "wisy": {
-    "kategorie": "Beauty",
-    "triggers": [
-      "brow lifting",
-      "brow lamination",
-      "augenbrauen formen",
-      "augenbrauen stylen"
-    ],
-    "probleme": ["ungeformte augenbrauen"],
-    "hauttypen": ["alle"],
-    "ziele": ["form", "ausdruck"],
-    "buchung_moeglich": true
-  }
-},
-{
+  "id": "wimpern-faerben",
   "name": "Wimpern färben",
-  "beschreibung": "Intensive Färbung der Wimpern für mehr Ausdruck.",
-  "preis": "ab 19 €",
   "url": "https://palaisdebeaute.de/products/wimpernfaerben",
-  "wisy": {
-    "kategorie": "Beauty",
-    "triggers": [
-      "wimpern färben",
-      "helle wimpern",
-      "dunkle wimpern"
-    ],
-    "probleme": ["helle wimpern"],
-    "hauttypen": ["alle"],
-    "ziele": ["ausdruck"],
-    "buchung_moeglich": true
-  }
-},
-{
-  "name": "Augenbrauen färben",
-  "beschreibung": "Färbung der Augenbrauen für mehr Kontur und Definition.",
-  "preis": "ab 19 €",
-  "url": "https://palaisdebeaute.de/products/augenbrauenfaerben",
-  "wisy": {
-    "kategorie": "Beauty",
-    "triggers": [
-      "augenbrauen färben",
-      "helle augenbrauen",
-      "augenbrauen definieren"
-    ],
-    "probleme": ["helle augenbrauen"],
-    "hauttypen": ["alle"],
-    "ziele": ["kontur", "definition"],
-    "buchung_moeglich": true
-  }
-},
-{
-  "name": "Circadia Gesichtsbehandlungen",
-  "beschreibung": "Medizinisch-kosmetische Gesichtsbehandlungen mit Circadia – individuell abgestimmt auf Akne, empfindliche Haut, Anti-Aging und Hautregeneration.",
-  "preis": "ab 129 €",
-  "url": "https://palaisdebeaute.de/collections/circadia-%C2%AE-all-treatments",
-  "wisy": {
-    "kategorie": "Gesichtsbehandlung",
-    "prioritaet": 9,
-    "triggers": [
-      "circadia",
-      "circadia facial",
-      "circadia behandlung",
-      "gesichtsbehandlung",
-      "akne",
-      "akne behandlung",
-      "pickel",
-      "unreine haut",
-      "unrein",
-      "empfindliche haut",
-      "empfindlich",
-      "roetungen",
-      "anti aging",
-      "hautregeneration",
-      "hautprobleme"
-    ],
-    "probleme": [
-      "akne",
-      "unreine haut",
-      "unrein",
-      "pickel",
-      "empfindliche haut",
-      "roetungen",
-      "fahle haut",
-      "hautalterung",
-      "hautprobleme"
-    ],
-    "hauttypen": [
-      "normal",
-      "trocken",
-      "mischhaut",
-      "fettig",
-      "sensibel"
-    ],
-    "ziele": [
-      "hautverfeinerung",
-      "regeneration",
-      "anti aging",
-      "beruhigung"
-    ],
-    "buchung_moeglich": true
-  }
-},
-{
-  "name": "PolyFill® Polynukleotide",
-  "beschreibung": "Innovative Injektionsbehandlung mit Polynukleotiden zur intensiven Hautregeneration, Verbesserung der Hautqualität und Förderung der natürlichen Zellaktivität.",
-  "preis": "ab 299 €",
-  "url": "https://palaisdebeaute.de/products/polyfill-polynukleotide",
-  "wisy": {
-    "kategorie": "Medical Aesthetic",
-    "prioritaet": 8,
-    "triggers": [
-      "polyfill",
-      "polynukleotide",
-      "polynukleotid",
-      "skin booster",
-      "skinbooster",
-      "hautregeneration",
-      "hautverjuengung",
-      "anti aging",
-      "falten",
-      "muede haut",
-      "duenne haut"
-    ],
-    "probleme": [
-  "hautalterung",
-  "falten",
-  "fahle haut",
-  "muede haut",
-  "muede",
-  "duenne haut",
-  "elastizitaetsverlust",
-  "trockene haut"
-]
-,
-    "hauttypen": [
-      "normal",
-      "trocken",
-      "mischhaut",
-      "sensibel"
-    ],
-    "ziele": [
-      "hautregeneration",
-      "hautverjuengung",
-      "verbesserung der hautqualitaet",
-      "mehr elastizitaet",
-      "frischer teint"
-    ],
-    "buchung_moeglich": true
-  }
-},
-{
-  "name": "Exosomen Therapie",
-  "beschreibung": "Hochwirksame regenerative Behandlung mit Exosomen zur Förderung der Zellregeneration, Verbesserung der Hautqualität und sichtbaren Hautverjüngung.",
-  "preis": "ab 349 €",
-  "url": "https://palaisdebeaute.de/products/exosomen-therapie-zellregeneration-hautverjungung",
-  "wisy": {
-    "kategorie": "Medical Aesthetic",
-    "prioritaet": 9,
-    "triggers": [
-      "exosomen",
-      "exosomen therapie",
-      "exosome",
-      "zellregeneration",
-      "hautverjuengung",
-      "anti aging",
-      "hautregeneration",
-      "falten",
-      "muede haut",
-      "muede",
-      "haut ohne frische",
-      "energiearme haut",
-      "regenerative therapie"
-    ],
-    "probleme": [
-  "hautalterung",
-  "falten",
-  "fahle haut",
-  "muede haut",
-  "muede",
-  "erschoepfte haut",
-  "energiearme haut",
-  "fahle haut",
-  "elastizitaetsverlust",
-  "trockene haut",
-  "regenerationsschwaeche"
-]
-,
-    "hauttypen": [
-      "normal",
-      "trocken",
-      "mischhaut",
-      "sensibel"
-    ],
-    "ziele": [
-      "zellregeneration",
-      "hautverjuengung",
-      "verbesserung der hautqualitaet",
-      "mehr elastizitaet",
-      "frischer teint"
-    ],
-    "buchung_moeglich": true
-  }
+  "category": "Beauty",
+  "priority": 2,
+
+  "triggers": [
+    "wimpern färben"
+  ],
+
+  "synonyms": [
+    "helle wimpern",
+    "dunkle wimpern",
+    "mehr ausdruck ohne mascara"
+  ],
+
+  "areas": [
+    "augen"
+  ],
+
+  "intent": [
+    "ausdruck",
+    "betonung"
+  ],
+
+  "bookable": true
 }
 
+,
+{
+  "id": "augenbrauen-faerben",
+  "name": "Augenbrauen färben",
+  "url": "https://palaisdebeaute.de/products/augenbrauenfaerben",
+  "category": "Beauty",
+  "priority": 2,
+
+  "triggers": [
+    "augenbrauen färben"
+  ],
+
+  "synonyms": [
+    "helle augenbrauen",
+    "augenbrauen definieren",
+    "mehr kontur"
+  ],
+
+  "areas": [
+    "augenbrauen"
+  ],
+
+  "intent": [
+    "kontur",
+    "definition"
+  ],
+
+  "bookable": true
+}
+,
+{
+  "id": "circadia",
+  "name": "Circadia® Gesichtsbehandlungen",
+  "url": "https://palaisdebeaute.de/collections/circadia-%C2%AE-all-treatments",
+  "category": "Gesichtsbehandlung",
+  "priority": 9,
+
+  "triggers": [
+    "circadia",
+    "circadia facial",
+    "circadia behandlung"
+  ],
+
+  "synonyms": [
+    "gesichtsbehandlung",
+    "akne",
+    "unreine haut",
+    "pickel",
+    "empfindliche haut",
+    "rötungen",
+    "anti aging",
+    "hautregeneration",
+    "hautprobleme"
+  ],
+
+  "areas": [
+    "gesicht"
+  ],
+
+  "intent": [
+    "reinigung",
+    "beruhigung",
+    "regeneration",
+    "anti aging"
+  ],
+
+  "bookable": true
+}
+,
+{
+  "id": "polyfill",
+  "name": "PolyFill® Polynukleotide",
+  "url": "https://palaisdebeaute.de/products/polyfill-polynukleotide",
+  "category": "Medical Aesthetic",
+  "priority": 8,
+
+  "triggers": [
+    "polyfill",
+    "polynukleotide",
+    "polynukleotid"
+  ],
+
+  "synonyms": [
+    "skinbooster",
+    "hautregeneration",
+    "hautverjuengung",
+    "anti aging",
+    "muede haut",
+    "duenne haut",
+    "elastizitaetsverlust"
+  ],
+
+  "areas": [
+    "gesicht",
+    "hals",
+    "dekolleté"
+  ],
+
+  "intent": [
+    "hautqualität verbessern",
+    "regeneration",
+    "verjüngung"
+  ],
+
+  "bookable": true
+}
+,
+{
+  "id": "exosomen",
+  "name": "Exosomen Therapie",
+  "url": "https://palaisdebeaute.de/products/exosomen-therapie-zellregeneration-hautverjungung",
+  "category": "Medical Aesthetic",
+  "priority": 9,
+
+  "triggers": [
+    "exosomen",
+    "exosomen therapie",
+    "exosome"
+  ],
+
+  "synonyms": [
+    "zellregeneration",
+    "hautverjuengung",
+    "anti aging",
+    "falten",
+    "muede haut",
+    "energiearme haut",
+    "regenerative therapie"
+  ],
+
+  "areas": [
+    "gesicht",
+    "hals",
+    "dekolleté"
+  ],
+
+  "intent": [
+    "zellregeneration",
+    "hautverjüngung",
+    "hautqualität verbessern"
+  ],
+
+  "bookable": true
+}
 
 
 

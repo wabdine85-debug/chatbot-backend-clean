@@ -40,34 +40,51 @@ const treatments = JSON.parse(
 );
 
 function matchTreatments(tags) {
-  if (!Array.isArray(tags)) return [];
-  if (!Array.isArray(treatments)) return [];
+  return treatments
+    .map(t => {
+      let score = 0;
 
+      // Triggers (stark)
+      if (Array.isArray(t.triggers)) {
+        tags.forEach(tag => {
+          if (t.triggers.includes(tag)) score += 5;
+        });
+      }
 
+      // Synonyms (mittel)
+      if (Array.isArray(t.synonyms)) {
+        tags.forEach(tag => {
+          if (t.synonyms.includes(tag)) score += 3;
+        });
+      }
 
-  const scored = treatments.map(t => {
-    let score = 0;
-    if (!t.wisy) return { ...t, score: 0 };
+      // Areas (leicht)
+      if (Array.isArray(t.areas)) {
+        tags.forEach(tag => {
+          if (t.areas.includes(tag)) score += 2;
+        });
+      }
 
-  tags.forEach(tag => {
-  if (tag.length <= 3) return;
+      // Intent (leicht)
+      if (Array.isArray(t.intent)) {
+        tags.forEach(tag => {
+          if (t.intent.includes(tag)) score += 1;
+        });
+      }
 
-  if (t.wisy.probleme?.includes(tag)) score += 3;
-  if (t.wisy.ziele?.includes(tag)) score += 2;
-  if (t.wisy.hauttypen?.includes(tag)) score += 1;
-  if (t.wisy.triggers?.includes(tag)) score += 5;
+      // Priority immer addieren
+      if (typeof t.priority === "number") {
+        score += t.priority;
+      }
 
-});
-
-
-    return { ...t, score };
-  });
-
-  return scored
-    .filter(t => t.score >= 3)
-    .sort((a, b) => b.score - a.score)
-    .slice(0, 2);
+      return { ...t, score };
+    })
+    // nur sinnvolle Treffer
+    .filter(t => t.score >= 6)
+    // beste zuerst
+    .sort((a, b) => b.score - a.score);
 }
+
 
 function shouldDirectToBooking(matches) {
   if (matches.length !== 1) return false;

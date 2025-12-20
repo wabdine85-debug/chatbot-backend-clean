@@ -43,39 +43,52 @@ function matchTreatments(tags) {
   return treatments
     .map(t => {
       let score = 0;
+let matched = false;
 
-      // Triggers (stark)
-      if (Array.isArray(t.triggers)) {
-        tags.forEach(tag => {
-          if (t.triggers.includes(tag)) score += 5;
-        });
-      }
 
-      // Synonyms (mittel)
-      if (Array.isArray(t.synonyms)) {
-        tags.forEach(tag => {
-          if (t.synonyms.includes(tag)) score += 3;
-        });
-      }
+  if (Array.isArray(t.triggers)) {
+  tags.forEach(tag => {
+    if (t.triggers.includes(tag)) {
+      score += 5;
+      matched = true;
+    }
+  });
+}
 
-      // Areas (leicht)
-      if (Array.isArray(t.areas)) {
-        tags.forEach(tag => {
-          if (t.areas.includes(tag)) score += 2;
-        });
-      }
 
-      // Intent (leicht)
-      if (Array.isArray(t.intent)) {
-        tags.forEach(tag => {
-          if (t.intent.includes(tag)) score += 1;
-        });
-      }
+   if (Array.isArray(t.synonyms)) {
+  tags.forEach(tag => {
+    if (t.synonyms.includes(tag)) {
+      score += 3;
+      matched = true;
+    }
+  });
+}
 
-      // Priority immer addieren
-      if (typeof t.priority === "number") {
-        score += t.priority;
-      }
+
+ if (Array.isArray(t.areas)) {
+  tags.forEach(tag => {
+    if (t.areas.includes(tag)) {
+      score += 2;
+      matched = true;
+    }
+  });
+}
+
+
+if (Array.isArray(t.intent)) {
+  tags.forEach(tag => {
+    if (t.intent.includes(tag)) {
+      score += 1;
+      matched = true;
+    }
+  });
+}
+
+if (matched && typeof t.priority === "number") {
+  score += t.priority;
+}
+
 
       return { ...t, score };
     })

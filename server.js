@@ -636,123 +636,114 @@ const TEXT_MULTI =
 const TEXT_FALLBACK =
   "Damit ich dich gezielt beraten kann, beschreibe bitte kurz dein Anliegen.";
 
+
+
 app.post("/api/chat/match", (req, res) => {
   try {
-    const message = (req.body?.message || "").toLowerCase();
+    const messageRaw = (req.body?.message || "");
+    const message = messageRaw.toLowerCase().trim();
     const session_id = req.body?.session_id;
 
-    /* =================================================
-       1️⃣ ALLGEMEINE FRAGEN (OHNE MATCHING)
-       ================================================= */
-
-    if (message.includes("adresse") || message.includes("standort")) {
+    // -------------------------
+    // 1) HARTE REGELN (Allgemein)
+    // -------------------------
+    if (
+      message.includes("kontakt") ||
+      message.includes("email") ||
+      message.includes("e-mail") ||
+      message.includes("mail")
+    ) {
       return res.json({
-        reply:
-          "Du findest uns im **PDB Aesthetic Room** in Wiesbaden.\n\nAdresse:\nRheinstraße 59",
-        session_id
-      });
-    }
-
-    if (message.includes("öffnungs") || message.includes("geöffnet")) {
-      return res.json({
-        reply:
-          "Unsere Öffnungszeiten:\nMo, Di, Do, Fr: 10–18 Uhr\nMi und Sa: nach Vereinbarung",
-        session_id
-      });
-    }
-
-    if (message.includes("telefon") || message.includes("anrufen")) {
-      return res.json({
-        reply:
-          "Du erreichst uns telefonisch unter:\n0178-6001103\n\nOder per WhatsApp / Kontaktformular.",
-        session_id
-      });
-    }
-
-    if (message.includes("kontakt") || message.includes("email")) {
-      return res.json({
-        reply:
-          "Du kannst uns jederzeit über unser Kontaktformular erreichen:\nhttps://palaisdebeaute.de/pages/contact",
-        session_id
-      });
-    }
-
-    /* =================================================
-       2️⃣ TAGS BILDEN
-       ================================================= */
-
-    const tags = message.split(/\s+/);
-
-    /* =================================================
-       3️⃣ KATEGORIE ERZWINGEN (DER ENTSCHEIDENDE FIX)
-       ================================================= */
-
-    let forcedCategory = null;
-
-    if (tags.includes("haarentfernung") || tags.includes("haare")) {
-      forcedCategory = "Haarentfernung";
-    }
-
-    if (tags.includes("haut")) {
-      forcedCategory = "Haut & Gesicht";
-    }
-
-    if (tags.includes("anti") && tags.includes("aging")) {
-      forcedCategory = "Anti-Aging";
-    }
-
-    /* =================================================
-       4️⃣ TREATMENTS MATCHEN
-       ================================================= */
-
-    let result;
-
-// 🔒 Haarentfernung = ALLE Treatments dieser Kategorie
-if (forcedCategory === "Haarentfernung") {
-  result = getAllTreatments().filter(
-    t => t.category === "Haarentfernung"
-  );
-} else {
-  result = matchTreatments(tags);
-
-  if (forcedCategory) {
-    result = result.filter(t => t.category === forcedCategory);
-  }
-}
-
-
-    /* =================================================
-       5️⃣ SORTIEREN + LIMIT
-       ================================================= */
-
-  let rankedMatches = result.sort((a, b) => {
-  if ((b.score || 0) !== (a.score || 0)) {
-    return (b.score || 0) - (a.score || 0);
-  }
-  return (b.priority || 0) - (a.priority || 0);
+  reply: "Du kannst uns jederzeit über unser Kontaktformular erreichen:\nhttps://palaisdebeaute.de/pages/contact",
+  session_id
 });
 
-// 🔒 Bei Haarentfernung: KEIN Limit
-if (forcedCategory !== "Haarentfernung") {
-  rankedMatches = rankedMatches.slice(0, 2);
-}
-
-
-    /* =================================================
-       6️⃣ ANTWORTTEXT
-       ================================================= */
-
-    let replyText = TEXT_FALLBACK;
-
-    if (rankedMatches.length === 1) {
-      replyText = TEXT_SINGLE;
-    } else if (rankedMatches.length > 1) {
-      replyText = TEXT_MULTI;
     }
 
-    /* =================================================
-       7️⃣ BEHANDLUNGEN ZURÜCKGEBEN
-       ================================================= */
+    if (message.includes("beratung")) {
+      return res.json({
+        reply: `Gerne 😊 Bitte schreib kurz, worum es geht (z. B. Haut, Anti-Aging, Haarentfernung) – oder nutze direkt unser Kontaktformular:\n${CONTACT_URL}`,
+        session_id
+      });
+    }
+
+    // Optional: termin direkt abfangen (wenn du willst)
+    if (message.includes("termin")) {
+      return res.json({
+  reply: "Du kannst uns jederzeit über unser Kontaktformular erreichen:\nhttps://palaisdebeaute.de/pages/contact",
+  session_id
+});
+
+    }
+
+    // -------------------------
+    // 2) KATEGORIE-BUTTONS (fixe Auswahl)
+    // -------------------------
+    // Diese Strings kommen von deinen Startbuttons: "haut", "anti aging", "haarentfernung"
+    let forcedCategory = null;
+
+    if (message === "haarentfernung" || message.includes("haarentfernung")) {
+      forcedCategory = "Haarentfernung";
+    } else if (message === "haut" || message.includes("haut")) {
+      forcedCategory = "Haut & Gesicht";
+    } else if (message === "anti aging" || (message.includes("anti") && message.includes("aging"))) {
+      forcedCategory = "Anti-Aging & Straffung";
+    }
+
+    // Wenn Kategorie gewählt wurde: NICHT matchTreatments benutzen, sondern direkt aus treatments filtern
+    if (forcedCategory) {
+      // ⚠️ treatments muss bei dir existieren (treatments.json geladen). Wenn es anders heißt: hier anpassen.
+      const categoryList = (Array.isArray(treatments) ? treatments : [])
+        .filter(t => (t.category || "").trim() === forcedCategory)
+        .sort((a, b) => (b.priority || 0) - (a.priority || 0));
+
+      if (categoryList.length === 0) {
+        // falls Kategorie bei dir anders benannt ist -> fallback
+        return res.json({
+          reply: TEXT_FALLBACK,
+          buttons: [
+            { label: "Haut & Gesicht", value: "haut" },
+            { label: "Anti-Aging & Straffung", value: "anti aging" },
+            { label: "Haarentfernung", value: "haarentfernung" }
+          ],
+          session_id
+        });
+      }
+
+      // Haarentfernung: IMMER alle Laser zeigen (z. B. Alexandrit + Diodenlaser)
+      const picked =
+        forcedCategory === "Haarentfernung"
+          ? categoryList // alle
+          : categoryList.slice(0, 2); // sonst top 2
+
+      return res.json({
+        reply: picked.length === 1 ? TEXT_SINGLE : TEXT_MULTI,
+        buttons: picked.map(t => ({
+          label: t.name,
+          value: t.url
+        })),
+        session_id
+      });
+    }
+
+    // -------------------------
+    // 3) FREITEXT-MATCHING (dein bestehendes System)
+    // -------------------------
+    const tags = message.split(/\s+/);
+    const result = matchTreatments(tags);
+
+    const rankedMatches = (result || [])
+      .sort((a, b) => {
+        if ((b.score || 0) !== (a.score || 0)) {
+          return (b.score || 0) - (a.score || 0);
+        }
+        return (b.priority || 0) - (a.priority || 0);
+      })
+      .slice(0, 2);
+
+    let replyText = TEXT_FALLBACK;
+    if (rankedMatches.length === 1) replyText = TEXT_SINGLE;
+    if (rankedMatches.length > 1) replyText = TEXT_MULTI;
 
     if (rankedMatches.length > 0) {
       return res.json({
@@ -765,10 +756,7 @@ if (forcedCategory !== "Haarentfernung") {
       });
     }
 
-    /* =================================================
-       8️⃣ FALLBACK (NUR WENN GAR NICHTS PASST)
-       ================================================= */
-
+    // Fallback
     return res.json({
       reply: TEXT_FALLBACK,
       buttons: [
@@ -782,13 +770,11 @@ if (forcedCategory !== "Haarentfernung") {
   } catch (err) {
     console.error("MATCH ERROR:", err);
     return res.status(500).json({
-      reply:
-        "Es ist ein technischer Fehler aufgetreten. Bitte versuche es erneut.",
+      reply: "Es ist ein technischer Fehler aufgetreten. Bitte versuche es erneut.",
       session_id: req.body?.session_id
     });
   }
 });
-
 
 
 

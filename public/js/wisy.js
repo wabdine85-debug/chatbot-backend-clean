@@ -4,7 +4,8 @@
 // Shopify-safe: bricht sauber ab, wenn DOM nicht vorhanden ist
 // ===============================
 
-const CHAT_ENDPOINT = "https://chatbot-backend-clean-eord.onrender.com/chat";
+const CHAT_ENDPOINT = "https://chatbot-backend-clean-eord.onrender.com/api/chat/match";
+
 
 // ---------------- STATE (NUR RAM) ----------------
 let chatHistory = [];
@@ -60,7 +61,8 @@ async function sendToServer(userText, tags = []) {
     console.log("🆕 session_id gesetzt:", sessionId);
   }
 
-  return data.reply || "Keine Antwort erhalten.";
+  return data;
+
 }
 
 // ---------------- TEXT LOGIK ----------------
@@ -140,13 +142,48 @@ function init() {
     addMessage({ role: "assistant", text: "…" });
 
     try {
-      const reply = await sendToServer(rawText, tags);
+    const data = await sendToServer(rawText, tags);
 
-      // remove thinking
-      chatHistory.pop();
-      if (chatContainer.lastElementChild) chatContainer.lastElementChild.remove();
+// remove thinking
+chatHistory.pop();
+if (chatContainer.lastElementChild) chatContainer.lastElementChild.remove();
 
-      addMessage({ role: "assistant", text: reply });
+// 1️⃣ Textantwort anzeigen
+if (data.reply) {
+  addMessage({ role: "assistant", text: data.reply });
+}
+
+// 2️⃣ Treatments anzeigen (NEU – Schritt 3)
+if (data.treatments && data.treatments.length) {
+  data.treatments.forEach(t => {
+    addMessage({
+      role: "assistant",
+      text: `
+        <div class="wisy-treatment">
+          <div class="wisy-title">${t.label}</div>
+          <div class="wisy-summary">${t.summary}</div>
+          <a href="${t.url}" target="_blank" class="wisy-btn">
+            Mehr erfahren
+          </a>
+        </div>
+      `
+    });
+  });
+  return; // ⛔ wichtig: danach NICHTS mehr rendern
+}
+
+// 3️⃣ Fallback-Buttons (falls vorhanden)
+if (data.buttons && data.buttons.length) {
+  data.buttons.forEach(b => {
+    addMessage({
+      role: "assistant",
+      text: `<button class="wisy-quick-btn" onclick="document.getElementById('chatInput').value='${b.value}';document.getElementById('chatForm').dispatchEvent(new Event('submit'));">
+              ${b.label}
+            </button>`
+    });
+  });
+}
+
     } catch (err) {
       console.error("❌ send error", err);
 
@@ -197,4 +234,7 @@ function init() {
   }
 }
 
-document.addEventListener("DOMContentLoaded", init);
+console.log("🚀 wisy.js loaded – calling init()");
+init();
+
+

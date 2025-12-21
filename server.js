@@ -636,66 +636,62 @@ const TEXT_FALLBACK =
 
 app.post("/api/chat/match", (req, res) => {
   try {
-    const message = req.body?.message || "";
+    const message = (req.body?.message || "").toLowerCase();
     const session_id = req.body?.session_id;
 
-    const tags = message.toLowerCase().split(/\s+/);
-    
-const result = matchTreatments(tags);
+    const tags = message.split(/\s+/);
 
-// 🔽 Ranking + Limitierung (Schritt B)
-const rankedMatches = result
-  .sort((a, b) => {
-    if ((b.score || 0) !== (a.score || 0)) {
-      return (b.score || 0) - (a.score || 0);
+    const result = matchTreatments(tags);
+
+    // 🔽 Ranking + Limitierung
+    const rankedMatches = result
+      .sort((a, b) => {
+        if ((b.score || 0) !== (a.score || 0)) {
+          return (b.score || 0) - (a.score || 0);
+        }
+        return (b.priority || 0) - (a.priority || 0);
+      })
+      .slice(0, 2);
+
+    // 🧠 Antworttext bestimmen
+    let replyText = TEXT_FALLBACK;
+
+    if (rankedMatches.length === 1) {
+      replyText = TEXT_SINGLE;
+    } else if (rankedMatches.length > 1) {
+      replyText = TEXT_MULTI;
     }
-    return (b.priority || 0) - (a.priority || 0);
-  })
-  .slice(0, 2);
 
-// 🧠 Antworttext bestimmen
-let replyText = TEXT_FALLBACK;
+    // ✅ WICHTIG: Buttons bauen (nicht treatments!)
+    if (rankedMatches.length > 0) {
+      return res.json({
+        reply: replyText,
+        buttons: rankedMatches.map(t => ({
+          label: t.name,
+          value: t.url
+        })),
+        session_id
+      });
+    }
 
-if (rankedMatches.length === 1) {
-  replyText = TEXT_SINGLE;
-} else if (rankedMatches.length > 1) {
-  replyText = TEXT_MULTI;
-}
+    // ✅ Fallback NUR wenn wirklich kein Treffer
+    return res.json({
+      reply: TEXT_FALLBACK,
+      buttons: [
+        { label: "Haut & Gesicht", value: "haut" },
+        { label: "Anti-Aging & Straffung", value: "anti aging" },
+        { label: "Haarentfernung", value: "haarentfernung" }
+      ],
+      session_id
+    });
 
-// 📦 Treatments für Response bauen
-const treatmentsResponse = rankedMatches.map(t => ({
-  label: t.name,
-  url: t.url,
-  summary: t.summary
-}));
-
-// ✅ EINZIGE Response
-if (treatmentsResponse.length > 0) {
-  return res.json({
-    reply: replyText,
-    treatments: treatmentsResponse,
-    session_id
-  });
-}
-
-// ✅ Fallback (nur wenn KEIN Treffer)
-return res.json({
-  reply: TEXT_FALLBACK,
-  buttons: [
-    { label: "Haut & Gesicht", value: "haut" },
-    { label: "Anti-Aging & Straffung", value: "anti aging" },
-    { label: "Haarentfernung", value: "haarentfernung" }
-  ],
-  session_id
-});
-
-} catch (err) {
-  console.error("MATCH ERROR:", err);
-  return res.status(500).json({
-    reply: "Es ist ein technischer Fehler aufgetreten. Bitte versuche es erneut.",
-    session_id
-  });
-}
+  } catch (err) {
+    console.error("MATCH ERROR:", err);
+    return res.status(500).json({
+      reply: "Es ist ein technischer Fehler aufgetreten. Bitte versuche es erneut.",
+      session_id: req.body?.session_id
+    });
+  }
 });
 
 

@@ -243,6 +243,47 @@
       .chat-toggle:hover {
         background: #155fc0;
       }
+
+
+
+.wisy-treatment {
+  margin-top: 10px;
+  padding: 12px;
+  border-radius: 10px;
+  background: #f7f5f2;
+}
+
+.wisy-title {
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.wisy-summary {
+  font-size: 13px;
+  color: #444;
+  margin-bottom: 10px;
+}
+
+.wisy-btn {
+  display: inline-block;
+  background: #d9bfa9;
+  color: #fff;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 12px;
+  text-decoration: none;
+}
+
+.wisy-quick-btn {
+  margin: 4px 6px 0 0;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: none;
+  background: #eee;
+  cursor: pointer;
+}
+
+
     }
   </style>
 </head>
@@ -267,24 +308,50 @@
   <!-- Floating Chat Button -->
   <button id="toggleChatBtn" class="chat-toggle">💬</button>
 
-  <script>
-    // === Chat öffnen / schließen ===
-    const toggleChatBtn = document.getElementById("toggleChatBtn");
+<script>
+document.addEventListener("DOMContentLoaded", () => {
 
-    // 💬 Chat öffnen
-    toggleChatBtn.addEventListener("click", () => {
-      const chatWrapper = document.getElementById("chatWrapper");
-      chatWrapper.style.display = "flex";
-      chatWrapper.classList.remove("hidden");
-      toggleChatBtn.style.display = "none";
-    });
+  const toggleChatBtn = document.getElementById("toggleChatBtn");
+  const chatWrapper = document.getElementById("chatWrapper");
+  const closeChatBtn = document.getElementById("closeChatBtn");
 
-    // ❌ Chat schließen → Button wieder einblenden
-    document.getElementById("closeChatBtn").addEventListener("click", () => {
-      setTimeout(() => {
-        toggleChatBtn.style.display = "block";
-      }, 400);
-    });
-  </script>
+  if (!toggleChatBtn || !chatWrapper || !closeChatBtn) {
+    console.error("Wisy: Chat-Elemente nicht gefunden");
+    return;
+  }
+
+  // 💬 Chat öffnen
+  toggleChatBtn.addEventListener("click", e => {
+    e.preventDefault();
+
+    chatWrapper.style.display = "flex";
+    chatWrapper.classList.remove("hidden");
+    toggleChatBtn.style.display = "none";
+
+    // 👋 Begrüßung nur 1× beim ersten Öffnen
+    if (!window.__wisyGreetingSent) {
+      window.__wisyGreetingSent = true;
+
+      // Session reset → n8n erkennt Start
+      localStorage.removeItem("wisySessionId");
+
+      if (typeof sendToServer === "function") {
+        sendToServer("start");
+      } else {
+        console.error("sendToServer() nicht gefunden");
+      }
+    }
+  });
+
+  // ❌ Chat schließen
+  closeChatBtn.addEventListener("click", () => {
+    chatWrapper.style.display = "none";
+    toggleChatBtn.style.display = "block";
+  });
+
+});
+</script>
+
+
 </body>
 </html>

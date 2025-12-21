@@ -639,11 +639,28 @@ app.post("/api/chat/match", (req, res) => {
     const message = (req.body?.message || "").toLowerCase();
     const session_id = req.body?.session_id;
 
+    // 1️⃣ Eingabe in Tags zerlegen
     const tags = message.split(/\s+/);
 
-    const result = matchTreatments(tags);
+    // 2️⃣ INTENT-MAPPING (HIER war dein Problem)
+    let normalizedTags = tags;
 
-    // 🔽 Ranking + Limitierung
+    if (tags.includes("anti") && tags.includes("aging")) {
+      normalizedTags = ["straffung", "falten", "lifting"];
+    }
+
+    if (tags.includes("haut")) {
+      normalizedTags = ["haut", "gesicht"];
+    }
+
+    if (tags.includes("haarentfernung") || tags.includes("haar")) {
+      normalizedTags = ["laser", "haarentfernung"];
+    }
+
+    // 3️⃣ Matching
+    const result = matchTreatments(normalizedTags);
+
+    // 4️⃣ Ranking + Limitierung
     const rankedMatches = result
       .sort((a, b) => {
         if ((b.score || 0) !== (a.score || 0)) {
@@ -653,7 +670,7 @@ app.post("/api/chat/match", (req, res) => {
       })
       .slice(0, 2);
 
-    // 🧠 Antworttext bestimmen
+    // 5️⃣ Antworttext bestimmen
     let replyText = TEXT_FALLBACK;
 
     if (rankedMatches.length === 1) {
@@ -662,7 +679,7 @@ app.post("/api/chat/match", (req, res) => {
       replyText = TEXT_MULTI;
     }
 
-    // ✅ WICHTIG: Buttons bauen (nicht treatments!)
+    // 6️⃣ WENN Treffer → Buttons zurückgeben
     if (rankedMatches.length > 0) {
       return res.json({
         reply: replyText,
@@ -674,7 +691,7 @@ app.post("/api/chat/match", (req, res) => {
       });
     }
 
-    // ✅ Fallback NUR wenn wirklich kein Treffer
+    // 7️⃣ Fallback NUR wenn wirklich nichts passt
     return res.json({
       reply: TEXT_FALLBACK,
       buttons: [

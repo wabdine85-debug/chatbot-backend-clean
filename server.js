@@ -625,6 +625,8 @@ return res.json({ reply: buildReply(matches) });
 // 🤖 WISY – Treatment Match API
 // ===============================
 
+
+
 const TEXT_SINGLE =
   "Basierend auf deiner Anfrage könnte folgende Behandlung für dich geeignet sein:";
 
@@ -639,28 +641,81 @@ app.post("/api/chat/match", (req, res) => {
     const message = (req.body?.message || "").toLowerCase();
     const session_id = req.body?.session_id;
 
-    // 1️⃣ Eingabe in Tags zerlegen
+    /* =================================================
+       1️⃣ ALLGEMEINE FRAGEN (OHNE MATCHING)
+       ================================================= */
+
+    if (message.includes("adresse") || message.includes("standort")) {
+      return res.json({
+        reply:
+          "Du findest uns im **PDB Aesthetic Room** in Wiesbaden.\n\nAdresse:\nRheinstraße 59",
+        session_id
+      });
+    }
+
+    if (message.includes("öffnungs") || message.includes("geöffnet")) {
+      return res.json({
+        reply:
+          "Unsere Öffnungszeiten:\nMo, Di, Do, Fr: 10–18 Uhr\nMi und Sa: nach Vereinbarung",
+        session_id
+      });
+    }
+
+    if (message.includes("telefon") || message.includes("anrufen")) {
+      return res.json({
+        reply:
+          "Du erreichst uns telefonisch unter:\n0178-6001103\n\nOder per WhatsApp / Kontaktformular.",
+        session_id
+      });
+    }
+
+    if (message.includes("kontakt") || message.includes("email")) {
+      return res.json({
+        reply:
+          "Du kannst uns jederzeit über unser Kontaktformular erreichen:\nhttps://palaisdebeaute.de/pages/contact",
+        session_id
+      });
+    }
+
+    /* =================================================
+       2️⃣ TAGS BILDEN
+       ================================================= */
+
     const tags = message.split(/\s+/);
 
-    // 2️⃣ INTENT-MAPPING (HIER war dein Problem)
-    let normalizedTags = tags;
+    /* =================================================
+       3️⃣ KATEGORIE ERZWINGEN (DER ENTSCHEIDENDE FIX)
+       ================================================= */
 
-    if (tags.includes("anti") && tags.includes("aging")) {
-      normalizedTags = ["straffung", "falten", "lifting"];
+    let forcedCategory = null;
+
+    if (tags.includes("haarentfernung") || tags.includes("haare")) {
+      forcedCategory = "Haarentfernung";
     }
 
     if (tags.includes("haut")) {
-      normalizedTags = ["haut", "gesicht"];
+      forcedCategory = "Haut & Gesicht";
     }
 
-    if (tags.includes("haarentfernung") || tags.includes("haar")) {
-      normalizedTags = ["laser", "haarentfernung"];
+    if (tags.includes("anti") && tags.includes("aging")) {
+      forcedCategory = "Anti-Aging";
     }
 
-    // 3️⃣ Matching
-    const result = matchTreatments(normalizedTags);
+    /* =================================================
+       4️⃣ TREATMENTS MATCHEN
+       ================================================= */
 
-    // 4️⃣ Ranking + Limitierung
+    let result = matchTreatments(tags);
+
+    // 🔒 Kategorie-Filter anwenden
+    if (forcedCategory) {
+      result = result.filter(t => t.category === forcedCategory);
+    }
+
+    /* =================================================
+       5️⃣ SORTIEREN + LIMIT
+       ================================================= */
+
     const rankedMatches = result
       .sort((a, b) => {
         if ((b.score || 0) !== (a.score || 0)) {
@@ -670,7 +725,10 @@ app.post("/api/chat/match", (req, res) => {
       })
       .slice(0, 2);
 
-    // 5️⃣ Antworttext bestimmen
+    /* =================================================
+       6️⃣ ANTWORTTEXT
+       ================================================= */
+
     let replyText = TEXT_FALLBACK;
 
     if (rankedMatches.length === 1) {
@@ -679,7 +737,10 @@ app.post("/api/chat/match", (req, res) => {
       replyText = TEXT_MULTI;
     }
 
-    // 6️⃣ WENN Treffer → Buttons zurückgeben
+    /* =================================================
+       7️⃣ BEHANDLUNGEN ZURÜCKGEBEN
+       ================================================= */
+
     if (rankedMatches.length > 0) {
       return res.json({
         reply: replyText,
@@ -691,7 +752,10 @@ app.post("/api/chat/match", (req, res) => {
       });
     }
 
-    // 7️⃣ Fallback NUR wenn wirklich nichts passt
+    /* =================================================
+       8️⃣ FALLBACK (NUR WENN GAR NICHTS PASST)
+       ================================================= */
+
     return res.json({
       reply: TEXT_FALLBACK,
       buttons: [
@@ -705,11 +769,13 @@ app.post("/api/chat/match", (req, res) => {
   } catch (err) {
     console.error("MATCH ERROR:", err);
     return res.status(500).json({
-      reply: "Es ist ein technischer Fehler aufgetreten. Bitte versuche es erneut.",
+      reply:
+        "Es ist ein technischer Fehler aufgetreten. Bitte versuche es erneut.",
       session_id: req.body?.session_id
     });
   }
 });
+
 
 
 

@@ -705,12 +705,21 @@ app.post("/api/chat/match", (req, res) => {
        4️⃣ TREATMENTS MATCHEN
        ================================================= */
 
-    let result = matchTreatments(tags);
+    let result;
 
-    // 🔒 Kategorie-Filter anwenden
-    if (forcedCategory) {
-      result = result.filter(t => t.category === forcedCategory);
-    }
+// 🔒 Haarentfernung = ALLE Treatments dieser Kategorie
+if (forcedCategory === "Haarentfernung") {
+  result = getAllTreatments().filter(
+    t => t.category === "Haarentfernung"
+  );
+} else {
+  result = matchTreatments(tags);
+
+  if (forcedCategory) {
+    result = result.filter(t => t.category === forcedCategory);
+  }
+}
+
 
     /* =================================================
        5️⃣ SORTIEREN + LIMIT

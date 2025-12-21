@@ -676,21 +676,24 @@ app.post("/api/chat/match", (req, res) => {
 
     }
 
-    // -------------------------
-    // 2) KATEGORIE-BUTTONS (fixe Auswahl)
-    // -------------------------
-    // Diese Strings kommen von deinen Startbuttons: "haut", "anti aging", "haarentfernung"
-    let forcedCategory = null;
-
-   if (message === "haarentfernung" || message.includes("haarentfernung")) {
+// 🔒 Kategorie-Erkennung ROBUST (Button + Freitext)
+if (message.includes("haarentfernung")) {
   forcedCategory = "Haarentfernung";
-} 
-else if (message === "haut" || message.includes("haut")) {
+}
+else if (
+  message.includes("haut") ||
+  message.includes("gesicht")
+) {
   forcedCategory = "Haut & Gesicht";
-} 
-else if (message === "anti aging" || (message.includes("anti") && message.includes("aging"))) {
+}
+else if (
+  message.includes("anti") ||
+  message.includes("aging") ||
+  message.includes("straff")
+) {
   forcedCategory = "Anti-Aging";
 }
+
 
 
     // Wenn Kategorie gewählt wurde: NICHT matchTreatments benutzen, sondern direkt aus treatments filtern

@@ -563,24 +563,6 @@ if (!tags.length) {
   );
 }
 
-    // Matching (bestehende Logik!)
-    let matches = matchTreatments(tags);
-
-    // 🔹 Haarentfernung: Alexandrit priorisieren
-    if (matches.length > 1) {
-      const hairMatches = matches.filter(
-        m => m.wisy?.kategorie === "Haarentfernung"
-      );
-
-      if (hairMatches.length > 0) {
-        hairMatches.sort((a, b) => {
-          if (b.score !== a.score) return b.score - a.score;
-          return (b.wisy?.prioritaet || 0) - (a.wisy?.prioritaet || 0);
-        });
-        matches = [hairMatches[0]];
-      }
-    }
-
 // 🔹 KEIN Match → erst Klarstellung, dann General, dann Fallback
 if (matches.length === 0) {
 
@@ -676,16 +658,19 @@ app.post("/api/chat/match", (req, res) => {
 
     }
 
-// 🔒 Kategorie-Erkennung ROBUST (Button + Freitext)
+
+
+// ===============================
+// 🔒 KATEGORIE-ROUTING (FINAL)
+// ===============================
+let forcedCategory = null;
+
 if (message.includes("haarentfernung")) {
   forcedCategory = "Haarentfernung";
-}
-else if (
-  message.includes("haut") ||
-  message.includes("gesicht")
-) {
+} 
+else if (message.includes("haut") || message.includes("gesicht")) {
   forcedCategory = "Haut & Gesicht";
-}
+} 
 else if (
   message.includes("anti") ||
   message.includes("aging") ||
@@ -694,43 +679,36 @@ else if (
   forcedCategory = "Anti-Aging";
 }
 
+// ⛔ WICHTIG: Sobald Kategorie erkannt → DIREKT antworten
+if (forcedCategory) {
 
+  const list = treatments.filter(
+    t => (t.category || "").trim() === forcedCategory
+  );
 
-    // Wenn Kategorie gewählt wurde: NICHT matchTreatments benutzen, sondern direkt aus treatments filtern
-    if (forcedCategory) {
-      // ⚠️ treatments muss bei dir existieren (treatments.json geladen). Wenn es anders heißt: hier anpassen.
-      const categoryList = (Array.isArray(treatments) ? treatments : [])
-        .filter(t => (t.category || "").trim() === forcedCategory)
-        .sort((a, b) => (b.priority || 0) - (a.priority || 0));
+  // Sicherheit
+  if (!list.length) {
+    return res.json({
+      reply: TEXT_FALLBACK,
+      buttons: [
+        { label: "Haut & Gesicht", value: "Haut & Gesicht" },
+        { label: "Anti-Aging & Straffung", value: "Anti-Aging & Straffung" },
+        { label: "Haarentfernung", value: "Haarentfernung" }
+      ],
+      session_id
+    });
+  }
 
-      if (categoryList.length === 0) {
-        // falls Kategorie bei dir anders benannt ist -> fallback
-        return res.json({
-          reply: TEXT_FALLBACK,
-          buttons: [
-            { label: "Haut & Gesicht", value: "haut" },
-            { label: "Anti-Aging & Straffung", value: "anti aging" },
-            { label: "Haarentfernung", value: "haarentfernung" }
-          ],
-          session_id
-        });
-      }
+  return res.json({
+    reply: list.length === 1 ? TEXT_SINGLE : TEXT_MULTI,
+    buttons: list.map(t => ({
+      label: t.name,
+      value: t.url
+    })),
+    session_id
+  });
+}
 
-      // Haarentfernung: IMMER alle Laser zeigen (z. B. Alexandrit + Diodenlaser)
-      const picked =
-        forcedCategory === "Haarentfernung"
-          ? categoryList // alle
-          : categoryList.slice(0, 2); // sonst top 2
-
-      return res.json({
-        reply: picked.length === 1 ? TEXT_SINGLE : TEXT_MULTI,
-        buttons: picked.map(t => ({
-          label: t.name,
-          value: t.url
-        })),
-        session_id
-      });
-    }
 
     // -------------------------
     // 3) FREITEXT-MATCHING (dein bestehendes System)

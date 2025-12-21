@@ -622,9 +622,15 @@ const TEXT_FALLBACK =
 
 app.post("/api/chat/match", (req, res) => {
   try {
+
+    console.log("🧪 HIT /api/chat/match");
+
     const messageRaw = (req.body?.message || "");
     const message = messageRaw.toLowerCase().trim();
     const session_id = req.body?.session_id;
+
+    console.log("🧪 MESSAGE =", message);
+
 
     // -------------------------
     // 1) HARTE REGELN (Allgemein)
@@ -681,6 +687,8 @@ else if (
 
 // ⛔ WICHTIG: Sobald Kategorie erkannt → DIREKT antworten
 if (forcedCategory) {
+  console.log("🟢 CATEGORY DETECTED:", forcedCategory);
+
 
   const list = treatments.filter(
     t => (t.category || "").trim() === forcedCategory

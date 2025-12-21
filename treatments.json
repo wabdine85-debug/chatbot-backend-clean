@@ -5,6 +5,7 @@
   "url": "https://palaisdebeaute.de/products/alexandrit-deka",
   "category": "Haarentfernung",
   "priority": 10,
+"summary": "Hocheffektive Laserbehandlung zur dauerhaften Reduktion von Haarwuchs durch gezielte Zerstörung der Haarwurzel – präzise, hautschonend und für große Areale geeignet.",
 
   "triggers": [
     "alexandrit",
@@ -47,6 +48,7 @@
   "url": "https://palaisdebeaute.de/products/dioden-laser",
   "category": "Haarentfernung",
   "priority": 4,
+"summary": "Laserbasierte Methode zur dauerhaften Haarreduktion mit tief eindringender Energie – besonders geeignet für dunklere Haare und unterschiedliche Hauttypen bei hoher Sicherheit.",
 
   "triggers": [
     "diodenlaser",
@@ -77,6 +79,7 @@
   "url": "https://palaisdebeaute.de/products/morpheus-8",
   "category": "Hautstraffung",
   "priority": 8,
+"summary": "Kombination aus Mikronadelung und Radiofrequenz zur tiefen Hautstraffung, Strukturverbesserung und Kollagenneubildung – ideal bei Falten, erschlaffter Haut und Aknenarben.",
 
   "triggers": [
     "morpheus",
@@ -111,9 +114,11 @@
   {
   "id": "hifu",
   "name": "HIFU / Ultherapy",
-  "url": "https://palaisdebeaute.de/products/hifuhifu-ultherapy",
+  "url": "https://palaisdebeaute.de/products/hifu-ultherapy",
   "category": "Hautstraffung",
   "priority": 9,
+  "summary": "Fokussierte Ultraschallenergie zur gezielten Straffung tiefer Hautschichten und Aktivierung der körpereigenen Kollagenneubildung – ohne Nadeln oder Ausfallzeit.",
+ 
 
   "triggers": [
     "hifu",
@@ -147,6 +152,8 @@
   "url": "https://palaisdebeaute.de/products/hydrafacial-md",
   "category": "Gesichtsbehandlung",
   "priority": 6,
+  "summary": "Mehrstufige apparative Gesichtsbehandlung zur porentiefen Reinigung, intensiven Hydration und Verbesserung des Hautbildes – sofort sichtbar, ohne Ausfallzeit.",
+
 
   "triggers": [
     "hydrafacial",
@@ -181,6 +188,8 @@
   "url": "https://palaisdebeaute.de/products/microneedling",
   "category": "Hautregeneration",
   "priority": 5,
+  "summary": "Gezielte Mikronadelbehandlung zur Anregung der Kollagen- und Elastinproduktion – verbessert Hautstruktur, Porenbild, feine Linien und Aknenarben nachhaltig.",
+
 
   "triggers": [
     "microneedling",
@@ -218,6 +227,8 @@
   "url": "https://palaisdebeaute.de/products/mesotherapie",
   "category": "Hautregeneration",
   "priority": 6,
+  "summary": "Injektionsbasierte Behandlung mit individuell abgestimmten Wirkstoffen zur Hautregeneration, Durchfeuchtung und Straffung – für ein sichtbar frisches und ebenmäßiges Hautbild.",
+
 
   "triggers": [
     "mesotherapie",
@@ -253,6 +264,8 @@
   "url": "https://palaisdebeaute.de/products/vampire-lifting",
   "category": "Regeneration",
   "priority": 8,
+  "summary": "Eigenblutbasierte Behandlung zur natürlichen Hautverjüngung durch Aktivierung von Regenerations- und Reparaturprozessen – verbessert Hautqualität, Elastizität und Ausstrahlung.",
+
 
   "triggers": [
     "prp",
@@ -288,6 +301,8 @@
   "url": "https://palaisdebeaute.de/products/faltenunterspritzung",
   "category": "Injektionen",
   "priority": 9,
+  "summary": "Gezielte Injektion von Botulinumtoxin zur Entspannung mimischer Muskulatur und Glättung dynamischer Falten – für ein frisches, natürliches Erscheinungsbild.",
+
 
   "triggers": [
     "botox",
@@ -322,6 +337,8 @@
   "url": "https://palaisdebeaute.de/products/hyaluron-1",
   "category": "Injektionen",
   "priority": 8,
+  "summary": "Volumen- und konturgebende Unterspritzung mit Hyaluronsäure zur Glättung statischer Falten, Harmonisierung der Gesichtszüge und Wiederherstellung jugendlicher Frische.",
+
 
   "triggers": [
     "hyaluron",
@@ -359,6 +376,8 @@
   "url": "https://palaisdebeaute.de/products/ems-sculpt-neo",
   "category": "Körperformung",
   "priority": 9,
+  "summary": "Elektromuskuläre Stimulation zur gezielten Aktivierung und Kräftigung der Muskulatur sowie gleichzeitigen Fettreduktion – ideal zur Körperformung ohne Training.",
+
 
   "triggers": [
     "ems sculpt",
@@ -397,6 +416,8 @@
   "url": "https://palaisdebeaute.de/products/kryolipolyse",
   "category": "Körperformung",
   "priority": 8,
+  "summary": "Nicht-invasive Kältebehandlung zur gezielten Reduktion lokaler Fettdepots durch kontrollierte Kühlung – formt die Silhouette ohne Operation oder Ausfallzeit.",
+
 
   "triggers": [
     "kryolipolyse"
@@ -431,6 +452,8 @@
   "url": "https://palaisdebeaute.de/products/ferninfrarot",
   "category": "Wellness & Regeneration",
   "priority": 4,
+  "summary": "Sanfte Behandlung zur Aktivierung des Lymphsystems und Förderung des Abtransports von Gewebeflüssigkeit – unterstützt Entschlackung, Regeneration und ein leichteres Körpergefühl.",
+
 
   "triggers": [
     "ferninfrarot",
@@ -466,6 +489,8 @@
   "url": "https://palaisdebeaute.de/products/nad-infusion",
   "category": "Infusionstherapie",
   "priority": 8,
+  "summary": "Intravenöse Therapie zur Unterstützung der zellulären Energieproduktion und Regeneration – kann Vitalität, Konzentration und allgemeines Wohlbefinden fördern.",
+
 
   "triggers": [
     "nad",
@@ -499,6 +524,8 @@
   "url": "https://palaisdebeaute.de/products/vitamin-infusion",
   "category": "Infusionstherapie",
   "priority": 6,
+  "summary": "Individuell abgestimmte intravenöse Versorgung mit Vitaminen und Mikronährstoffen zur Unterstützung von Immunsystem, Regeneration und allgemeinem Wohlbefinden.",
+
 
   "triggers": [
     "vitamin infusion",
@@ -532,6 +559,8 @@
   "url": "https://palaisdebeaute.de/products/lash-lifting",
   "category": "Beauty",
   "priority": 4,
+  "summary": "Schonende Behandlung zur Anhebung und Formung der natürlichen Wimpern – sorgt für einen offenen, ausdrucksstarken Blick ganz ohne Extensions.",
+
 
   "triggers": [
     "lash lifting",
@@ -563,6 +592,8 @@
   "url": "https://palaisdebeaute.de/products/lash-lifting-booster",
   "category": "Beauty",
   "priority": 5,
+  "summary": "Wimpernlifting mit zusätzlichem Pflege-Booster zur Stärkung und Regeneration der Naturwimpern – für mehr Glanz, Elastizität und ein intensiveres Ergebnis.",
+
 
   "triggers": [
     "lash lifting booster"
@@ -593,6 +624,7 @@
   "url": "https://palaisdebeaute.de/products/wimpernfaerben",
   "category": "Beauty",
   "priority": 2,
+  "summary": "Schonende Farbbehandlung zur Intensivierung der natürlichen Wimpernfarbe – verleiht mehr Ausdruck und Tiefe ganz ohne tägliches Mascara.",
 
   "triggers": [
     "wimpern färben"
@@ -623,6 +655,7 @@
   "url": "https://palaisdebeaute.de/products/augenbrauenfaerben",
   "category": "Beauty",
   "priority": 2,
+"summary": "Gezielte Farbbehandlung zur Betonung und Harmonisierung der Augenbrauen – sorgt für klare Konturen und einen ausdrucksstarken, gepflegten Look.",
 
   "triggers": [
     "augenbrauen färben"
@@ -652,8 +685,9 @@
   "url": "https://palaisdebeaute.de/collections/circadia-%C2%AE-all-treatments",
   "category": "Gesichtsbehandlung",
   "priority": 9,
+"summary": "Professionelle Gesichtsbehandlungen mit biochemisch abgestimmten Wirkstoffen zur gezielten Verbesserung verschiedener Hautzustände – individuell angepasst und wissenschaftlich fundiert.",
 
-  "triggers": [
+"triggers": [
     "circadia",
     "circadia facial",
     "circadia behandlung"
@@ -691,6 +725,7 @@
   "url": "https://palaisdebeaute.de/products/polyfill-polynukleotide",
   "category": "Medical Aesthetic",
   "priority": 8,
+"summary": "Biostimulierende Injektionsbehandlung zur Förderung der Hautregeneration auf Zellebene – verbessert Elastizität, Feuchtigkeit und die allgemeine Hautqualität.",
 
   "triggers": [
     "polyfill",
@@ -729,6 +764,7 @@
   "url": "https://palaisdebeaute.de/products/exosomen-therapie-zellregeneration-hautverjungung",
   "category": "Medical Aesthetic",
   "priority": 9,
+"summary": "Innovative regenerative Behandlung mit Exosomen zur Unterstützung der Zellkommunikation und Hauterneuerung – fördert Regeneration, Struktur und Hautqualität.",
 
   "triggers": [
     "exosomen",
@@ -756,6 +792,359 @@
     "zellregeneration",
     "hautverjüngung",
     "hautqualität verbessern"
+  ],
+
+  "bookable": true
+}
+,
+{
+  "id": "hautaufhellung",
+  "name": "Hautaufhellung",
+  "url": "https://palaisdebeaute.de/collections/behandlungen/products/hautaufhellung",
+  "category": "Medical Aesthetic",
+  "priority": 7,
+
+  "summary": "Gezielte Behandlung zur Harmonisierung des Hauttons und Reduktion von Pigmentunregelmäßigkeiten – für einen sichtbar ebenmäßigeren, frischen Teint.",
+
+  "triggers": [
+    "hautaufhellung",
+    "skin brightening",
+    "aufhellung"
+  ],
+
+  "synonyms": [
+    "pigmentflecken",
+    "hyperpigmentierung",
+    "ungleichmaessiger hautton",
+    "melasma",
+    "dunkle flecken",
+    "fahler teint"
+  ],
+
+  "areas": [
+    "gesicht",
+    "hals",
+    "dekolleté"
+  ],
+
+  "intent": [
+    "hautton aufhellen",
+    "pigmentstörungen reduzieren",
+    "hautbild verbessern"
+  ],
+
+  "bookable": true
+}
+
+,
+{
+  "id": "herbs2peel",
+  "name": "HERBS2PEEL – Natürliche Akne- & Hautbildverbesserung",
+  "url": "https://palaisdebeaute.de/collections/behandlungen/products/akne-behandlung",
+  "category": "Medical Aesthetic",
+  "priority": 8,
+
+  "summary": "Rein pflanzliche Intensivbehandlung zur Regulierung unreiner Haut und Förderung der Hauterneuerung – unterstützt die Klärung des Hautbildes ganz ohne chemische Zusätze.",
+
+  "triggers": [
+    "herbs2peel",
+    "akne behandlung",
+    "pflanzliches peeling",
+    "akne therapie"
+  ],
+
+  "synonyms": [
+    "akne",
+    "unreine haut",
+    "entzuendete haut",
+    "pickel",
+    "mitesser",
+    "hautbild verbessern",
+    "natuerliche aknebehandlung"
+  ],
+
+  "areas": [
+    "gesicht",
+    "ruecken",
+    "dekolleté"
+  ],
+
+  "intent": [
+    "akne reduzieren",
+    "hautbild klären",
+    "hautregeneration fördern"
+  ],
+
+  "bookable": true
+}
+,
+{
+  "id": "aqua_facial",
+  "name": "Aqua Facial",
+  "url": "https://palaisdebeaute.de/collections/behandlungen/products/hydra-beaute",
+  "category": "Medical Aesthetic",
+  "priority": 8,
+
+  "summary": "Sanfte, mehrstufige apparative Gesichtsbehandlung zur porentiefen Reinigung, Hydration und Vitalisierung – für ein sichtbar frisches und ebenmäßiges Hautbild ohne Ausfallzeit.",
+
+  "triggers": [
+    "aqua facial",
+    "hydra beaute",
+    "hydrafacial",
+    "gesichtsreinigung"
+  ],
+
+  "synonyms": [
+    "hydra facial",
+    "wasser peeling",
+    "porentiefe reinigung",
+    "haut hydration",
+    "haut auffrischen"
+  ],
+
+  "areas": [
+    "gesicht",
+    "hals",
+    "dekolleté"
+  ],
+
+  "intent": [
+    "haut reinigen",
+    "haut hydratisieren",
+    "hautbild verbessern"
+  ],
+
+  "bookable": true
+}
+,
+{
+  "id": "lemon_bottle",
+  "name": "Lemon Bottle",
+  "url": "https://palaisdebeaute.de/collections/behandlungen/products/lemon-bottle",
+  "category": "Medical Aesthetic",
+  "priority": 8,
+
+  "summary": "Multifunktionale, apparative Hautbehandlung zur Verbesserung von Textur, Hydration und Hautbild – kombiniert sanfte Reinigung mit Wirkstoffzufuhr für einen klareren, strahlenderen Teint.",
+
+  "triggers": [
+    "lemon bottle",
+    "lemonbottle",
+    "hautbehandlung",
+    "textur verbesserung"
+  ],
+
+  "synonyms": [
+    "lemon bottle facial",
+    "hautbild verbessern",
+    "porenverfeinerung",
+    "strahlender teint",
+    "apparative gesichtsbehandlung"
+  ],
+
+  "areas": [
+    "gesicht",
+    "hals",
+    "dekolleté"
+  ],
+
+  "intent": [
+    "hautbild verbessern",
+    "haut hydratieren",
+    "haut reinigen"
+  ],
+
+  "bookable": true
+}
+,
+{
+  "id": "lifting",
+  "name": "Lifting",
+  "url": "https://palaisdebeaute.de/collections/behandlungen/products/lifting",
+  "category": "Medical Aesthetic",
+  "priority": 7,
+
+  "summary": "Effektive Straffungsbehandlung zur Harmonisierung des Gesichtsprofils und Reduktion von Erschlaffungen – für eine definierte Kontur und frischere Ausstrahlung.",
+
+  "triggers": [
+    "lifting",
+    "gesichts lifting",
+    "anti aging lifting",
+    "straffung"
+  ],
+
+  "synonyms": [
+    "hautstraffung",
+    "gesichtsstraffung",
+    "anti aging",
+    "konturierung",
+    "haut festigen"
+  ],
+
+  "areas": [
+    "gesicht",
+    "hals",
+    "dekolleté"
+  ],
+
+  "intent": [
+    "haut straffen",
+    "konturen verbessern",
+    "ausstrahlung verbessern"
+  ],
+
+  "bookable": true
+}
+,
+{
+  "id": "lifting_mask",
+  "name": "Lifting Mask",
+  "url": "https://palaisdebeaute.de/collections/behandlungen/products/lifting-mask",
+  "category": "Medical Aesthetic",
+  "priority": 7,
+
+  "summary": "Intensiv wirkende Maskenbehandlung zur Unterstützung der Hautstraffung und Festigung – verleiht Elastizität, Spannkraft und einen jugendlichen Teint.",
+
+  "triggers": [
+    "lifting mask",
+    "liftingmaske",
+    "mask lifting",
+    "hautfestigung"
+  ],
+
+  "synonyms": [
+    "straffende maske",
+    "anti aging maske",
+    "elastizität verbessern",
+    "haut straffen"
+  ],
+
+  "areas": [
+    "gesicht",
+    "hals",
+    "dekolleté"
+  ],
+
+  "intent": [
+    "haut straffen",
+    "haut elastizität verbessern",
+    "hautbild verbessern"
+  ],
+
+  "bookable": true
+}
+,
+{
+  "id": "nctf",
+  "name": "NCTF® Hautverjüngung",
+  "url": "https://palaisdebeaute.de/products/nctf-ha-135-augenringe",
+  "category": "Medical Aesthetic",
+  "priority": 9,
+
+  "summary": "Hochwirksame mesotherapeutische Therapie mit NCTF® zur Förderung der Hautregeneration, Hydratation und Verbesserung der Hautstruktur – besonders geeignet für feine Linien und müde Hautpartien.",
+
+  "triggers": [
+    "nctf",
+    "nctf ha 135",
+    "hautverjüngung",
+    "augenringe behandlung"
+  ],
+
+  "synonyms": [
+    "nctf hautbehandlung",
+    "mesotherapie nctf",
+    "haut regenerieren",
+    "haut struktur verbessern",
+    "haut hydratation"
+  ],
+
+  "areas": [
+    "gesicht",
+    "augenpartie",
+    "hals",
+    "dekolleté"
+  ],
+
+  "intent": [
+    "haut regenerieren",
+    "feine linien reduzieren",
+    "hautbild verbessern"
+  ],
+
+  "bookable": true
+}
+,
+{
+  "id": "ultraschallbehandlung",
+  "name": "Ultraschallbehandlung – 4-Frequenz-Matrix-Pulsation",
+  "url": "https://palaisdebeaute.de/collections/behandlungen/products/ultraschallbehandlung",
+  "category": "Medical Aesthetic",
+  "priority": 8,
+
+  "summary": "Apparative Ultraschallbehandlung mit vier Frequenzen für tiefenwirksame Stimulation, Verbesserung der Durchblutung und Aktivierung der Hautregeneration – für ein ausgeglichenes, lebendiges Hautbild.",
+
+  "triggers": [
+    "ultraschallbehandlung",
+    "4 frequenz matrix",
+    "ultraschall therapie",
+    "matrix pulsation"
+  ],
+
+  "synonyms": [
+    "ultraschall",
+    "ultraschall gesichtsbehandlung",
+    "tiefenreinigung",
+    "haut durchblutung",
+    "regeneration"
+  ],
+
+  "areas": [
+    "gesicht",
+    "hals",
+    "dekolleté"
+  ],
+
+  "intent": [
+    "hautregeneration aktivieren",
+    "durchblutung verbessern",
+    "hautbild verbessern"
+  ],
+
+  "bookable": true
+}
+,
+{
+  "id": "elektrolyt_infusion",
+  "name": "Elektrolyt-Infusion",
+  "url": "https://palaisdebeaute.de/products/elektrolyt-infusion-500ml",
+  "category": "Medical Aesthetic",
+  "priority": 8,
+
+  "summary": "Intravenöse Elektrolytversorgung zur raschen Rehydrierung und Unterstützung des Flüssigkeits- und Mineralhaushalts – ideal zur Regeneration nach Belastung oder zur Verbesserung des Allgemeinbefindens.",
+
+  "triggers": [
+    "elektrolyt infusion",
+    "electrolyte infusion",
+    "hydration infusion",
+    "rehydration infusion"
+  ],
+
+  "synonyms": [
+    "elektrolyte infusion",
+    "hydration therapie",
+    "mineral infusion",
+    "infusion therapie",
+    "re hydrierung"
+  ],
+
+  "areas": [
+    "allgemein",
+    "körper"
+  ],
+
+  "intent": [
+    "hydration verbessern",
+    "mineralhaushalt ausgleichen",
+    "regeneration fördern"
   ],
 
   "bookable": true

@@ -641,45 +641,54 @@ app.post("/api/chat/match", (req, res) => {
 
     const tags = message.toLowerCase().split(/\s+/);
     
+const result = matchTreatments(tags);
 
-    const result = matchTreatments(tags);
-
-
-
-    // ✅ Treffer
-    if (Array.isArray(result) && result.length > 0) {
-      const replyText =
-        result.length === 1 ? TEXT_SINGLE : TEXT_MULTI;
-
-      return res.json({
-        reply: replyText,
-        buttons: result.map(t => ({
-          label: t.name,
-          url: t.url
-        })),
-        session_id
-      });
+// 🔽 Ranking + Limitierung (Schritt B)
+const rankedMatches = result
+  .sort((a, b) => {
+    if ((b.score || 0) !== (a.score || 0)) {
+      return (b.score || 0) - (a.score || 0);
     }
+    return (b.priority || 0) - (a.priority || 0);
+  })
+  .slice(0, 2);
 
-    // ✅ Fallback
-    return res.json({
-      reply: TEXT_FALLBACK,
-      buttons: [
-        { label: "Haut & Gesicht", value: "haut" },
-        { label: "Anti-Aging & Straffung", value: "anti aging" },
-        { label: "Haarentfernung", value: "haarentfernung" }
-      ],
-      session_id
-    });
+// 🧠 Antworttext bestimmen
+let replyText = TEXT_FALLBACK;
 
-  } catch (err) {
-    console.error("MATCH ERROR:", err);
-    return res.status(500).json({
-      reply: "Es ist ein technischer Fehler aufgetreten. Bitte versuche es erneut.",
-      session_id
-    });
-  }
+if (rankedMatches.length === 1) {
+  replyText = TEXT_SINGLE;
+} else if (rankedMatches.length > 1) {
+  replyText = TEXT_MULTI;
+}
+
+// 📦 Treatments für Response bauen
+const treatmentsResponse = rankedMatches.map(t => ({
+  label: t.name,
+  url: t.url,
+  summary: t.summary
+}));
+
+// ✅ EINZIGE Response
+if (treatmentsResponse.length > 0) {
+  return res.json({
+    reply: replyText,
+    treatments: treatmentsResponse,
+    session_id
+  });
+}
+
+// ✅ Fallback (nur wenn KEIN Treffer)
+return res.json({
+  reply: TEXT_FALLBACK,
+  buttons: [
+    { label: "Haut & Gesicht", value: "haut" },
+    { label: "Anti-Aging & Straffung", value: "anti aging" },
+    { label: "Haarentfernung", value: "haarentfernung" }
+  ],
+  session_id
 });
+
 
 
 

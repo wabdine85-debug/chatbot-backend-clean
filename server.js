@@ -716,14 +716,18 @@ app.post("/api/chat/match", (req, res) => {
        5️⃣ SORTIEREN + LIMIT
        ================================================= */
 
-    const rankedMatches = result
-      .sort((a, b) => {
-        if ((b.score || 0) !== (a.score || 0)) {
-          return (b.score || 0) - (a.score || 0);
-        }
-        return (b.priority || 0) - (a.priority || 0);
-      })
-      .slice(0, 2);
+  let rankedMatches = result.sort((a, b) => {
+  if ((b.score || 0) !== (a.score || 0)) {
+    return (b.score || 0) - (a.score || 0);
+  }
+  return (b.priority || 0) - (a.priority || 0);
+});
+
+// 🔒 Bei Haarentfernung: KEIN Limit
+if (forcedCategory !== "Haarentfernung") {
+  rankedMatches = rankedMatches.slice(0, 2);
+}
+
 
     /* =================================================
        6️⃣ ANTWORTTEXT

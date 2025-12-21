@@ -682,13 +682,16 @@ app.post("/api/chat/match", (req, res) => {
     // Diese Strings kommen von deinen Startbuttons: "haut", "anti aging", "haarentfernung"
     let forcedCategory = null;
 
-    if (message === "haarentfernung" || message.includes("haarentfernung")) {
-      forcedCategory = "Haarentfernung";
-    } else if (message === "haut" || message.includes("haut")) {
-      forcedCategory = "Haut & Gesicht";
-    } else if (message === "anti aging" || (message.includes("anti") && message.includes("aging"))) {
-      forcedCategory = "Anti-Aging & Straffung";
-    }
+   if (message === "haarentfernung" || message.includes("haarentfernung")) {
+  forcedCategory = "Haarentfernung";
+} 
+else if (message === "haut" || message.includes("haut")) {
+  forcedCategory = "Haut & Gesicht";
+} 
+else if (message === "anti aging" || (message.includes("anti") && message.includes("aging"))) {
+  forcedCategory = "Anti-Aging";
+}
+
 
     // Wenn Kategorie gewählt wurde: NICHT matchTreatments benutzen, sondern direkt aus treatments filtern
     if (forcedCategory) {

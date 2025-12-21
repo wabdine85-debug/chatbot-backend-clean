@@ -689,7 +689,14 @@ return res.json({
   session_id
 });
 
-
+} catch (err) {
+  console.error("MATCH ERROR:", err);
+  return res.status(500).json({
+    reply: "Es ist ein technischer Fehler aufgetreten. Bitte versuche es erneut.",
+    session_id
+  });
+}
+});
 
 
 

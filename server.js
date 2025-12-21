@@ -640,10 +640,10 @@ app.post("/api/chat/match", (req, res) => {
     const session_id = req.body?.session_id;
 
     const tags = message.toLowerCase().split(/\s+/);
-    console.log("🧪 TAGS:", tags);
+    
 
     const result = matchTreatments(tags);
-console.log("🧪 MATCH RESULT:", result);
+
 
 
     // ✅ Treffer

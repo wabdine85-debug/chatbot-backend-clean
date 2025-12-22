@@ -641,10 +641,11 @@ app.post("/api/chat/match", (req, res) => {
         );
       }
 
-      if (key === "anti") {
-        list = treatments.filter(t =>
-          (t.category || "").toLowerCase().includes("anti")
-        );
+     if (key === "anti") {
+  const list = treatments.filter(t =>
+    (t.category || "").toLowerCase().includes("anti")
+  );
+
       }
 
       if (key === "hair") {

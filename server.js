@@ -626,68 +626,75 @@ app.post("/api/chat/match", (req, res) => {
 
     console.log("🧪 MESSAGE =", message);
 
-    // ==================================================
-    // 🔥 1) EXPLIZITES KATEGORIE-ROUTING (__CAT__)
-    // ==================================================
-    if (message.startsWith("__cat__:")) {
-      const key = message.replace("__cat__:", "").trim();
-      console.log("🟢 CAT KEY =", key);
+// ==================================================
+// 🔥 1) EXPLIZITES KATEGORIE-ROUTING (__CAT__)
+// ==================================================
+if (message.startsWith("__cat__:")) {
+  const key = message.replace("__cat__:", "").trim();
+  console.log("🟢 CAT KEY =", key);
 
-      let list = [];
+  let list = [];
 
-      if (key === "skin") {
-        list = treatments.filter(t =>
-          (t.category || "").toLowerCase().includes("haut")
-        );
-      }
+  if (key === "skin") {
+    list = treatments.filter(t =>
+      (t.category || "").toLowerCase().includes("haut")
+    );
+  }
 
-     if (key === "anti") {
-  const list = treatments.filter(t =>
-    (t.category || "").toLowerCase().includes("anti")
-  );
+  if (key === "anti") {
+    list = treatments.filter(t => {
+      const c = (t.category || "").toLowerCase();
+      return (
+        c.includes("anti") ||
+        c.includes("aging") ||
+        c.includes("straff") ||
+        c.includes("falten") ||
+        c.includes("lifting")
+      );
+    });
+  }
 
-      }
+  if (key === "hair") {
+    list = treatments.filter(t =>
+      (t.category || "").toLowerCase().includes("haar")
+    );
+  }
 
-      if (key === "hair") {
-        list = treatments.filter(t =>
-          (t.category || "").toLowerCase().includes("haar")
-        );
-      }
+  if (key === "contact") {
+    return res.json({
+      reply: "Gerne 😊",
+      buttons: [
+        {
+          label: "Termin buchen oder Beratung anfragen",
+          value: "https://palaisdebeaute.de/pages/contact"
+        }
+      ],
+      session_id
+    });
+  }
 
-      if (key === "contact") {
-        return res.json({
-          reply: "Gerne 😊",
-          buttons: [
-            {
-              label: "Termin buchen oder Beratung anfragen",
-              value: "https://palaisdebeaute.de/pages/contact"
-            }
-          ],
-          session_id
-        });
-      }
+  if (!list.length) {
+    return res.json({
+      reply: TEXT_FALLBACK,
+      buttons: [
+        { label: "Haut & Gesicht", value: "__CAT__:skin" },
+        { label: "Anti-Aging & Straffung", value: "__CAT__:anti" },
+        { label: "Haarentfernung", value: "__CAT__:hair" }
+      ],
+      session_id
+    });
+  }
 
-      if (!list.length) {
-        return res.json({
-          reply: TEXT_FALLBACK,
-          buttons: [
-            { label: "Haut & Gesicht", value: "__CAT__:skin" },
-            { label: "Anti-Aging & Straffung", value: "__CAT__:anti" },
-            { label: "Haarentfernung", value: "__CAT__:hair" }
-          ],
-          session_id
-        });
-      }
+  return res.json({
+    reply: list.length === 1 ? TEXT_SINGLE : TEXT_MULTI,
+    buttons: list.map(t => ({
+      label: t.name,
+      value: t.url
+    })),
+    session_id
+  });
+}
 
-      return res.json({
-        reply: list.length === 1 ? TEXT_SINGLE : TEXT_MULTI,
-        buttons: list.map(t => ({
-          label: t.name,
-          value: t.url
-        })),
-        session_id
-      });
-    }
 
     // ==================================================
     // 2) ALLGEMEINE ANFRAGEN (Kontakt / Beratung)

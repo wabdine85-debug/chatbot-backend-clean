@@ -633,47 +633,52 @@ app.post("/api/chat/match", (req, res) => {
 // ===============================
 // 🔥 HARTE KATEGORIE-ROUTING-REGEL (PREFIX)
 // ===============================
-if (message.startsWith("__cat__:")) {
+if (key === "skin") {
+  const list = treatments.filter(
+    t => (t.category || "").toLowerCase().includes("haut")
+  );
 
-  const key = message.replace("__cat__:", "");
+  return res.json({
+    reply: list.length === 1 ? TEXT_SINGLE : TEXT_MULTI,
+    buttons: list.map(t => ({ label: t.name, value: t.url })),
+    session_id
+  });
+}
 
-  if (key === "skin") {
-    const list = treatments.filter(t => t.category === "Haut & Gesicht");
-    return res.json({
-      reply: list.length === 1 ? TEXT_SINGLE : TEXT_MULTI,
-      buttons: list.map(t => ({ label: t.name, value: t.url })),
-      session_id
-    });
-  }
+if (key === "anti") {
+  const list = treatments.filter(
+    t => (t.category || "").toLowerCase().includes("anti")
+  );
 
-  if (key === "anti") {
-    const list = treatments.filter(t => t.category === "Anti-Aging");
-    return res.json({
-      reply: list.length === 1 ? TEXT_SINGLE : TEXT_MULTI,
-      buttons: list.map(t => ({ label: t.name, value: t.url })),
-      session_id
-    });
-  }
+  return res.json({
+    reply: list.length === 1 ? TEXT_SINGLE : TEXT_MULTI,
+    buttons: list.map(t => ({ label: t.name, value: t.url })),
+    session_id
+  });
+}
 
-  if (key === "hair") {
-    const list = treatments.filter(t => t.category === "Haarentfernung");
-    return res.json({
-      reply: TEXT_MULTI,
-      buttons: list.map(t => ({ label: t.name, value: t.url })),
-      session_id
-    });
-  }
+if (key === "hair") {
+  const list = treatments.filter(
+    t => (t.category || "").toLowerCase().includes("haar")
+  );
 
-  if (key === "contact") {
-    return res.json({
-      reply: "Gerne 😊",
-      buttons: [{
-        label: "Termin buchen oder Beratung anfragen",
-        value: "https://palaisdebeaute.de/pages/contact"
-      }],
-      session_id
-    });
-  }
+  return res.json({
+    reply: TEXT_MULTI,
+    buttons: list.map(t => ({ label: t.name, value: t.url })),
+    session_id
+  });
+}
+
+if (key === "contact") {
+  return res.json({
+    reply: "Gerne 😊",
+    buttons: [{
+      label: "Termin buchen oder Beratung anfragen",
+      value: "https://palaisdebeaute.de/pages/contact"
+    }],
+    session_id
+  });
+
 }
 
 

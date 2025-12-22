@@ -718,47 +718,6 @@ if (forcedCategory) {
 }
 
 
-    // -------------------------
-    // 3) FREITEXT-MATCHING (dein bestehendes System)
-    // -------------------------
-    const tags = message.split(/\s+/);
-    const result = matchTreatments(tags);
-
-    const rankedMatches = (result || [])
-      .sort((a, b) => {
-        if ((b.score || 0) !== (a.score || 0)) {
-          return (b.score || 0) - (a.score || 0);
-        }
-        return (b.priority || 0) - (a.priority || 0);
-      })
-      .slice(0, 2);
-
-    let replyText = TEXT_FALLBACK;
-    if (rankedMatches.length === 1) replyText = TEXT_SINGLE;
-    if (rankedMatches.length > 1) replyText = TEXT_MULTI;
-
-    if (rankedMatches.length > 0) {
-      return res.json({
-        reply: replyText,
-        buttons: rankedMatches.map(t => ({
-          label: t.name,
-          value: t.url
-        })),
-        session_id
-      });
-    }
-
-    // Fallback
-    return res.json({
-      reply: TEXT_FALLBACK,
-      buttons: [
-        { label: "Haut & Gesicht", value: "haut" },
-        { label: "Anti-Aging & Straffung", value: "anti aging" },
-        { label: "Haarentfernung", value: "haarentfernung" }
-      ],
-      session_id
-    });
-
   } catch (err) {
     console.error("MATCH ERROR:", err);
     return res.status(500).json({

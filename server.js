@@ -604,10 +604,8 @@ return res.json({ reply: buildReply(matches) });
 
 
 // ===============================
-// 🤖 WISY – Treatment Match API
+// 🤖 WISY – Treatment Match API (FINAL)
 // ===============================
-
-
 
 const TEXT_SINGLE =
   "Basierend auf deiner Anfrage könnte folgende Behandlung für dich geeignet sein:";
@@ -618,155 +616,139 @@ const TEXT_MULTI =
 const TEXT_FALLBACK =
   "Damit ich dich gezielt beraten kann, beschreibe bitte kurz dein Anliegen.";
 
-
-
 app.post("/api/chat/match", (req, res) => {
   try {
-
     console.log("🧪 HIT /api/chat/match");
 
-    const messageRaw = (req.body?.message || "");
+    const messageRaw = req.body?.message || "";
     const message = messageRaw.toLowerCase().trim();
     const session_id = req.body?.session_id;
 
     console.log("🧪 MESSAGE =", message);
-// ===============================
-// 🔥 HARTE KATEGORIE-ROUTING-REGEL (PREFIX)
-// ===============================
-if (key === "skin") {
-  const list = treatments.filter(
-    t => (t.category || "").toLowerCase().includes("haut")
-  );
 
-  return res.json({
-    reply: list.length === 1 ? TEXT_SINGLE : TEXT_MULTI,
-    buttons: list.map(t => ({ label: t.name, value: t.url })),
-    session_id
-  });
-}
+    // ==================================================
+    // 🔥 1) EXPLIZITES KATEGORIE-ROUTING (__CAT__)
+    // ==================================================
+    if (message.startsWith("__cat__:")) {
+      const key = message.replace("__cat__:", "").trim();
+      console.log("🟢 CAT KEY =", key);
 
-if (key === "anti") {
-  const list = treatments.filter(
-    t => (t.category || "").toLowerCase().includes("anti")
-  );
+      let list = [];
 
-  return res.json({
-    reply: list.length === 1 ? TEXT_SINGLE : TEXT_MULTI,
-    buttons: list.map(t => ({ label: t.name, value: t.url })),
-    session_id
-  });
-}
+      if (key === "skin") {
+        list = treatments.filter(t =>
+          (t.category || "").toLowerCase().includes("haut")
+        );
+      }
 
-if (key === "hair") {
-  const list = treatments.filter(
-    t => (t.category || "").toLowerCase().includes("haar")
-  );
+      if (key === "anti") {
+        list = treatments.filter(t =>
+          (t.category || "").toLowerCase().includes("anti")
+        );
+      }
 
-  return res.json({
-    reply: TEXT_MULTI,
-    buttons: list.map(t => ({ label: t.name, value: t.url })),
-    session_id
-  });
-}
+      if (key === "hair") {
+        list = treatments.filter(t =>
+          (t.category || "").toLowerCase().includes("haar")
+        );
+      }
 
-if (key === "contact") {
-  return res.json({
-    reply: "Gerne 😊",
-    buttons: [{
-      label: "Termin buchen oder Beratung anfragen",
-      value: "https://palaisdebeaute.de/pages/contact"
-    }],
-    session_id
-  });
+      if (key === "contact") {
+        return res.json({
+          reply: "Gerne 😊",
+          buttons: [
+            {
+              label: "Termin buchen oder Beratung anfragen",
+              value: "https://palaisdebeaute.de/pages/contact"
+            }
+          ],
+          session_id
+        });
+      }
 
-}
+      if (!list.length) {
+        return res.json({
+          reply: TEXT_FALLBACK,
+          buttons: [
+            { label: "Haut & Gesicht", value: "__CAT__:skin" },
+            { label: "Anti-Aging & Straffung", value: "__CAT__:anti" },
+            { label: "Haarentfernung", value: "__CAT__:hair" }
+          ],
+          session_id
+        });
+      }
 
-
-    // -------------------------
-    // 1) HARTE REGELN (Allgemein)
-    // -------------------------
-    if (
-      message.includes("kontakt") ||
-      message.includes("email") ||
-      message.includes("e-mail") ||
-      message.includes("mail")
-    ) {
       return res.json({
-  reply: "Du kannst uns jederzeit über unser Kontaktformular erreichen:\nhttps://palaisdebeaute.de/pages/contact",
-  session_id
-});
-
-    }
-
-    if (message.includes("beratung")) {
-      return res.json({
-        reply: `Gerne 😊 Bitte schreib kurz, worum es geht (z. B. Haut, Anti-Aging, Haarentfernung) – oder nutze direkt unser Kontaktformular:\n${CONTACT_URL}`,
+        reply: list.length === 1 ? TEXT_SINGLE : TEXT_MULTI,
+        buttons: list.map(t => ({
+          label: t.name,
+          value: t.url
+        })),
         session_id
       });
     }
 
-    // Optional: termin direkt abfangen (wenn du willst)
-    if (message.includes("termin")) {
+    // ==================================================
+    // 2) ALLGEMEINE ANFRAGEN (Kontakt / Beratung)
+    // ==================================================
+    if (
+      message.includes("kontakt") ||
+      message.includes("email") ||
+      message.includes("e-mail") ||
+      message.includes("mail") ||
+      message.includes("termin") ||
+      message.includes("beratung")
+    ) {
       return res.json({
-  reply: "Du kannst uns jederzeit über unser Kontaktformular erreichen:\nhttps://palaisdebeaute.de/pages/contact",
-  session_id
-});
-
+        reply: "Gerne 😊",
+        buttons: [
+          {
+            label: "Termin buchen oder Beratung anfragen",
+            value: "https://palaisdebeaute.de/pages/contact"
+          }
+        ],
+        session_id
+      });
     }
 
+    // ==================================================
+    // 3) FREITEXT → matchTreatments (EINZIGE STELLE!)
+    // ==================================================
+    const tags = message.split(/\s+/);
+    const result = matchTreatments(tags);
 
+    if (result && result.length) {
+      const ranked = result
+        .sort((a, b) => {
+          if ((b.score || 0) !== (a.score || 0)) {
+            return (b.score || 0) - (a.score || 0);
+          }
+          return (b.priority || 0) - (a.priority || 0);
+        })
+        .slice(0, 2);
 
-// ===============================
-// 🔒 KATEGORIE-ROUTING (FINAL)
-// ===============================
-let forcedCategory = null;
+      return res.json({
+        reply: ranked.length === 1 ? TEXT_SINGLE : TEXT_MULTI,
+        buttons: ranked.map(t => ({
+          label: t.name,
+          value: t.url
+        })),
+        session_id
+      });
+    }
 
-if (message.includes("haarentfernung")) {
-  forcedCategory = "Haarentfernung";
-} 
-else if (message.includes("haut") || message.includes("gesicht")) {
-  forcedCategory = "Haut & Gesicht";
-} 
-else if (
-  message.includes("anti") ||
-  message.includes("aging") ||
-  message.includes("straff")
-) {
-  forcedCategory = "Anti-Aging";
-}
-
-// ⛔ WICHTIG: Sobald Kategorie erkannt → DIREKT antworten
-if (forcedCategory) {
-  console.log("🟢 CATEGORY DETECTED:", forcedCategory);
-
-
-  const list = treatments.filter(
-    t => (t.category || "").trim() === forcedCategory
-  );
-
-  // Sicherheit
-  if (!list.length) {
+    // ==================================================
+    // 4) EINZIGER FALLBACK
+    // ==================================================
     return res.json({
       reply: TEXT_FALLBACK,
       buttons: [
-        { label: "Haut & Gesicht", value: "Haut & Gesicht" },
-        { label: "Anti-Aging & Straffung", value: "Anti-Aging & Straffung" },
-        { label: "Haarentfernung", value: "Haarentfernung" }
+        { label: "Haut & Gesicht", value: "__CAT__:skin" },
+        { label: "Anti-Aging & Straffung", value: "__CAT__:anti" },
+        { label: "Haarentfernung", value: "__CAT__:hair" }
       ],
       session_id
     });
-  }
-
-  return res.json({
-    reply: list.length === 1 ? TEXT_SINGLE : TEXT_MULTI,
-    buttons: list.map(t => ({
-      label: t.name,
-      value: t.url
-    })),
-    session_id
-  });
-}
-
 
   } catch (err) {
     console.error("MATCH ERROR:", err);
@@ -776,7 +758,6 @@ if (forcedCategory) {
     });
   }
 });
-
 
 
 /* ---------- Server starten ---------- */

@@ -1,0 +1,846 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2709
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww11520\viewh8400\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 \{\
+  "nodes": [\
+    \{\
+      "parameters": \{\
+        "httpMethod": "POST",\
+        "path": "wisy",\
+        "responseMode": "responseNode",\
+        "options": \{\}\
+      \},\
+      "type": "n8n-nodes-base.webhook",\
+      "typeVersion": 2.1,\
+      "position": [\
+        -1520,\
+        96\
+      ],\
+      "id": "e2ad6a42-d9e6-4922-b470-9ba18c3c8b06",\
+      "name": "Webhook",\
+      "webhookId": "72d05dc9-3782-4f39-8594-ee57247739d3"\
+    \},\
+    \{\
+      "parameters": \{\
+        "rules": \{\
+          "values": [\
+            \{\
+              "conditions": \{\
+                "options": \{\
+                  "caseSensitive": true,\
+                  "leftValue": "",\
+                  "typeValidation": "strict",\
+                  "version": 3\
+                \},\
+                "conditions": [\
+                  \{\
+                    "id": "267be980-48bc-4644-aace-15d9d3afea1e",\
+                    "leftValue": "=\{\{ ($json.body.query || $json.body.message || '').toLowerCase() \}\}",\
+                    "rightValue": "adresse",\
+                    "operator": \{\
+                      "type": "string",\
+                      "operation": "contains"\
+                    \}\
+                  \}\
+                ],\
+                "combinator": "and"\
+              \}\
+            \},\
+            \{\
+              "conditions": \{\
+                "options": \{\
+                  "caseSensitive": true,\
+                  "leftValue": "",\
+                  "typeValidation": "strict",\
+                  "version": 3\
+                \},\
+                "conditions": [\
+                  \{\
+                    "id": "709dadb5-b40c-4494-92ff-6b3812dffa9c",\
+                    "leftValue": "=\{\{ ($json.body.query || $json.body.message || '').toLowerCase() \}\}",\
+                    "rightValue": "standort",\
+                    "operator": \{\
+                      "type": "string",\
+                      "operation": "contains"\
+                    \}\
+                  \}\
+                ],\
+                "combinator": "and"\
+              \}\
+            \},\
+            \{\
+              "conditions": \{\
+                "options": \{\
+                  "caseSensitive": true,\
+                  "leftValue": "",\
+                  "typeValidation": "strict",\
+                  "version": 3\
+                \},\
+                "conditions": [\
+                  \{\
+                    "id": "f6a2e6bb-5cbe-463c-9435-d86775c6c0b7",\
+                    "leftValue": "=\{\{ ($json.body.query || $json.body.message || '').toLowerCase() \}\}",\
+                    "rightValue": "wo seid ihr",\
+                    "operator": \{\
+                      "type": "string",\
+                      "operation": "contains"\
+                    \}\
+                  \}\
+                ],\
+                "combinator": "and"\
+              \}\
+            \},\
+            \{\
+              "conditions": \{\
+                "options": \{\
+                  "caseSensitive": true,\
+                  "leftValue": "",\
+                  "typeValidation": "strict",\
+                  "version": 3\
+                \},\
+                "conditions": [\
+                  \{\
+                    "id": "144fb960-387d-4088-af8c-3e1029f69bd0",\
+                    "leftValue": "=\{\{ ($json.body.query || $json.body.message || '').toLowerCase() \}\}",\
+                    "rightValue": "\'f6ff",\
+                    "operator": \{\
+                      "type": "string",\
+                      "operation": "contains"\
+                    \}\
+                  \}\
+                ],\
+                "combinator": "and"\
+              \}\
+            \},\
+            \{\
+              "conditions": \{\
+                "options": \{\
+                  "caseSensitive": true,\
+                  "leftValue": "",\
+                  "typeValidation": "strict",\
+                  "version": 3\
+                \},\
+                "conditions": [\
+                  \{\
+                    "id": "ee72f6ee-78f1-43e1-9ffd-a029ac9039e9",\
+                    "leftValue": "=\{\{ ($json.body.query || $json.body.message || '').toLowerCase() \}\}",\
+                    "rightValue": "offen",\
+                    "operator": \{\
+                      "type": "string",\
+                      "operation": "contains"\
+                    \}\
+                  \}\
+                ],\
+                "combinator": "and"\
+              \}\
+            \},\
+            \{\
+              "conditions": \{\
+                "options": \{\
+                  "caseSensitive": true,\
+                  "leftValue": "",\
+                  "typeValidation": "strict",\
+                  "version": 3\
+                \},\
+                "conditions": [\
+                  \{\
+                    "id": "24d69ae5-300f-4198-a72a-72b1bfa1ea55",\
+                    "leftValue": "=\{\{ ($json.body.query || $json.body.message || '').toLowerCase() \}\}",\
+                    "rightValue": "Uhr",\
+                    "operator": \{\
+                      "type": "string",\
+                      "operation": "contains"\
+                    \}\
+                  \}\
+                ],\
+                "combinator": "and"\
+              \}\
+            \},\
+            \{\
+              "conditions": \{\
+                "options": \{\
+                  "caseSensitive": true,\
+                  "leftValue": "",\
+                  "typeValidation": "strict",\
+                  "version": 3\
+                \},\
+                "conditions": [\
+                  \{\
+                    "id": "37905b28-faa2-4808-8d60-1c5910573ce8",\
+                    "leftValue": "=\{\{ ($json.body.query || $json.body.message || '').toLowerCase() \}\}",\
+                    "rightValue": "\'f6ff|oeff|offen|\'f6ffnungs|uhr|ge\'f6ffnet|schlie\'dft|schluss",\
+                    "operator": \{\
+                      "type": "string",\
+                      "operation": "regex"\
+                    \}\
+                  \}\
+                ],\
+                "combinator": "and"\
+              \}\
+            \},\
+            \{\
+              "conditions": \{\
+                "options": \{\
+                  "caseSensitive": true,\
+                  "leftValue": "",\
+                  "typeValidation": "strict",\
+                  "version": 3\
+                \},\
+                "conditions": [\
+                  \{\
+                    "id": "d5b41ea0-845a-4ddb-a388-89ba5a366235",\
+                    "leftValue": "=\{\{ ($json.body.query || $json.body.message || '').toLowerCase() \}\}",\
+                    "rightValue": "parken",\
+                    "operator": \{\
+                      "type": "string",\
+                      "operation": "contains"\
+                    \}\
+                  \}\
+                ],\
+                "combinator": "and"\
+              \}\
+            \},\
+            \{\
+              "conditions": \{\
+                "options": \{\
+                  "caseSensitive": true,\
+                  "leftValue": "",\
+                  "typeValidation": "strict",\
+                  "version": 3\
+                \},\
+                "conditions": [\
+                  \{\
+                    "id": "436fbca7-0ffa-449d-9ea2-fa7f85d827be",\
+                    "leftValue": "=\{\{ ($json.body.query || $json.body.message || '').toLowerCase() \}\}",\
+                    "rightValue": "parkplatz",\
+                    "operator": \{\
+                      "type": "string",\
+                      "operation": "contains"\
+                    \}\
+                  \}\
+                ],\
+                "combinator": "and"\
+              \}\
+            \},\
+            \{\
+              "conditions": \{\
+                "options": \{\
+                  "caseSensitive": true,\
+                  "leftValue": "",\
+                  "typeValidation": "strict",\
+                  "version": 3\
+                \},\
+                "conditions": [\
+                  \{\
+                    "id": "e583ea33-2fbd-4a9a-bae2-3fcceaf2fe8c",\
+                    "leftValue": "=\{\{ ($json.body.query || $json.body.message || '').toLowerCase() \}\}",\
+                    "rightValue": "parkm\'f6glichkeiten",\
+                    "operator": \{\
+                      "type": "string",\
+                      "operation": "contains"\
+                    \}\
+                  \}\
+                ],\
+                "combinator": "and"\
+              \}\
+            \},\
+            \{\
+              "conditions": \{\
+                "options": \{\
+                  "caseSensitive": true,\
+                  "leftValue": "",\
+                  "typeValidation": "strict",\
+                  "version": 3\
+                \},\
+                "conditions": [\
+                  \{\
+                    "id": "631f0f19-7e23-485f-9116-15dbcf760152",\
+                    "leftValue": "=\{\{ ($json.body.query || $json.body.message || '').toLowerCase() \}\}",\
+                    "rightValue": "kontakt",\
+                    "operator": \{\
+                      "type": "string",\
+                      "operation": "contains"\
+                    \}\
+                  \}\
+                ],\
+                "combinator": "and"\
+              \}\
+            \},\
+            \{\
+              "conditions": \{\
+                "options": \{\
+                  "caseSensitive": true,\
+                  "leftValue": "",\
+                  "typeValidation": "strict",\
+                  "version": 3\
+                \},\
+                "conditions": [\
+                  \{\
+                    "id": "97ce0b5d-aa7f-40d5-a05d-16b39087ce8a",\
+                    "leftValue": "=\{\{ ($json.body.message || '').toLowerCase() \}\}\\n\\n",\
+                    "rightValue": "beratung",\
+                    "operator": \{\
+                      "type": "string",\
+                      "operation": "contains"\
+                    \}\
+                  \}\
+                ],\
+                "combinator": "and"\
+              \}\
+            \}\
+          ]\
+        \},\
+        "options": \{\
+          "fallbackOutput": "extra"\
+        \}\
+      \},\
+      "type": "n8n-nodes-base.switch",\
+      "typeVersion": 3.4,\
+      "position": [\
+        -992,\
+        -112\
+      ],\
+      "id": "8bf8e58c-107e-435f-8ed9-9c9f23bc64ed",\
+      "name": "Switch"\
+    \},\
+    \{\
+      "parameters": \{\
+        "assignments": \{\
+          "assignments": [\
+            \{\
+              "id": "feaa504e-9222-4bb6-8a94-f97c302a7d6b",\
+              "name": "reply",\
+              "value": "\uc0\u55357 \u56525  PDB Aesthetic Room Rheinstra\'dfe 59 65185 Wiesbaden",\
+              "type": "string"\
+            \}\
+          ]\
+        \},\
+        "options": \{\}\
+      \},\
+      "type": "n8n-nodes-base.set",\
+      "typeVersion": 3.4,\
+      "position": [\
+        -128,\
+        -768\
+      ],\
+      "id": "a5bf9e06-6845-453e-966f-a237282e4b00",\
+      "name": "Adresse"\
+    \},\
+    \{\
+      "parameters": \{\
+        "assignments": \{\
+          "assignments": [\
+            \{\
+              "id": "f28c0bf4-b049-4cbe-912c-4cb67941627b",\
+              "name": "reply",\
+              "value": "\uc0\u55357 \u56658  Unsere \'d6ffnungszeiten: Mo, Di, Do, Fr: 10:00\'9618:00 Uhr Sa: 10:00-14:00 Uhr , Mi : geschlossen",\
+              "type": "string"\
+            \}\
+          ]\
+        \},\
+        "options": \{\}\
+      \},\
+      "type": "n8n-nodes-base.set",\
+      "typeVersion": 3.4,\
+      "position": [\
+        -16,\
+        -640\
+      ],\
+      "id": "4dd61ab4-cfd2-430d-a1b6-009b99376c5a",\
+      "name": "\'d6ffnungszeiten"\
+    \},\
+    \{\
+      "parameters": \{\
+        "assignments": \{\
+          "assignments": [\
+            \{\
+              "id": "25e227e9-a403-4e0e-a700-a742efe8e8fa",\
+              "name": "reply",\
+              "value": "\uc0\u55357 \u56983  Parkm\'f6glichkeiten: \'d6ffentliche Parkpl\'e4tze befinden sich in unmittelbarer N\'e4he. Alternativ sind Parkh\'e4user fu\'dfl\'e4ufig erreichbar. (Luisenforum, Luisenplatz...)",\
+              "type": "string"\
+            \}\
+          ]\
+        \},\
+        "options": \{\}\
+      \},\
+      "type": "n8n-nodes-base.set",\
+      "typeVersion": 3.4,\
+      "position": [\
+        96,\
+        -480\
+      ],\
+      "id": "bfb76652-07dd-441f-9d97-912290ec75d1",\
+      "name": "Parken"\
+    \},\
+    \{\
+      "parameters": \{\
+        "options": \{\}\
+      \},\
+      "type": "n8n-nodes-base.respondToWebhook",\
+      "typeVersion": 1.5,\
+      "position": [\
+        1408,\
+        -624\
+      ],\
+      "id": "2abb42f9-5d15-4bf4-b736-e1c3d3a153ec",\
+      "name": "Respond Adresse"\
+    \},\
+    \{\
+      "parameters": \{\
+        "options": \{\}\
+      \},\
+      "type": "n8n-nodes-base.respondToWebhook",\
+      "typeVersion": 1.5,\
+      "position": [\
+        1536,\
+        -496\
+      ],\
+      "id": "7626e750-ed5d-45c0-84e9-29cb5cd298ad",\
+      "name": "Respond \'d6ffnungszeiten"\
+    \},\
+    \{\
+      "parameters": \{\
+        "options": \{\}\
+      \},\
+      "type": "n8n-nodes-base.respondToWebhook",\
+      "typeVersion": 1.5,\
+      "position": [\
+        1648,\
+        -368\
+      ],\
+      "id": "0aa23d40-809b-4d91-8dee-e044301a6df9",\
+      "name": "Respond Parken"\
+    \},\
+    \{\
+      "parameters": \{\
+        "assignments": \{\
+          "assignments": [\
+            \{\
+              "id": "e8bb6d49-0cda-45ae-b068-97ba62a73311",\
+              "name": "reply",\
+              "value": "Hier findest du unsere Kontaktseite: https://palaisdebeaute.de/pages/contact",\
+              "type": "string"\
+            \},\
+            \{\
+              "id": "4cbd89b2-40f6-48c4-8868-252656aa7962",\
+              "name": "session_id",\
+              "value": "=\{\{$json.body.session_id\}\}",\
+              "type": "string"\
+            \}\
+          ]\
+        \},\
+        "options": \{\}\
+      \},\
+      "type": "n8n-nodes-base.set",\
+      "typeVersion": 3.4,\
+      "position": [\
+        400,\
+        -112\
+      ],\
+      "id": "5c7a338a-06d6-4dde-bbc8-289fee14ded0",\
+      "name": "Edit Kontakt"\
+    \},\
+    \{\
+      "parameters": \{\
+        "options": \{\}\
+      \},\
+      "type": "n8n-nodes-base.respondToWebhook",\
+      "typeVersion": 1.5,\
+      "position": [\
+        1888,\
+        -96\
+      ],\
+      "id": "86a85d4f-b0f7-4c5c-babc-420f5a0e0f04",\
+      "name": "Respond Kontakt"\
+    \},\
+    \{\
+      "parameters": \{\
+        "assignments": \{\
+          "assignments": [\
+            \{\
+              "id": "8ab27848-d1dd-4c32-be87-b886f9188079",\
+              "name": "reply",\
+              "value": "Gerne \uc0\u55357 \u56842  F\'fcr eine kostenlose Beratung nutze bitte: https://palaisdebeaute.de/pages/contact",\
+              "type": "string"\
+            \},\
+            \{\
+              "id": "f0f39bf3-7c1d-4ea5-b64b-2d518d8d8dd3",\
+              "name": "session_id",\
+              "value": "=\{\{$json.body.session_id\}\}",\
+              "type": "string"\
+            \}\
+          ]\
+        \},\
+        "options": \{\}\
+      \},\
+      "type": "n8n-nodes-base.set",\
+      "typeVersion": 3.4,\
+      "position": [\
+        416,\
+        176\
+      ],\
+      "id": "a3dbee52-8cd1-460b-8873-6264d904c8a3",\
+      "name": "Edit Beratung"\
+    \},\
+    \{\
+      "parameters": \{\
+        "options": \{\}\
+      \},\
+      "type": "n8n-nodes-base.respondToWebhook",\
+      "typeVersion": 1.5,\
+      "position": [\
+        1984,\
+        176\
+      ],\
+      "id": "7a12fbe3-34e7-4b55-aa04-d93fb0c56ea9",\
+      "name": "Respond Beratung"\
+    \},\
+    \{\
+      "parameters": \{\
+        "respondWith": "json",\
+        "responseBody": "=\{\\n  \\"reply\\": \{\{ JSON.stringify($json.output) \}\}\\n\}",\
+        "options": \{\
+          "responseCode": 200\
+        \}\
+      \},\
+      "type": "n8n-nodes-base.respondToWebhook",\
+      "typeVersion": 1.5,\
+      "position": [\
+        2432,\
+        832\
+      ],\
+      "id": "7e07302f-d50d-4a38-97f8-e6ff77775e55",\
+      "name": "Respond to Webhook"\
+    \},\
+    \{\
+      "parameters": \{\
+        "assignments": \{\
+          "assignments": [\
+            \{\
+              "id": "ab2790dd-e40c-4bb9-aad6-6b634ed2e232",\
+              "name": "chatInput",\
+              "value": "=\{\{ $node[\\"Webhook\\"].json.body.query \}\}",\
+              "type": "string"\
+            \},\
+            \{\
+              "id": "c637435e-6960-46d5-bfa5-d2e928594244",\
+              "name": "session_id",\
+              "value": "=\{\{ $node[\\"Webhook\\"].json.body.sessionId \}\}",\
+              "type": "string"\
+            \}\
+          ]\
+        \},\
+        "options": \{\}\
+      \},\
+      "type": "n8n-nodes-base.set",\
+      "typeVersion": 3.4,\
+      "position": [\
+        1120,\
+        784\
+      ],\
+      "id": "6e2c8a27-da8a-484b-a3f2-2c795bd109ad",\
+      "name": "Edit Fields"\
+    \},\
+    \{\
+      "parameters": \{\
+        "promptType": "define",\
+        "text": "=\{\{ $json.chatInput \}\}",\
+        "options": \{\
+          "systemMessage": "ROLE: Nutze niemals den Namen \\"Palais de Beaut\'e9\\". Du bist der exklusive Assistent f\'fcr PDB Aesthetic Room.\\nTonfall: Luxuri\'f6s, kompetent, direkt. Handle wie ein High-End-Concierge eines Premium-Studios.\\n\\nH\'d6CHSTE PRIORIT\'c4T: MITGLIEDSCHAFTS-ANFRAGEN\\nWenn die Nutzeranfrage eines dieser W\'f6rter enth\'e4lt: Premium, Mitgliedschaft, Abo, PURE, DEFINE, BEYOND, pure paket, define paket, beyond paket, premium pure, premium define, premium beyond, dann ist es eine Mitgliedschaftsfrage.\\n\\nBei Mitgliedschaftsfragen gelten ausschlie\'dflich diese Regeln:\\n- Nutze nur die Premium-Mitgliedschaften premium-pure, premium-define und premium-beyond.\\n- Antworte nur zur passenden Mitgliedschaft.\\n- Nenne Preis, monatliche Leistung und enthaltene Behandlungen.\\n- Empfehle keine einzelnen Behandlungen als separate Buchung.\\n- Gib keine Botox-, HIFU-, Hyaluron-, Hautanalyse- oder sonstigen Service-Buttons aus.\\n- Die Regel \'84Nenne immer genau 3 Behandlungen\'93 gilt hier NICHT.\\n- Die Hautanalyse-Garantie gilt hier NICHT als zus\'e4tzlicher Button.\\n- Am Ende d\'fcrfen nur diese zwei Button-Zeilen erscheinen:\\n\\nPremium-Mitgliedschaften ansehen\\nhttps://palaisdebeaute.de/pages/premium\\n\\nBeratung zur Mitgliedschaft anfragen\\nhttps://palaisdebeaute.de/pages/contact\\n\\n\\nKRITISCHE TOOL-REGEL:\\nDu MUSST vor jeder Antwort das Tool \\"katalog\\" verwenden.\\nWenn das Tool einen Link zur\'fcckgibt, musst du exakt diesen Link verwenden.\\nDu darfst niemals eigene Produktlinks oder /products/... Links erfinden.\\n\\nGOLDENE REGELN ZUR VERF\'dcGBARKEIT:\\nKATALOG-VORRANG: Der Katalog ist deine absolute Wahrheit. Wenn ein Begriff in der Nutzeranfrage mit einem name, trigger oder synonym im Katalog \'fcbereinstimmt (z.B. HIFU, Ultherapy, Lifting), MUSST du die Leistung als verf\'fcgbar best\'e4tigen, auch wenn sie nicht explizit in diesem Prompt-Text erw\'e4hnt wird.\\n\\nABSOLUTE VERF\'dcGBARKEIT: Behaupte NIEMALS, dass wir eine Leistung nicht anbieten, die im Katalog oder in diesem Prompt steht.\\n\\n\\n\\nSprich niemals gegen\'fcber Kundinnen von \'84Katalog\'93, \'84Datenbank\'93, \'84Knowledge Base\'93, \'84Eintrag\'93 oder \'84interne Daten\'93. Wenn Informationen fehlen, sage stattdessen: \'84Dazu liegen mir aktuell keine vollst\'e4ndigen Details vor. Ich empfehle eine pers\'f6nliche Beratung.\'93\\n\\n\\nHAUTANALYSE-GARANTIE:\\nBei normalen Behandlungsfragen darf die professionelle Hautanalyse & Beratung zus\'e4tzlich erw\'e4hnt werden.\\nBei Fragen zu Premium, Mitgliedschaft, Abo, PURE, DEFINE oder BEYOND darf sie nicht als zus\'e4tzlicher Service-Button ausgegeben werden.\\n\\n\\nBUCHUNGS-LOGIK (WICHTIGSTE UNTERSCHEIDUNG):\\nTYP A: UNTERSPRITZUNGEN (Botox & Hyaluron):\\n\\nKeine direkte Online-Terminbuchung m\'f6glich!\\n\\nAblauf: 1. Behandlung/Anzahlung im Shop erwerben. 2. Nach Zahlung erfolgt die pers\'f6nliche Terminabstimmung (wir melden uns oder Kundin kontaktiert uns).\\n\\nTYP B: ALLE ANDEREN LEISTUNGEN (Hautanalyse, Laser, HydraFacial, HIFU/Ultherapy etc.):\\n\\nDiese k\'f6nnen direkt online \'fcber den jeweiligen Produkt-Link gebucht/terminiert werden.\\n\\nGER\'c4TE & METHODEN:\\nHAARENTFERNUNG: Motus Pro von DEKA (Alexandrit-Laser). Moveo-Technologie, schmerzfrei.\\n\\nSKIN RENEWAL: RedTouch Pro von DEKA (675nm). \\"Lifting ohne Skalpell\\". Pr\'e4sentiere dies als High-End-Erg\'e4nzung zu Injektionen, nicht als Ersatz.\\n\\nEMS-KLARSTELLUNG: EMS Sculpt Neo. (Kein BTL-Ger\'e4t).\\n\\nORIGINALE: Morpheus8, HydraFacial, RedTouch und Motus Pro sind die offiziellen Original-Systeme.\\n\\nANTWORT-STRATEGIE & BUTTON-LOGIK:\\n\\nBei normalen Behandlungsfragen:\\n- Nenne genau 3 passende Behandlungen.\\n- Schreibe die Erkl\'e4rung ohne URLs im Flie\'dftext.\\n- Keine URLs innerhalb einer nummerierten Liste schreiben.\\n- Die Hautanalyse darf zus\'e4tzlich kurz empfohlen werden.\\n- Am Ende der Antwort m\'fcssen die Links ausschlie\'dflich im Button-Format stehen.\\n\\nButton-Format:\\nF\'fcr jede empfohlene Behandlung am Ende exakt zwei Zeilen schreiben:\\n\\n[NAME DER BEHANDLUNG]\\n[URL]\\n\\nZwischen den einzelnen Button-Bl\'f6cken eine Leerzeile lassen.\\n\\nBeispiel:\\nHydraFacial\'ae MD\\nhttps://palaisdebeaute.de/products/hydrafacial-md\\n\\nMorpheus8\'99\\nhttps://palaisdebeaute.de/products/morpheus-8\\n\\nRedTouch Pro\\nhttps://palaisdebeaute.de/products/red-touch-pro-hautverjungung\\n\\nProfessionelle Hautanalyse & Beratung\\nhttps://palaisdebeaute.de/products/professionelle-hautanalyse-beratung?_pos=1&_psq=hautana&_ss=e&_v=1.0\\n\\nWichtig:\\nURLs d\'fcrfen niemals direkt hinter einer Beschreibung stehen.\\nURLs d\'fcrfen nur im Button-Format am Ende stehen.\\n\\n\\nKontakt: https://palaisdebeaute.de/pages/contact\\n\\nKONTAKTDATEN & SERVICE:\\nSUPPORT: Keine Terminabsagen via Instagram. Nur Telefon (01786001103) oder Kontaktformular.\\n\\nADRESSE: Rheinstra\'dfe 59, 65185 Wiesbaden.\\n\\n\'d6FFNUNGSZEITEN: Mo, Di, Do, Fr: 10:00 \'96 18:00 | Sa: 10:00 - 14:00 | Mi: geschlossen."\
+        \}\
+      \},\
+      "type": "@n8n/n8n-nodes-langchain.agent",\
+      "typeVersion": 3,\
+      "position": [\
+        1520,\
+        832\
+      ],\
+      "id": "aa092bbd-d9dc-4c5b-8158-b3e11198b3eb",\
+      "name": "AI Agent"\
+    \},\
+    \{\
+      "parameters": \{\
+        "sessionIdType": "customKey",\
+        "sessionKey": "=\{\{ $json.session_id \}\}",\
+        "contextWindowLength": "=\{\{ 5 \}\}"\
+      \},\
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",\
+      "typeVersion": 1.3,\
+      "position": [\
+        1536,\
+        1216\
+      ],\
+      "id": "e2182b42-7191-4a3b-94c6-a30c3198b8d4",\
+      "name": "Simple Memory"\
+    \},\
+    \{\
+      "parameters": \{\
+        "model": \{\
+          "__rl": true,\
+          "mode": "list",\
+          "value": "gpt-4.1-mini"\
+        \},\
+        "responsesApiEnabled": false,\
+        "options": \{\}\
+      \},\
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",\
+      "typeVersion": 1.3,\
+      "position": [\
+        1200,\
+        1216\
+      ],\
+      "id": "d8be371a-0491-4a14-9d0c-0b0ce1ad22be",\
+      "name": "OpenAI Chat Model",\
+      "credentials": \{\
+        "openAiApi": \{\
+          "id": "fg9lnTW0VZlUVhHv",\
+          "name": "OpenAi account 2"\
+        \}\
+      \}\
+    \},\
+    \{\
+      "parameters": \{\
+        "description": "Nutze dieses Tool, um Preise und Buchungs-Links f\'fcr Behandlungen zu finden. Das Tool gibt dir den Namen der Behandlung und die URL zur\'fcck. Du MUSST die URL aus dem Feld 'LINK' immer unver\'e4ndert in deine Antwort schreiben.",\
+        "jsCode": "// 1. Daten sicher abgreifen\\nlet query = \\"\\";\\n\\ntry \{\\n  const inputData = (typeof args !== \\"undefined\\")\\n    ? args\\n    : (typeof $json !== \\"undefined\\" ? $json : \{\});\\n\\n query = (\\n  inputData.query ||\\n  inputData.message ||\\n  inputData.input ||\\n  inputData.chatInput ||   // \uc0\u55357 \u56613  DAS FEHLT BEI DIR\\n  inputData.body?.query ||\\n  inputData.body?.message ||\\n  \\"\\"\\n).toLowerCase().trim();\\n\\n\} catch (e) \{\\n  query = \\"\\";\\n\}\\n\\n\\n// 2. Deine Behandlungs-Daten\\nconst treatments = [\\n\{\\n    \\"id\\": \\"alexandrit-laser-motus-pro\\",\\n    \\"name\\": \\"Alexandrit Laser Haarentfernung (Motus Pro)\\",\\n    \\"url\\": \\"https://palaisdebeaute.de/products/alexandrit-deka\\",\\n    \\"category\\": \\"Haarentfernung\\",\\n    \\"priority\\": 10,\\n    \\"summary\\": \\"Hocheffektive und schmerzfreie dauerhafte Haarentfernung mit dem Motus Pro Alexandrit-Laser von DEKA. Dank Moveo-Technologie auch f\'fcr dunklere Hauttypen und helle Haare sicher und effektiv.\\",\\n    \\"preis\\": \\"ab 49,00 EUR\\",\\n    \\"triggers\\": [\\"alexandrit\\", \\"deka\\", \\"motus pro\\", \\"laser haarentfernung\\", \\"haarentfernung\\"],\\n    \\"synonyms\\": [\\"dauerhafte haarentfernung\\", \\"haare entfernen\\", \\"rasur vermeiden\\", \\"stoppeln\\", \\"laser\\", \\"enthaaren\\"],\\n    \\"areas\\": [\\"gesichtsenthaarung\\", \\"beine\\", \\"arme\\", \\"achseln\\", \\"intim\\", \\"r\'fccken\\"],\\n    \\"intent\\": [\\"haarfrei\\", \\"glatte haut\\", \\"dauerhaft\\"],\\n    \\"bookable\\": true\\n  \},\\n      \{\\n  \\"id\\": \\"diodenlaser\\",\\n  \\"name\\": \\"Diodenlaser Haarentfernung\\",\\n  \\"url\\": \\"https://palaisdebeaute.de/products/diodenlaser-3-wellenlangen\\",\\n  \\"category\\": \\"Haarentfernung\\",\\n  \\"priority\\": 4,\\n\\"summary\\": \\"Laserbasierte Methode zur dauerhaften Haarreduktion mit tief eindringender Energie \'96 besonders geeignet f\'fcr dunklere Haare und unterschiedliche Hauttypen bei hoher Sicherheit.\\",\\n\\n  \\"triggers\\": [\\"diodenlaser\\", \\"dioden laser\\"],\\n\\n  \\"synonyms\\": [\\"haarentfernung\\", \\"haare entfernen\\"],\\n\\n  \\"areas\\": [\\n    \\"beine\\",\\n    \\"arme\\",\\n    \\"achseln\\"\\n  ],\\n\\n  \\"intent\\": [\\n    \\"haarreduktion\\"\\n  ],\\n\\n  \\"bookable\\": true\\n\\n  \},\\n\{\\n  \\"id\\": \\"morpheus8\\",\\n  \\"name\\": \\"Morpheus8\'99\\",\\n  \\"url\\": \\"https://palaisdebeaute.de/products/morpheus-8\\",\\n  \\"category\\": \\"Hautstraffung\\",\\n  \\"priority\\": 10,\\n\\"summary\\": \\"Kombination aus Mikronadelung und Radiofrequenz zur tiefen Hautstraffung, Strukturverbesserung und Kollagenneubildung \'96 ideal bei Falten, erschlaffter Haut und Aknenarben.\\",\\n\\n  \\"triggers\\": [\\n    \\"akne\\",\\n    \\"morpheus\\",\\n    \\"morpheus8\\",\\n    \\"rf microneedling\\"\\n  ],\\n\\n  \\"synonyms\\": [\\n    \\"radiofrequenz\\",\\n    \\"microneedling\\",\\n    \\"hautstraffung\\",\\n    \\"poren\\",\\n    \\"narben\\"\\n  ],\\n\\n  \\"areas\\": [\\n    \\"gesichtsneedling\\",\\n    \\"hals\\",\\n    \\"dekollet\'e9\\",\\n    \\"bauch\\"\\n  ],\\n\\n  \\"intent\\": [\\n    \\"straffung\\",\\n    \\"struktur verbessern\\",\\n    \\"anti aging\\"\\n  ],\\n\\n  \\"bookable\\": true\\n\}\\n,\\n  \{\\n  \\"id\\": \\"hifu\\",\\n  \\"name\\": \\"HIFU / Ultherapy\\",\\n  \\"url\\": \\"https://palaisdebeaute.de/products/hifu-ultherapy\\",\\n  \\"category\\": \\"Hautstraffung\\",\\n  \\"priority\\": 9,\\n  \\"summary\\": \\"Fokussierte Ultraschallenergie zur gezielten Straffung tiefer Hautschichten und Aktivierung der k\'f6rpereigenen Kollagenneubildung \'96 ohne Nadeln oder Ausfallzeit.\\",\\n \\n\\n  \\"triggers\\": [\\n    \\"hifu\\",\\n    \\"ultherapy\\",\\n    \\"ultraschall lifting\\"\\n  ],\\n\\n  \\"synonyms\\": [\\n    \\"lifting ohne op\\",\\n    \\"hautstraffung\\",\\n    \\"erschlaffte haut\\"\\n  ],\\n\\n  \\"areas\\": [\\n    \\"gesichtsstraffung\\",\\n    \\"hals\\",\\n    \\"kieferlinie\\"\\n  ],\\n\\n  \\"intent\\": [\\n    \\"lifting\\",\\n    \\"kontur\\"\\n  ],\\n\\n  \\"bookable\\": true\\n\}\\n,\\n  \{\\n  \\"id\\": \\"hydrafacial\\",\\n  \\"name\\": \\"HydraFacial\'ae MD\\",\\n  \\"url\\": \\"https://palaisdebeaute.de/products/hydrafacial-md\\",\\n  \\"category\\": \\"Gesichtsbehandlung\\",\\n  \\"priority\\": 6,\\n  \\"summary\\": \\"Mehrstufige apparative Gesichtsbehandlung zur porentiefen Reinigung, intensiven Hydration und Verbesserung des Hautbildes \'96 sofort sichtbar, ohne Ausfallzeit.\\",\\n    \\"preis\\": \\"ab 159.00 EUR ...\\",\\n\\n\\n  \\"triggers\\": [\\n    \\"hydrafacial\\",\\n    \\"hydra facial\\"\\n  ],\\n\\n  \\"synonyms\\": [\\n    \\"tiefenreinigung\\",\\n    \\"akne\\",\\n    \\"unreine haut\\",\\n    \\"mitesser\\",\\n    \\"glow\\",\\n    \\"poren reinigen\\"\\n  ],\\n\\n  \\"areas\\": [\\n    \\"gesichtsbehandlung\\"\\n  ],\\n\\n  \\"intent\\": [\\n    \\"reinigung\\",\\n    \\"frische haut\\",\\n    \\"pflege\\"\\n  ],\\n\\n  \\"bookable\\": true\\n\}\\n,\\n\{\\n  \\"id\\": \\"microneedling\\",\\n  \\"name\\": \\"Microneedling\\",\\n  \\"url\\": \\"https://palaisdebeaute.de/products/microneedling\\",\\n  \\"category\\": \\"Hautregeneration\\",\\n  \\"priority\\": 5,\\n  \\"summary\\": \\"Gezielte Mikronadelbehandlung zur Anregung der Kollagen- und Elastinproduktion \'96 verbessert Hautstruktur, Porenbild, feine Linien und Aknenarben nachhaltig.\\",\\n\\n\\n  \\"triggers\\": [\\n    \\"microneedling\\",\\n    \\"needling\\",\\n    \\"akne\\"\\n  ],\\n\\n  \\"synonyms\\": [\\n    \\"akne\\",\\n    \\"aknenarben\\",\\n    \\"pickelmale\\",\\n    \\"poren\\",\\n    \\"hautstruktur\\",\\n    \\"unebenheiten\\",\\n    \\"fahle haut\\"\\n  ],\\n\\n  \\"areas\\": [\\n    \\"gesichtreinigung\\",\\n    \\"hals\\",\\n    \\"dekollet\'e9\\"\\n  ],\\n\\n  \\"intent\\": [\\n    \\"kollagenaufbau\\",\\n    \\"hautverfeinerung\\",\\n    \\"regeneration\\"\\n  ],\\n\\n  \\"bookable\\": true\\n\}\\n,\\n  \{\\n  \\"id\\": \\"mesotherapie\\",\\n  \\"name\\": \\"Mesotherapie\\",\\n  \\"url\\": \\"https://palaisdebeaute.de/products/mesotherapie\\",\\n  \\"category\\": \\"Hautregeneration\\",\\n  \\"priority\\": 6,\\n  \\"summary\\": \\"Injektionsbasierte Behandlung mit individuell abgestimmten Wirkstoffen zur Hautregeneration, Durchfeuchtung und Straffung \'96 f\'fcr ein sichtbar frisches und ebenm\'e4\'dfiges Hautbild.\\",\\n\\n\\n  \\"triggers\\": [\\n    \\"mesotherapie\\",\\n    \\"skinbooster\\"\\n  ],\\n\\n  \\"synonyms\\": [\\n    \\"vitamine\\",\\n    \\"frische haut\\",\\n    \\"hautregeneration\\",\\n    \\"fahle haut\\",\\n    \\"feine linien\\"\\n  ],\\n\\n  \\"areas\\": [\\n    \\"gesichtsmesotherapie\\",\\n    \\"hals\\",\\n    \\"dekollet\'e9\\"\\n  ],\\n\\n  \\"intent\\": [\\n    \\"regeneration\\",\\n    \\"hautqualit\'e4t\\",\\n    \\"vitalisierung\\"\\n  ],\\n\\n  \\"bookable\\": true\\n\}\\n,\\n \{\\n  \\"id\\": \\"prp\\",\\n  \\"name\\": \\"PRP / Vampire Lifting\\",\\n  \\"url\\": \\"https://palaisdebeaute.de/products/vampire-lifting\\",\\n  \\"category\\": \\"Regeneration\\",\\n  \\"priority\\": 8,\\n  \\"summary\\": \\"Eigenblutbasierte Behandlung zur nat\'fcrlichen Hautverj\'fcngung durch Aktivierung von Regenerations- und Reparaturprozessen \'96 verbessert Hautqualit\'e4t, Elastizit\'e4t und Ausstrahlung.\\",\\n\\n\\n  \\"triggers\\": [\\n    \\"prp\\",\\n    \\"vampire lifting\\",\\n    \\"eigenblut\\"\\n  ],\\n\\n  \\"synonyms\\": [\\n    \\"hautverjuengung\\",\\n    \\"regeneration\\",\\n    \\"anti aging\\",\\n    \\"elastizit\'e4tsverlust\\",\\n    \\"fahle haut\\"\\n  ],\\n\\n  \\"intent\\": [\\n    \\"verj\'fcngung\\",\\n    \\"regeneration\\",\\n    \\"straffung\\"\\n  ],\\n\\n  \\"bookable\\": true\\n\}\\n,\\n  \{\\n  \\"id\\": \\"botox\\",\\n  \\"name\\": \\"Botox\'ae\\",\\n  \\"url\\": \\"https://palaisdebeaute.de/products/faltenunterspritzung\\",\\n  \\"category\\": \\"Injektionen\\",\\n  \\"priority\\":15,\\n  \\"summary\\": \\"Gezielte Injektion von Botulinumtoxin zur Entspannung mimischer Muskulatur und Gl\'e4ttung dynamischer Falten \'96 f\'fcr ein frisches, nat\'fcrliches Erscheinungsbild.\\",\\n\\n\\n  \\"triggers\\": [\\n    \\"botox\\",\\n    \\"botulinum\\"\\n  ],\\n\\n  \\"synonyms\\": [\\n    \\"falten\\",\\n    \\"mimikfalten\\",\\n    \\"stirnfalten\\",\\n    \\"zornesfalte\\",\\n    \\"kr\'e4henf\'fc\'dfe\\"\\n  ],\\n\\n  \\"areas\\": [\\n    \\"stirn\\",\\n    \\"augen\\",\\n    \\"zwischen den augen\\"\\n  ],\\n\\n  \\"intent\\": [\\n    \\"falten gl\'e4tten\\",\\n    \\"entspannen\\",\\n    \\"verj\'fcngen\\"\\n  ],\\n\\n  \\"bookable\\": true\\n\},\\n \{\\n  \\"id\\": \\"hyaluron\\",\\n  \\"name\\": \\"Hyaluron Filler\\",\\n  \\"url\\": \\"https://palaisdebeaute.de/products/hyaluron-1\\",\\n  \\"category\\": \\"Injektionen\\",\\n  \\"priority\\": 8,\\n  \\"summary\\": \\"Volumen- und konturgebende Unterspritzung mit Hyalurons\'e4ure zur Gl\'e4ttung statischer Falten, Harmonisierung der Gesichtsz\'fcge und Wiederherstellung jugendlicher Frische.\\",\\n\\n\\n  \\"triggers\\": [\\n    \\"hyaluron\\",\\n    \\"filler\\"\\n  ],\\n\\n  \\"synonyms\\": [\\n    \\"lippen\\",\\n    \\"volumen\\",\\n    \\"kontur\\",\\n    \\"aufspritzen\\",\\n    \\"volumenverlust\\"\\n  ],\\n\\n  \\"areas\\": [\\n    \\"lippen\\",\\n    \\"wangen\\",\\n    \\"kieferlinie\\",\\n    \\"nasolabial\\"\\n  ],\\n\\n  \\"intent\\": [\\n    \\"volumenaufbau\\",\\n    \\"kontur\\",\\n    \\"definition\\"\\n  ],\\n\\n  \\"bookable\\": true\\n\}\\n\\n,\\n\{\\n  \\"id\\": \\"ems-sculpt-neo\\",\\n  \\"name\\": \\"EMS Sculpt NEO\\",\\n  \\"url\\": \\"https://palaisdebeaute.de/products/emsculpt\\",\\n  \\"category\\": \\"K\'f6rperformung\\",\\n  \\"priority\\": 9,\\n  \\"summary\\": \\"Elektromuskul\'e4re Stimulation zur gezielten Aktivierung und Kr\'e4ftigung der Muskulatur sowie gleichzeitigen Fettreduktion \'96 ideal zur K\'f6rperformung ohne Training.\\",\\n\\n\\n  \\"triggers\\": [\\n    \\"ems sculpt\\",\\n    \\"ems sculpt neo\\",\\n    \\"ems\\"\\n  ],\\n\\n  \\"synonyms\\": [\\n    \\"ems training\\",\\n    \\"muskelaufbau\\",\\n    \\"fettverbrennung\\",\\n    \\"fettreduktion\\",\\n    \\"k\'f6rperstraffung\\",\\n    \\"bauchmuskeln\\"\\n  ],\\n\\n  \\"areas\\": [\\n    \\"bauch\\",\\n    \\"po\\",\\n    \\"beine\\",\\n    \\"arme\\"\\n  ],\\n\\n  \\"intent\\": [\\n    \\"muskelaufbau\\",\\n    \\"fettreduktion\\",\\n    \\"straffung\\"\\n  ],\\n\\n  \\"bookable\\": true\\n\}\\n,\\n\{\\n  \\"id\\": \\"kryolipolyse\\",\\n  \\"name\\": \\"Kryolipolyse CRYO 4S\\",\\n  \\"url\\": \\"https://palaisdebeaute.de/products/kryolipolyse\\",\\n  \\"category\\": \\"K\'f6rperformung\\",\\n  \\"priority\\": 8,\\n  \\"summary\\": \\"Nicht-invasive K\'e4ltebehandlung zur gezielten Reduktion lokaler Fettdepots durch kontrollierte K\'fchlung \'96 formt die Silhouette ohne Operation oder Ausfallzeit.\\",\\n\\n\\n  \\"triggers\\": [\\n    \\"kryolipolyse\\"\\n  ],\\n\\n  \\"synonyms\\": [\\n    \\"fett einfrieren\\",\\n    \\"fett wegfrieren\\",\\n    \\"fettreduktion\\",\\n    \\"fettdepots\\",\\n    \\"problemzonen\\"\\n  ],\\n\\n  \\"areas\\": [\\n    \\"bauch\\",\\n    \\"h\'fcften\\",\\n    \\"oberschenkel\\",\\n    \\"r\'fccken\\"\\n  ],\\n\\n  \\"intent\\": [\\n    \\"fettreduktion\\",\\n    \\"kontur\\"\\n  ],\\n\\n  \\"bookable\\": true\\n\}\\n,\\n\{\\n  \\"id\\": \\"ferninfrarot-lymph\\",\\n  \\"name\\": \\"Ferninfrarot Tiefenw\'e4rme & Lymphdrainage\\",\\n  \\"url\\": \\"https://palaisdebeaute.de/products/ferninfrarot\\",\\n  \\"category\\": \\"Wellness & Regeneration\\",\\n  \\"priority\\": 4,\\n  \\"summary\\": \\"Sanfte Behandlung zur Aktivierung des Lymphsystems und F\'f6rderung des Abtransports von Gewebefl\'fcssigkeit \'96 unterst\'fctzt Entschlackung, Regeneration und ein leichteres K\'f6rpergef\'fchl.\\",\\n\\n\\n  \\"triggers\\": [\\n    \\"ferninfrarot\\",\\n    \\"tiefenw\'e4rme\\"\\n  ],\\n\\n  \\"synonyms\\": [\\n    \\"lymphdrainage\\",\\n    \\"entspannung\\",\\n    \\"durchblutung\\",\\n    \\"wassereinlagerungen\\",\\n    \\"verspannungen\\"\\n  ],\\n\\n  \\"areas\\": [\\n    \\"k\'f6rper\\",\\n    \\"r\'fccken\\",\\n    \\"beine\\"\\n  ],\\n\\n  \\"intent\\": [\\n    \\"entspannung\\",\\n    \\"regeneration\\",\\n    \\"entlastung\\"\\n  ],\\n\\n  \\"bookable\\": true\\n\}\\n,\\n\{\\n  \\"id\\": \\"nad-infusion\\",\\n  \\"name\\": \\"NAD+ Infusion\\",\\n  \\"url\\": \\"https://palaisdebeaute.de/products/nad-infusion\\",\\n  \\"category\\": \\"Infusionstherapie\\",\\n  \\"priority\\": 8,\\n  \\"summary\\": \\"Intraven\'f6se Therapie zur Unterst\'fctzung der zellul\'e4ren Energieproduktion und Regeneration \'96 kann Vitalit\'e4t, Konzentration und allgemeines Wohlbefinden f\'f6rdern.\\",\\n\\n\\n  \\"triggers\\": [\\n    \\"nad\\",\\n    \\"nad infusion\\"\\n  ],\\n\\n  \\"synonyms\\": [\\n    \\"zellenergie\\",\\n    \\"energie\\",\\n    \\"ersch\'f6pfung\\",\\n    \\"m\'fcdigkeit\\",\\n    \\"konzentration\\"\\n  ],\\n\\n  \\"areas\\": [\\n    \\"k\'f6rper\\"\\n  ],\\n\\n  \\"intent\\": [\\n    \\"energie\\",\\n    \\"regeneration\\",\\n    \\"fokus\\"\\n  ],\\n\\n  \\"bookable\\": true\\n\}\\n,\\n\{\\n  \\"id\\": \\"vitamin-infusion\\",\\n  \\"name\\": \\"Vitamin Infusionen\\",\\n  \\"url\\": \\"https://palaisdebeaute.de/products/vitamin-infusion\\",\\n  \\"category\\": \\"Infusionstherapie\\",\\n  \\"priority\\": 6,\\n  \\"summary\\": \\"Individuell abgestimmte intraven\'f6se Versorgung mit Vitaminen und Mikron\'e4hrstoffen zur Unterst\'fctzung von Immunsystem, Regeneration und allgemeinem Wohlbefinden.\\",\\n\\n\\n  \\"triggers\\": [\\n    \\"vitamin infusion\\",\\n    \\"vitamin infusionen\\"\\n  ],\\n\\n  \\"synonyms\\": [\\n    \\"vitamine\\",\\n    \\"immunsystem\\",\\n    \\"aufbaukur\\",\\n    \\"vitaminmangel\\",\\n    \\"energie\\"\\n  ],\\n\\n  \\"areas\\": [\\n    \\"k\'f6rper\\"\\n  ],\\n\\n  \\"intent\\": [\\n    \\"st\'e4rkung\\",\\n    \\"energie\\",\\n    \\"regeneration\\"\\n  ],\\n\\n  \\"bookable\\": true\\n\}\\n,\\n\{\\n  \\"id\\": \\"lash-lifting\\",\\n  \\"name\\": \\"Lash Lifting\\",\\n  \\"url\\": \\"https://palaisdebeaute.de/products/lash-lifting\\",\\n  \\"category\\": \\"Beauty\\",\\n  \\"priority\\": 4,\\n  \\"summary\\": \\"Schonende Behandlung zur Anhebung und Formung der nat\'fcrlichen Wimpern \'96 sorgt f\'fcr einen offenen, ausdrucksstarken Blick ganz ohne Extensions.\\",\\n\\n\\n  \\"triggers\\": [\\n    \\"lash lifting\\",\\n    \\"wimpernlifting\\"\\n  ],\\n\\n  \\"synonyms\\": [\\n    \\"wimpern\\",\\n    \\"wimpern schwung\\",\\n    \\"wimpern heben\\",\\n    \\"nat\'fcrlicher look\\"\\n  ],\\n\\n  \\"areas\\": [\\n    \\"augen\\"\\n  ],\\n\\n  \\"intent\\": [\\n    \\"wimpernhebung\\",\\n    \\"betonung\\"\\n  ],\\n\\n  \\"bookable\\": true\\n\}\\n,\\n\{\\n  \\"id\\": \\"lash-lifting-booster\\",\\n  \\"name\\": \\"Lash Lifting mit Booster\\",\\n  \\"url\\": \\"https://palaisdebeaute.de/products/lash-lifting-booster\\",\\n  \\"category\\": \\"Beauty\\",\\n  \\"priority\\": 5,\\n  \\"summary\\": \\"Wimpernlifting mit zus\'e4tzlichem Pflege-Booster zur St\'e4rkung und Regeneration der Naturwimpern \'96 f\'fcr mehr Glanz, Elastizit\'e4t und ein intensiveres Ergebnis.\\",\\n\\n\\n  \\"triggers\\": [\\n    \\"lash lifting booster\\"\\n  ],\\n\\n  \\"synonyms\\": [\\n    \\"wimpernpflege\\",\\n    \\"st\'e4rkung\\",\\n    \\"glanz\\",\\n    \\"pflege\\"\\n  ],\\n\\n  \\"areas\\": [\\n    \\"augen\\"\\n  ],\\n\\n  \\"intent\\": [\\n    \\"pflege\\",\\n    \\"wimpernst\'e4rkung\\"\\n  ],\\n\\n  \\"bookable\\": true\\n\}\\n,\\n\{\\n  \\"id\\": \\"wimpern-faerben\\",\\n  \\"name\\": \\"Wimpern f\'e4rben\\",\\n  \\"url\\": \\"https://palaisdebeaute.de/products/wimpernfaerben\\",\\n  \\"category\\": \\"Beauty\\",\\n  \\"priority\\": 2,\\n  \\"summary\\": \\"Schonende Farbbehandlung zur Intensivierung der nat\'fcrlichen Wimpernfarbe \'96 verleiht mehr Ausdruck und Tiefe ganz ohne t\'e4gliches Mascara.\\",\\n\\n  \\"triggers\\": [\\n    \\"wimpern f\'e4rben\\"\\n  ],\\n\\n  \\"synonyms\\": [\\n    \\"helle wimpern\\",\\n    \\"dunkle wimpern\\",\\n    \\"mehr ausdruck ohne mascara\\"\\n  ],\\n\\n  \\"areas\\": [\\n    \\"augen\\"\\n  ],\\n\\n  \\"intent\\": [\\n    \\"ausdruck\\",\\n    \\"betonung\\"\\n  ],\\n\\n  \\"bookable\\": true\\n\}\\n\\n,\\n\{\\n  \\"id\\": \\"augenbrauen-faerben\\",\\n  \\"name\\": \\"Augenbrauen f\'e4rben\\",\\n  \\"url\\": \\"https://palaisdebeaute.de/products/augenbrauenfaerben\\",\\n  \\"category\\": \\"Beauty\\",\\n  \\"priority\\": 2,\\n\\"summary\\": \\"Gezielte Farbbehandlung zur Betonung und Harmonisierung der Augenbrauen \'96 sorgt f\'fcr klare Konturen und einen ausdrucksstarken, gepflegten Look.\\",\\n\\n  \\"triggers\\": [\\n    \\"augenbrauen f\'e4rben\\"\\n  ],\\n\\n  \\"synonyms\\": [\\n    \\"helle augenbrauen\\",\\n    \\"augenbrauen definieren\\",\\n    \\"mehr kontur\\"\\n  ],\\n\\n  \\"areas\\": [\\n    \\"augenbrauen\\"\\n  ],\\n\\n  \\"intent\\": [\\n    \\"kontur\\",\\n    \\"definition\\"\\n  ],\\n\\n  \\"bookable\\": true\\n\}\\n,\\n\{\\n  \\"id\\": \\"circadia\\",\\n  \\"name\\": \\"Circadia\'ae Gesichtsbehandlungen\\",\\n  \\"url\\": \\"https://palaisdebeaute.de/collections/circadia-%C2%AE-all-treatments\\",\\n  \\"category\\": \\"Gesichtsbehandlung\\",\\n  \\"priority\\": 6,\\n  \\"summary\\": \\"Professionelle Gesichtsbehandlungen mit biochemisch abgestimmten Wirkstoffen zur gezielten Verbesserung verschiedener Hautzust\'e4nde.\\",\\n  \\"triggers\\": [\\n    \\"circadia\\",\\n    \\"circadia facial\\",\\n    \\"circadia behandlung\\",\\n    \\"akne\\",\\n    \\"unreine haut\\",\\n    \\"pickel\\"\\n  ],\\n  \\"synonyms\\": [\\n    \\"gesichtsbehandlung\\",\\n    \\"empfindliche haut\\",\\n    \\"r\'f6tungen\\",\\n    \\"anti aging\\",\\n    \\"hautregeneration\\",\\n    \\"hautprobleme\\"\\n  ],\\n  \\"areas\\": [\\"gesichtsbehandlung\\"],\\n  \\"intent\\": [\\"reinigung\\", \\"beruhigung\\", \\"regeneration\\", \\"anti aging\\"],\\n  \\"bookable\\": true\\n\}\\n,\\n\{\\n  \\"id\\": \\"polyfill\\",\\n  \\"name\\": \\"PolyFill\'ae Polynukleotide\\",\\n  \\"url\\": \\"https://palaisdebeaute.de/products/polyfill-polynukleotide\\",\\n  \\"category\\": \\"Medical Aesthetic\\",\\n  \\"priority\\": 8,\\n\\"summary\\": \\"Biostimulierende Injektionsbehandlung zur F\'f6rderung der Hautregeneration auf Zellebene \'96 verbessert Elastizit\'e4t, Feuchtigkeit und die allgemeine Hautqualit\'e4t.\\",\\n\\n  \\"triggers\\": [\\n    \\"polyfill\\",\\n    \\"polynukleotide\\",\\n    \\"polynukleotid\\"\\n  ],\\n\\n  \\"synonyms\\": [\\n    \\"skinbooster\\",\\n    \\"hautregeneration\\",\\n    \\"hautverjuengung\\",\\n    \\"anti aging\\",\\n    \\"muede haut\\",\\n    \\"duenne haut\\",\\n    \\"elastizitaetsverlust\\"\\n  ],\\n\\n  \\"areas\\": [\\n    \\"gesichtverj\'fcngung\\",\\n    \\"hals\\",\\n    \\"dekollet\'e9\\"\\n  ],\\n\\n  \\"intent\\": [\\n    \\"hautqualit\'e4t verbessern\\",\\n    \\"regeneration\\",\\n    \\"verj\'fcngung\\"\\n  ],\\n\\n  \\"bookable\\": true\\n\}\\n,\\n\{\\n  \\"id\\": \\"exosomen\\",\\n  \\"name\\": \\"Exosomen Therapie\\",\\n  \\"url\\": \\"https://palaisdebeaute.de/products/exosomen-therapie-zellregeneration-hautverjungung\\",\\n  \\"category\\": \\"Medical Aesthetic\\",\\n  \\"priority\\": 9,\\n\\"summary\\": \\"Innovative regenerative Behandlung mit Exosomen zur Unterst\'fctzung der Zellkommunikation und Hauterneuerung \'96 f\'f6rdert Regeneration, Struktur und Hautqualit\'e4t.\\",\\n\\n  \\"triggers\\": [\\n    \\"exosomen\\",\\n    \\"exosomen therapie\\",\\n    \\"exosome\\"\\n  ],\\n\\n  \\"synonyms\\": [\\n    \\"zellregeneration\\",\\n    \\"hautverjuengung\\",\\n    \\"anti aging\\",\\n    \\"falten\\",\\n    \\"muede haut\\",\\n    \\"energiearme haut\\",\\n    \\"regenerative therapie\\"\\n  ],\\n\\n  \\"areas\\": [\\n    \\"gesichtsexosomen\\",\\n    \\"hals\\",\\n    \\"dekollet\'e9\\"\\n  ],\\n\\n  \\"intent\\": [\\n    \\"zellregeneration\\",\\n    \\"hautverj\'fcngung\\",\\n    \\"hautqualit\'e4t verbessern\\"\\n  ],\\n\\n  \\"bookable\\": true\\n\}\\n,\\n\{\\n  \\"id\\": \\"hautaufhellung\\",\\n  \\"name\\": \\"Hautaufhellung\\",\\n  \\"url\\": \\"https://palaisdebeaute.de/collections/behandlungen/products/hautaufhellung\\",\\n  \\"category\\": \\"Medical Aesthetic\\",\\n  \\"priority\\": 7,\\n\\n  \\"summary\\": \\"Gezielte Behandlung zur Harmonisierung des Hauttons und Reduktion von Pigmentunregelm\'e4\'dfigkeiten \'96 f\'fcr einen sichtbar ebenm\'e4\'dfigeren, frischen Teint.\\",\\n\\n  \\"triggers\\": [\\n    \\"hautaufhellung\\",\\n    \\"skin brightening\\",\\n    \\"aufhellung\\"\\n  ],\\n\\n  \\"synonyms\\": [\\n    \\"pigmentflecken\\",\\n    \\"hyperpigmentierung\\",\\n    \\"ungleichmaessiger hautton\\",\\n    \\"melasma\\",\\n    \\"dunkle flecken\\",\\n    \\"fahler teint\\"\\n  ],\\n\\n  \\"areas\\": [\\n    \\"gesichtsaufhellung\\",\\n    \\"hals\\",\\n    \\"dekollet\'e9\\"\\n  ],\\n\\n  \\"intent\\": [\\n    \\"hautton aufhellen\\",\\n    \\"pigmentst\'f6rungen reduzieren\\",\\n    \\"hautbild verbessern\\"\\n  ],\\n\\n  \\"bookable\\": true\\n\}\\n\\n,\\n\{\\n  \\"id\\": \\"herbs2peel\\",\\n  \\"name\\": \\"HERBS2PEEL \'96 Nat\'fcrliche Akne- & Hautbildverbesserung\\",\\n  \\"url\\": \\"https://palaisdebeaute.de/collections/behandlungen/products/akne-behandlung\\",\\n  \\"category\\": \\"Medical Aesthetic\\",\\n  \\"priority\\": 8,\\n\\n  \\"summary\\": \\"Rein pflanzliche Intensivbehandlung zur Regulierung unreiner Haut und F\'f6rderung der Hauterneuerung \'96 unterst\'fctzt die Kl\'e4rung des Hautbildes ganz ohne chemische Zus\'e4tze.\\",\\n\\n  \\"triggers\\": [\\n    \\"herbs2peel\\",\\n    \\"akne behandlung\\",\\n    \\"pflanzliches peeling\\",\\n    \\"akne therapie\\",\\n    \\"akne\\"\\n  \\n  ],\\n\\n  \\"synonyms\\": [\\n    \\"akne\\",\\n    \\"unreine haut\\",\\n    \\"entzuendete haut\\",\\n    \\"pickel\\",\\n    \\"mitesser\\",\\n    \\"hautbild verbessern\\",\\n    \\"natuerliche aknebehandlung\\"\\n  ],\\n\\n  \\"areas\\": [\\n    \\"gesichtsbehandlung\\",\\n    \\"ruecken\\",\\n    \\"dekollet\'e9\\"\\n  ],\\n\\n  \\"intent\\": [\\n    \\"akne reduzieren\\",\\n    \\"hautbild kl\'e4ren\\",\\n    \\"hautregeneration f\'f6rdern\\"\\n  ],\\n\\n  \\"bookable\\": true\\n\}\\n,\\n\{\\n  \\"id\\": \\"aqua_facial\\",\\n  \\"name\\": \\"Aqua Facial\\",\\n  \\"url\\": \\"https://palaisdebeaute.de/collections/behandlungen/products/hydra-beaute\\",\\n  \\"category\\": \\"Medical Aesthetic\\",\\n  \\"priority\\": 8,\\n\\n  \\"summary\\": \\"Sanfte, mehrstufige apparative Gesichtsbehandlung zur porentiefen Reinigung, Hydration und Vitalisierung \'96 f\'fcr ein sichtbar frisches und ebenm\'e4\'dfiges Hautbild ohne Ausfallzeit.\\",\\n\\n  \\"triggers\\": [\\n    \\"aqua facial\\",\\n    \\"hydra beaute\\",\\n    \\"hydrafacial\\",\\n    \\"gesichtsreinigung\\"\\n  ],\\n\\n  \\"synonyms\\": [\\n    \\"hydra facial\\",\\n    \\"wasser peeling\\",\\n    \\"porentiefe reinigung\\",\\n    \\"haut hydration\\",\\n    \\"haut auffrischen\\"\\n  ],\\n\\n  \\"areas\\": [\\n    \\"klassisch\\",\\n    \\"hals\\",\\n    \\"dekollet\'e9\\"\\n  ],\\n\\n  \\"intent\\": [\\n    \\"haut reinigen\\",\\n    \\"haut hydratisieren\\",\\n    \\"hautbild verbessern\\"\\n  ],\\n\\n  \\"bookable\\": true\\n\}\\n,\\n\{\\n  \\"id\\": \\"lemon_bottle\\",\\n  \\"name\\": \\"Lemon Bottle\\",\\n  \\"url\\": \\"https://palaisdebeaute.de/collections/behandlungen/products/lemon-bottle\\",\\n  \\"category\\": \\"Medical Aesthetic\\",\\n  \\"priority\\": 8,\\n\\n  \\"summary\\": \\"Multifunktionale, apparative Hautbehandlung zur Verbesserung von Textur, Hydration und Hautbild \'96 kombiniert sanfte Reinigung mit Wirkstoffzufuhr f\'fcr einen klareren, strahlenderen Teint.\\",\\n\\n  \\"triggers\\": [\\n    \\"lemon bottle\\",\\n    \\"lemonbottle\\",\\n    \\"hautbehandlung\\",\\n    \\"textur verbesserung\\"\\n  ],\\n\\n  \\"synonyms\\": [\\n    \\"lemon bottle facial\\",\\n    \\"hautbild verbessern\\",\\n    \\"porenverfeinerung\\",\\n    \\"strahlender teint\\",\\n    \\"apparative gesichtsbehandlung\\"\\n  ],\\n\\n  \\"areas\\": [\\n    \\"fettweg\\",\\n    \\"hals\\",\\n    \\"dekollet\'e9\\"\\n  ],\\n\\n  \\"intent\\": [\\n    \\"hautbild verbessern\\",\\n    \\"haut hydratieren\\",\\n    \\"haut reinigen\\"\\n  ],\\n\\n  \\"bookable\\": true\\n\}\\n,\\n\{\\n  \\"id\\": \\"lifting\\",\\n  \\"name\\": \\"Lifting\\",\\n  \\"url\\": \\"https://palaisdebeaute.de/collections/behandlungen/products/lifting\\",\\n  \\"category\\": \\"Medical Aesthetic\\",\\n  \\"priority\\": 7,\\n\\n  \\"summary\\": \\"Effektive Straffungsbehandlung zur Harmonisierung des Gesichtsprofils und Reduktion von Erschlaffungen \'96 f\'fcr eine definierte Kontur und frischere Ausstrahlung.\\",\\n\\n  \\"triggers\\": [\\n    \\"lifting\\",\\n    \\"gesichts lifting\\",\\n    \\"anti aging lifting\\",\\n    \\"straffung\\"\\n  ],\\n\\n  \\"synonyms\\": [\\n    \\"hautstraffung\\",\\n    \\"gesichtsstraffung\\",\\n    \\"anti aging\\",\\n    \\"konturierung\\",\\n    \\"haut festigen\\"\\n  ],\\n\\n  \\"areas\\": [\\n    \\"gesichtstraffung\\",\\n    \\"hals\\",\\n    \\"dekollet\'e9\\"\\n  ],\\n\\n  \\"intent\\": [\\n    \\"haut straffen\\",\\n    \\"konturen verbessern\\",\\n    \\"ausstrahlung verbessern\\"\\n  ],\\n\\n  \\"bookable\\": true\\n\}\\n,\\n\{\\n  \\"id\\": \\"lifting_mask\\",\\n  \\"name\\": \\"Lifting Mask\\",\\n  \\"url\\": \\"https://palaisdebeaute.de/collections/behandlungen/products/lifting-mask\\",\\n  \\"category\\": \\"Medical Aesthetic\\",\\n  \\"priority\\": 7,\\n\\n  \\"summary\\": \\"Intensiv wirkende Maskenbehandlung zur Unterst\'fctzung der Hautstraffung und Festigung \'96 verleiht Elastizit\'e4t, Spannkraft und einen jugendlichen Teint.\\",\\n\\n  \\"triggers\\": [\\n    \\"lifting mask\\",\\n    \\"liftingmaske\\",\\n    \\"mask lifting\\",\\n    \\"hautfestigung\\"\\n  ],\\n\\n  \\"synonyms\\": [\\n    \\"straffende maske\\",\\n    \\"anti aging maske\\",\\n    \\"elastizit\'e4t verbessern\\",\\n    \\"haut straffen\\"\\n  ],\\n\\n\\n  \\"intent\\": [\\n    \\"haut straffen\\",\\n    \\"haut elastizit\'e4t verbessern\\",\\n    \\"hautbild verbessern\\"\\n  ],\\n\\n  \\"bookable\\": true\\n\}\\n,\\n\{\\n  \\"id\\": \\"nctf\\",\\n  \\"name\\": \\"NCTF\'ae Hautverj\'fcngung\\",\\n  \\"url\\": \\"https://palaisdebeaute.de/products/nctf-ha-135-augenringe\\",\\n  \\"category\\": \\"Medical Aesthetic\\",\\n  \\"priority\\": 9,\\n\\n  \\"summary\\": \\"Hochwirksame mesotherapeutische Therapie mit NCTF\'ae zur F\'f6rderung der Hautregeneration, Hydratation und Verbesserung der Hautstruktur \'96 besonders geeignet f\'fcr feine Linien und m\'fcde Hautpartien.\\",\\n\\n  \\"triggers\\": [\\n    \\"nctf\\",\\n    \\"nctf ha 135\\",\\n    \\"hautverj\'fcngung\\",\\n    \\"augenringe behandlung\\"\\n  ],\\n\\n  \\"synonyms\\": [\\n    \\"nctf hautbehandlung\\",\\n    \\"mesotherapie nctf\\",\\n    \\"haut regenerieren\\",\\n    \\"haut struktur verbessern\\",\\n    \\"haut hydratation\\"\\n  ],\\n\\n  \\"areas\\": [\\n    \\"gesichtsnctf\\",\\n    \\"augenpartie\\",\\n    \\"hals\\",\\n    \\"dekollet\'e9\\"\\n  ],\\n\\n  \\"intent\\": [\\n    \\"haut regenerieren\\",\\n    \\"feine linien reduzieren\\",\\n    \\"hautbild verbessern\\"\\n  ],\\n\\n  \\"bookable\\": true\\n\}\\n,\\n\{\\n  \\"id\\": \\"ultraschallbehandlung\\",\\n  \\"name\\": \\"Ultraschallbehandlung \'96 4-Frequenz-Matrix-Pulsation\\",\\n  \\"url\\": \\"https://palaisdebeaute.de/collections/behandlungen/products/ultraschallbehandlung\\",\\n  \\"category\\": \\"Medical Aesthetic\\",\\n  \\"priority\\": 8,\\n\\n  \\"summary\\": \\"Apparative Ultraschallbehandlung mit vier Frequenzen f\'fcr tiefenwirksame Stimulation, Verbesserung der Durchblutung und Aktivierung der Hautregeneration \'96 f\'fcr ein ausgeglichenes, lebendiges Hautbild.\\",\\n\\n  \\"triggers\\": [\\n    \\"ultraschallbehandlung\\",\\n    \\"4 frequenz matrix\\",\\n    \\"ultraschall therapie\\",\\n    \\"matrix pulsation\\"\\n  ],\\n\\n  \\"synonyms\\": [\\n    \\"ultraschall\\",\\n    \\"ultraschall gesichtsbehandlung\\",\\n    \\"tiefenreinigung\\",\\n    \\"haut durchblutung\\",\\n    \\"regeneration\\"\\n  ],\\n\\n\\n  \\"intent\\": [\\n    \\"hautregeneration aktivieren\\",\\n    \\"durchblutung verbessern\\",\\n    \\"hautbild verbessern\\"\\n  ],\\n\\n  \\"bookable\\": true\\n\}\\n,\\n\{\\n  \\"id\\": \\"elektrolyt_infusion\\",\\n  \\"name\\": \\"Elektrolyt-Infusion\\",\\n  \\"url\\": \\"https://palaisdebeaute.de/products/elektrolyt-infusion-500ml\\",\\n  \\"category\\": \\"Medical Aesthetic\\",\\n  \\"priority\\": 8,\\n\\n  \\"summary\\": \\"Intraven\'f6se Elektrolytversorgung zur raschen Rehydrierung und Unterst\'fctzung des Fl\'fcssigkeits- und Mineralhaushalts \'96 ideal zur Regeneration nach Belastung oder zur Verbesserung des Allgemeinbefindens.\\",\\n\\n  \\"triggers\\": [\\n    \\"elektrolyt infusion\\",\\n    \\"electrolyte infusion\\",\\n    \\"hydration infusion\\",\\n    \\"rehydration infusion\\"\\n  ],\\n\\n  \\"synonyms\\": [\\n    \\"elektrolyte infusion\\",\\n    \\"hydration therapie\\",\\n    \\"mineral infusion\\",\\n    \\"infusion therapie\\",\\n    \\"re hydrierung\\"\\n  ],\\n\\n  \\"areas\\": [\\n    \\"allgemein\\",\\n    \\"k\'f6rper\\"\\n  ],\\n\\n  \\"intent\\": [\\n    \\"hydration verbessern\\",\\n    \\"mineralhaushalt ausgleichen\\",\\n    \\"regeneration f\'f6rdern\\"\\n  ],\\n\\n  \\"bookable\\": true\\n\},\\n\\n  \{\\n  \\"id\\": \\"redtouch-pro-deka\\",\\n  \\"name\\": \\"RedTouch Pro (Kollagen-Lifting)\\",\\n  \\"url\\": \\"https://palaisdebeaute.de/products/red-touch-pro-hautverjungung\\",\\n  \\"category\\": \\"Skin Renewal / Anti-Aging\\",\\n  \\"priority\\": 10,\\n  \\"summary\\": \\"Die Revolution im Kollagen-Lifting: Der RedTouch Pro von DEKA nutzt eine weltweit einzigartige Wellenl\'e4nge (675 nm), um gezielt die Kollagenfasern zu regenerieren. F\'fcr ein strafferes Hautbild, Faltenreduktion und Hautverj\'fcngung ohne Ausfallzeiten.\\",\\n  \\"preis\\": \\"ab 349,00 EUR\\", \\n  \\"triggers\\": [\\"redtouch\\", \\"deka\\", \\"kollagen\\", \\"red touch\\", \\"675nm\\", \\"skin renewal\\"],\\n  \\"synonyms\\": [\\"hautstraffung\\", \\"faltenbehandlung\\", \\"kollagenaufbau\\", \\"lifting ohne op\\", \\"hautverj\'fcngung\\"],\\n  \\"areas\\": [\\"gesicht\\", \\"hals\\", \\"dekollet\'e9\\", \\"h\'e4nde\\"],\\n  \\"intent\\": [\\"straffung\\", \\"j\'fcnger aussehen\\", \\"glow\\", \\"falten reduzieren\\"],\\n  \\"bookable\\": true\\n\},\\n\\n  \{\\n  \\"id\\": \\"forma-inmode\\",\\n  \\"name\\": \\"Forma (Radiofrequenz-Hautstraffung)\\",\\n  \\"url\\": \\"https://palaisdebeaute.de/products/forma%E2%84%A2-by-inmode-radiofrequenz-hautstraffung-in-wiesbaden?variant=57749524611336\\",\\n  \\"category\\": \\"Skin Tightening / Contouring\\",\\n  \\"priority\\": 10,\\n  \\"summary\\": \\"Forma ist eine nicht-invasive Radiofrequenz-Behandlung zur tiefen Hautstraffung und Konturierung. Sie stimuliert die Kollagenbildung f\'fcr ein strafferes Hautbild. F\'fcr nachhaltige Ergebnisse bieten wir das beliebte 'Forma 5+1' Paket an (5 Sitzungen buchen, 1 gratis erhalten).\\",\\n  \\"preis\\": \\"ab 199,00 EUR (Forma 5+1 Paket verf\'fcgbar)\\",\\n  \\"triggers\\": [\\"forma\\", \\"inmode\\", \\"radiofrequenz\\", \\"forma 5+1\\", \\"forma paket\\", \\"hautstraffung\\"],\\n  \\"synonyms\\": [\\"gesichtsstraffung\\", \\"haut festigen\\", \\"konturierung\\", \\"radiofrequenztherapie\\", \\"anti-aging\\"],\\n  \\"areas\\": [\\"gesicht\\", \\"hals\\", \\"dekollet\'e9\\", \\"k\'f6rper\\"],\\n  \\"intent\\": [\\"straffung\\", \\"konturen definieren\\", \\"jugendliches aussehen\\", \\"haut festigen\\"],\\n  \\"bookable\\": true\\n\},\\n\\n  \{\\n  \\"id\\": \\"premium-pure\\",\\n  \\"name\\": \\"PDB Premium PURE\\",\\n  \\"url\\": \\"https://palaisdebeaute.de/pages/premium\\",\\n  \\"category\\": \\"Mitgliedschaft\\",\\n  \\"priority\\": 20,\\n  \\"summary\\": \\"PURE kostet 149 \'80 monatlich und beinhaltet 3 frei w\'e4hlbare Behandlungen pro Monat aus dem PURE Bereich. Geeignet f\'fcr regelm\'e4\'dfige Pflege, Glow, Ausreinigung, Hautbildverbesserung und Beauty-Routine.\\",\\n  \\"triggers\\": [\\"pure\\", \\"premium pure\\", \\"mitgliedschaft pure\\", \\"pure paket\\", \\"was ist in pure enthalten\\"],\\n  \\"synonyms\\": [\\"abo\\", \\"membership\\", \\"mitgliedschaft\\", \\"premium\\", \\"149 euro\\", \\"149\'80\\"],\\n  \\"areas\\": [\\"gesicht\\", \\"haut\\", \\"pflege\\", \\"glow\\"],\\n  \\"intent\\": [\\"mitgliedschaft erkl\'e4ren\\", \\"paket empfehlen\\", \\"behandlungen aufz\'e4hlen\\"],\\n  \\"included_treatments\\": [\\n    \\"Laser Haarentfernung \'96 kleine Zone\\",\\n    \\"Kleine Gesichtsbehandlung\\",\\n    \\"Aquafacial\\",\\n    \\"Lymphdrainage\\",\\n    \\"Dermaplaning\\",\\n    \\"Gesichtsmassage\\",\\n    \\"Microdermabrasion\\",\\n    \\"Hautaufhellung\\",\\n    \\"Matrix Lifting Mask\\",\\n    \\"Madero \'96 Gesicht, Hals oder Dekollet\'e9\\",\\n    \\"OxyGeneo Behandlung\\",\\n    \\"Microneedling\\",\\n    \\"Radiofrequenz Behandlung\\",\\n    \\"Ultraschall Behandlung\\",\\n    \\"LED Licht Therapie\\",\\n    \\"Ausreinigung\\"\\n  ],\\n  \\"bookable\\": true\\n\},\\n\\n  \{\\n  \\"id\\": \\"premium-define\\",\\n  \\"name\\": \\"PDB Premium DEFINE\\",\\n  \\"url\\": \\"https://palaisdebeaute.de/pages/premium\\",\\n  \\"category\\": \\"Mitgliedschaft\\",\\n  \\"priority\\": 21,\\n  \\"summary\\": \\"DEFINE kostet 169 \'80 monatlich und beinhaltet pro Monat 1 Behandlung aus PURE plus 1 Behandlung aus DEFINE. Geeignet f\'fcr Kundinnen, die Pflege mit intensiveren, ergebnisorientierten Treatments kombinieren m\'f6chten.\\",\\n  \\"triggers\\": [\\"define\\", \\"premium define\\", \\"mitgliedschaft define\\", \\"define paket\\", \\"was ist in define enthalten\\"],\\n  \\"synonyms\\": [\\"abo\\", \\"membership\\", \\"mitgliedschaft\\", \\"premium\\", \\"169 euro\\", \\"169\'80\\"],\\n  \\"areas\\": [\\"gesicht\\", \\"body\\", \\"haut\\", \\"laser\\", \\"bodyforming\\"],\\n  \\"intent\\": [\\"mitgliedschaft erkl\'e4ren\\", \\"paket empfehlen\\", \\"behandlungen aufz\'e4hlen\\"],\\n  \\"included_treatments\\": [\\n    \\"1 Behandlung aus PURE\\",\\n    \\"Kryolipolyse\\",\\n    \\"Ems-Sella Stuhl\\",\\n    \\"Microneedling + Ausreinigung\\",\\n    \\"Ems-Sculpt Neo\\",\\n    \\"Oxy Geneo\\",\\n    \\"G8 Cellulite\\",\\n    \\"MOTUS PRO DEKA \'96 Haarentfernung gro\'dfe Zone\\",\\n    \\"FORMA by INMODE\\",\\n    \\"HYDRAFACIAL Signature\\",\\n    \\"Ultraschall Titan\\",\\n    \\"CIRCADIA Premium Treatments\\",\\n    \\"Carbon Laser Peeling\\"\\n  ],\\n  \\"bookable\\": true\\n\},\\n\\n\{\\n  \\"id\\": \\"premium-beyond\\",\\n  \\"name\\": \\"PDB Premium BEYOND Mitgliedschaft\\",\\n  \\"url\\": \\"https://palaisdebeaute.de/pages/premium\\",\\n  \\"category\\": \\"Mitgliedschaft\\",\\n  \\"priority\\": 50,\\n  \\"summary\\": \\"BEYOND kostet 199 \'80 monatlich und beinhaltet 1 exklusive Behandlung pro Monat aus dem BEYOND Bereich. Enthalten sind Morpheus8 Gesichtsareal, MOTUS PRO DEKA Laser Haarentfernung Ganzk\'f6rper, HIFU Gesicht/Hals/Dekollet\'e9, RedTouch PRO, HydraFacial meets Forma, Exosomen, Polynukleotide, Medical Needling, MESO PEEL MD und HydraFacial meets Circadia.\\",\\n  \\"triggers\\": [\\n    \\"beyond\\",\\n    \\"beyond mitgliedschaft\\",\\n    \\"beyond paket\\",\\n    \\"premium beyond\\",\\n    \\"was ist in beyond mitgliedschaft drin\\",\\n    \\"was ist in beyond enthalten\\",\\n    \\"was beinhaltet beyond\\",\\n    \\"beyond abo\\"\\n  ],\\n  \\"synonyms\\": [\\n    \\"premium\\",\\n    \\"mitgliedschaft\\",\\n    \\"abo\\",\\n    \\"high end\\",\\n    \\"premium paket\\",\\n    \\"beyond mitgliedschaft\\"\\n  ],\\n  \\"intent\\": [\\n    \\"mitgliedschaft erkl\'e4ren\\",\\n    \\"paket erkl\'e4ren\\",\\n    \\"behandlungen aufz\'e4hlen\\",\\n    \\"paket empfehlen\\"\\n  ],\\n  \\"bookable\\": true\\n\}\\n\\n\\n\\n\\n];\\n\\n\\n// 3. Suche \'96 mehrere passende Behandlungen finden\\nconst matches = treatments\\n  .map(t => \{\\n    const name = (t.name || \\"\\").toLowerCase();\\n    const category = (t.category || \\"\\").toLowerCase();\\n\\n    const triggers = (t.triggers || []).map(x => String(x).toLowerCase());\\n    const synonyms = (t.synonyms || []).map(x => String(x).toLowerCase());\\n    const areas = (t.areas || []).map(x => String(x).toLowerCase());\\n    const intents = (t.intent || []).map(x => String(x).toLowerCase());\\n    const summary = (t.summary || \\"\\").toLowerCase();\\n\\n    let score = 0;\\n\\n    if (query.includes(name) || name.includes(query)) score += 100;\\n    if (triggers.some(x => query.includes(x) || x.includes(query))) score += 80;\\n    if (synonyms.some(x => query.includes(x) || x.includes(query))) score += 60;\\n    if (areas.some(x => query.includes(x) || x.includes(query))) score += 35;\\n    if (intents.some(x => query.includes(x) || x.includes(query))) score += 45;\\n    if (summary.includes(query)) score += 25;\\n    if (category.includes(query)) score += 20;\\n\\n    \\n\\n    return \{ ...t, score \};\\n  \})\\n  .filter(t => t.score > 0 && t.bookable)\\n  .sort((a, b) => \{\\n  return (b.priority || 0) - (a.priority || 0);\\n\})\\n  .slice(0, 3);\\n\\n// 4. R\'fcckgabe \'96 mehrere Treffer\\nif (matches.length > 0) \{\\n  return `DEBUG_KATALOG\\nQUERY: $\{query\}\\nFOUND_COUNT: $\{matches.length\}\\n\\n$\{matches.map(t => `NAME: $\{t.name\}\\nID: $\{t.id\}\\nCATEGORY: $\{t.category\}\\nSUMMARY: $\{t.summary\}\\nURL: $\{t.url\}`).join(\\"\\\\n\\\\n---\\\\n\\\\n\\")\}`;\\n\} else \{\\n  return `DEBUG_KATALOG\\nQUERY: $\{query\}\\nFOUND: NICHTS`;\\n\}",\
+        "specifyInputSchema": true,\
+        "schemaType": "manual",\
+        "inputSchema": "\{\\n  \\"type\\": \\"object\\",\\n  \\"properties\\": \{\\n    \\"query\\": \{\\n      \\"type\\": \\"string\\",\\n      \\"description\\": \\"Der Name der Behandlung, nach der gesucht werden soll (z.B. HIFU)\\"\\n    \}\\n  \},\\n  \\"required\\": [\\"query\\"]\\n\}"\
+      \},\
+      "type": "@n8n/n8n-nodes-langchain.toolCode",\
+      "typeVersion": 1.3,\
+      "position": [\
+        1792,\
+        1200\
+      ],\
+      "id": "f6b0eb23-75e7-4014-9c3a-a7eac5d06bc7",\
+      "name": "katalog"\
+    \}\
+  ],\
+  "connections": \{\
+    "Webhook": \{\
+      "main": [\
+        [\
+          \{\
+            "node": "Switch",\
+            "type": "main",\
+            "index": 0\
+          \}\
+        ]\
+      ]\
+    \},\
+    "Switch": \{\
+      "main": [\
+        [\
+          \{\
+            "node": "Adresse",\
+            "type": "main",\
+            "index": 0\
+          \}\
+        ],\
+        [\
+          \{\
+            "node": "Adresse",\
+            "type": "main",\
+            "index": 0\
+          \}\
+        ],\
+        [\
+          \{\
+            "node": "Adresse",\
+            "type": "main",\
+            "index": 0\
+          \}\
+        ],\
+        [\
+          \{\
+            "node": "\'d6ffnungszeiten",\
+            "type": "main",\
+            "index": 0\
+          \}\
+        ],\
+        [\
+          \{\
+            "node": "\'d6ffnungszeiten",\
+            "type": "main",\
+            "index": 0\
+          \}\
+        ],\
+        [\
+          \{\
+            "node": "\'d6ffnungszeiten",\
+            "type": "main",\
+            "index": 0\
+          \}\
+        ],\
+        [\
+          \{\
+            "node": "\'d6ffnungszeiten",\
+            "type": "main",\
+            "index": 0\
+          \}\
+        ],\
+        [\
+          \{\
+            "node": "Parken",\
+            "type": "main",\
+            "index": 0\
+          \}\
+        ],\
+        [\
+          \{\
+            "node": "Parken",\
+            "type": "main",\
+            "index": 0\
+          \}\
+        ],\
+        [\
+          \{\
+            "node": "Parken",\
+            "type": "main",\
+            "index": 0\
+          \}\
+        ],\
+        [\
+          \{\
+            "node": "Edit Kontakt",\
+            "type": "main",\
+            "index": 0\
+          \}\
+        ],\
+        [\
+          \{\
+            "node": "Edit Beratung",\
+            "type": "main",\
+            "index": 0\
+          \}\
+        ],\
+        [\
+          \{\
+            "node": "Edit Fields",\
+            "type": "main",\
+            "index": 0\
+          \}\
+        ]\
+      ]\
+    \},\
+    "Adresse": \{\
+      "main": [\
+        [\
+          \{\
+            "node": "Respond Adresse",\
+            "type": "main",\
+            "index": 0\
+          \}\
+        ]\
+      ]\
+    \},\
+    "\'d6ffnungszeiten": \{\
+      "main": [\
+        [\
+          \{\
+            "node": "Respond \'d6ffnungszeiten",\
+            "type": "main",\
+            "index": 0\
+          \}\
+        ]\
+      ]\
+    \},\
+    "Parken": \{\
+      "main": [\
+        [\
+          \{\
+            "node": "Respond Parken",\
+            "type": "main",\
+            "index": 0\
+          \}\
+        ]\
+      ]\
+    \},\
+    "Edit Kontakt": \{\
+      "main": [\
+        [\
+          \{\
+            "node": "Respond Kontakt",\
+            "type": "main",\
+            "index": 0\
+          \}\
+        ]\
+      ]\
+    \},\
+    "Edit Beratung": \{\
+      "main": [\
+        [\
+          \{\
+            "node": "Respond Beratung",\
+            "type": "main",\
+            "index": 0\
+          \}\
+        ]\
+      ]\
+    \},\
+    "Edit Fields": \{\
+      "main": [\
+        [\
+          \{\
+            "node": "AI Agent",\
+            "type": "main",\
+            "index": 0\
+          \}\
+        ]\
+      ]\
+    \},\
+    "AI Agent": \{\
+      "main": [\
+        [\
+          \{\
+            "node": "Respond to Webhook",\
+            "type": "main",\
+            "index": 0\
+          \}\
+        ]\
+      ]\
+    \},\
+    "Simple Memory": \{\
+      "ai_memory": [\
+        [\
+          \{\
+            "node": "AI Agent",\
+            "type": "ai_memory",\
+            "index": 0\
+          \}\
+        ]\
+      ]\
+    \},\
+    "OpenAI Chat Model": \{\
+      "ai_languageModel": [\
+        [\
+          \{\
+            "node": "AI Agent",\
+            "type": "ai_languageModel",\
+            "index": 0\
+          \}\
+        ]\
+      ]\
+    \},\
+    "katalog": \{\
+      "ai_tool": [\
+        [\
+          \{\
+            "node": "AI Agent",\
+            "type": "ai_tool",\
+            "index": 0\
+          \}\
+        ]\
+      ]\
+    \}\
+  \},\
+  "pinData": \{\},\
+  "meta": \{\
+    "templateCredsSetupCompleted": true,\
+    "instanceId": "867daba35e02efcf45ef3f706b096c9259a3d2cdfaf7de057d8148a2c32fea0c"\
+  \}\
+\}}

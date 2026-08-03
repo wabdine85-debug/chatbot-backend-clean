@@ -428,8 +428,6 @@ Keine Telefon/E-Mail angeben.
 
 /* ---------- Saubere Link-Formatierung ---------- */
 function cleanReply(raw) {
-  console.log("✅ cleanReply wurde ausgeführt:", raw.slice(0, 100));
-
   if (!raw) return "";
 
   let cleaned = raw;
@@ -618,20 +616,15 @@ const TEXT_FALLBACK =
 
 app.post("/api/chat/match", (req, res) => {
   try {
-    console.log("🧪 HIT /api/chat/match");
-
     const messageRaw = req.body?.message || "";
     const message = messageRaw.toLowerCase().trim();
     const session_id = req.body?.session_id;
-
-    console.log("🧪 MESSAGE =", message);
 
 // ==================================================
 // 🔥 1) EXPLIZITES KATEGORIE-ROUTING (__CAT__)
 // ==================================================
 if (message.startsWith("__cat__:")) {
   const key = message.replace("__cat__:", "").trim();
-  console.log("🟢 CAT KEY =", key);
 
   let list = [];
 

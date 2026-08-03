@@ -36,8 +36,6 @@ function addMessage({ text, role }) {
 
 // ---------------- SERVER ----------------
 async function sendToServer(userText, tags = []) {
-  console.log("📤 Sende:", userText, "session:", sessionId);
-
   const res = await fetch(CHAT_ENDPOINT, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -58,7 +56,6 @@ async function sendToServer(userText, tags = []) {
 
   if (data.session_id) {
     sessionId = data.session_id; // 🔥 nur im RAM
-    console.log("🆕 session_id gesetzt:", sessionId);
   }
 
   return data;
@@ -236,5 +233,4 @@ if (data.buttons && data.buttons.length) {
 
 console.log("🚀 wisy.js loaded – calling init()");
 init();
-
 

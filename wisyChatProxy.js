@@ -367,7 +367,7 @@ export function createWisyChatProxyRouter({
 
     try {
       await recordLeadEventImpl(pool, validation.value);
-      void tryNotifyContact({
+      const notificationQueued = await tryNotifyContact({
         webhookUrl,
         webhookSecret,
         fetchImpl,
@@ -377,7 +377,7 @@ export function createWisyChatProxyRouter({
           phone: validation.value.contactPhone,
         },
       });
-      return res.status(201).json({ ok: true });
+      return res.status(201).json({ ok: true, notification_queued: notificationQueued });
     } catch (error) {
       console.error("Wisy contact capture failed:", error.name || "Error");
       return res.status(500).json({ ok: false, error: "storage_failed" });

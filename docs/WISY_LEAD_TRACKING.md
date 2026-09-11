@@ -105,6 +105,8 @@ Workflow `Wisy Lead Notification`. Dieser verwendet Header-Authentifizierung
 und das vorhandene interne SMTP-Credential. Erfolgreiche und fehlerhafte
 Execution-Daten sind fuer diesen Workflow deaktiviert. Ein
 Benachrichtigungsfehler verwirft den bereits sicher gespeicherten Lead nicht.
+Das Backend wartet hoechstens zehn Sekunden auf die n8n-Bestaetigung und gibt
+keine internen Adressen oder Secrets an das Widget aus.
 
 ## Aktive Lead-Ansicht
 

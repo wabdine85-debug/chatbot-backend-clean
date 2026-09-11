@@ -58,7 +58,9 @@ Das Format orientiert sich grob an Keep a Changelog. Historische Aenderungen wer
   markierten Testbenachrichtigung verifiziert.
 - Backend-Benachrichtigung nach erfolgreicher Kontaktspeicherung vorbereitet.
   Sie uebermittelt nur Name und Kontaktweg, aber weder Session-ID noch
-  Chattext; Benachrichtigungsfehler verlieren den gespeicherten Lead nicht.
+  Chattext. Das Backend wartet maximal zehn Sekunden auf eine reine
+  n8n-Erfolgsbestaetigung; Benachrichtigungsfehler verlieren den gespeicherten
+  Lead nicht.
 - Lead-Dashboard rendert Kennzahlen und Zeilen jetzt serverseitig. Dadurch ist
   die Ansicht nicht mehr von einem zweiten JavaScript-API-Aufruf abhaengig, der
   in Safari trotz geladener und authentifizierter HTML-Seite haengen blieb.

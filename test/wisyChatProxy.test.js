@@ -200,12 +200,12 @@ test("stores a public contact request only after explicit consent", async (conte
   });
 
   assert.equal(response.status, 201);
+  assert.deepEqual(await response.json(), { ok: true, notification_queued: true });
   assert.equal(recorded.length, 1);
   assert.equal(recorded[0].eventType, "contact_submitted");
   assert.equal(recorded[0].status, "contact_requested");
   assert.equal(recorded[0].consentToContact, true);
   assert.equal(recorded[0].consentVersion, "wisy-contact-v1-2026-09-11");
-  await new Promise((resolve) => setImmediate(resolve));
   assert.equal(notifications.length, 1);
   assert.equal(notifications[0].body.contact.email, "test@example.com");
 });

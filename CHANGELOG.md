@@ -41,6 +41,17 @@ Das Format orientiert sich grob an Keep a Changelog. Historische Aenderungen wer
 
 ### Changed
 
+- Datenschutzarme Kontaktstrecke fuer Wisy vorbereitet: Das Shopify-Widget
+  bietet eine persoenliche Kontaktanfrage direkt und nach erkanntem Kontakt-
+  oder Buchungsintent an. Der neue rate-limitierte Endpunkt
+  `POST /api/wisy/contact` verlangt Name, mindestens E-Mail oder Telefon,
+  aktive Zustimmung und eine feste Einwilligungstextversion. Freie Chattexte
+  und Gesundheitsangaben werden nicht als Lead-Daten angenommen.
+- Additive produktive Datenbankmigration
+  `002_add_wisy_consent_version.sql` angewendet; bestehende Lead-Daten wurden
+  nicht geloescht oder ueberschrieben.
+- Sichtbaren Widget-Hinweis um die technisch belegte Verarbeitung ueber n8n
+  und OpenAI sowie einen Link zu den Datenschutzhinweisen ergaenzt.
 - Lead-Dashboard rendert Kennzahlen und Zeilen jetzt serverseitig. Dadurch ist
   die Ansicht nicht mehr von einem zweiten JavaScript-API-Aufruf abhaengig, der
   in Safari trotz geladener und authentifizierter HTML-Seite haengen blieb.

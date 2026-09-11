@@ -111,6 +111,13 @@ Im Code referenzierte Tabellen:
 
 - `chat_sessions`
 - `wisy_chat_sessions`
+- `wisy_leads`
+- `wisy_lead_events`
+
+Angewendete additive Wisy-Migrationen:
+
+- `001_create_wisy_lead_tracking.sql`
+- `002_add_wisy_consent_version.sql`
 
 ## Deployment-Checkliste fuer zukuenftige Aenderungen
 

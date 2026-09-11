@@ -67,6 +67,7 @@ export function validateLeadEventPayload(body) {
   }
 
   const consentToContact = body.consent_to_contact === true;
+  const consentVersion = optionalText(body.consent_version, 64);
   const contact = body.contact && typeof body.contact === "object" ? body.contact : {};
   const contactName = optionalText(contact.name, 160);
   const contactEmail = optionalText(contact.email, 320);
@@ -74,6 +75,9 @@ export function validateLeadEventPayload(body) {
 
   if (!consentToContact && (contactName || contactEmail || contactPhone)) {
     return { ok: false, error: "contact_requires_consent" };
+  }
+  if (consentToContact && !consentVersion) {
+    return { ok: false, error: "consent_version_required" };
   }
   if (contactEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contactEmail)) {
     return { ok: false, error: "invalid_contact_email" };
@@ -94,6 +98,7 @@ export function validateLeadEventPayload(body) {
       route: optionalText(body.route, 96),
       ctaTarget: optionalText(body.cta_target, 500),
       consentToContact,
+      consentVersion,
       contactName,
       contactEmail,
       contactPhone,
@@ -127,9 +132,10 @@ export async function recordLeadEvent(pool, event) {
           contact_email,
           contact_phone,
           consent_to_contact,
+          consent_version,
           consent_at
         )
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, CASE WHEN $9 THEN NOW() ELSE NULL END)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, CASE WHEN $9 THEN NOW() ELSE NULL END)
         ON CONFLICT (session_id) DO UPDATE SET
           source = EXCLUDED.source,
           status = CASE
@@ -150,6 +156,7 @@ export async function recordLeadEvent(pool, event) {
           contact_email = COALESCE(EXCLUDED.contact_email, wisy_leads.contact_email),
           contact_phone = COALESCE(EXCLUDED.contact_phone, wisy_leads.contact_phone),
           consent_to_contact = wisy_leads.consent_to_contact OR EXCLUDED.consent_to_contact,
+          consent_version = COALESCE(EXCLUDED.consent_version, wisy_leads.consent_version),
           consent_at = COALESCE(wisy_leads.consent_at, EXCLUDED.consent_at),
           updated_at = NOW(),
           last_activity_at = NOW()
@@ -165,6 +172,7 @@ export async function recordLeadEvent(pool, event) {
         event.contactEmail,
         event.contactPhone,
         event.consentToContact,
+        event.consentVersion,
       ],
     );
 

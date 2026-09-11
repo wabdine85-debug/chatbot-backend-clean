@@ -44,6 +44,7 @@ test("accepts contact data with explicit consent", () => {
     session_id: "123e4567-e89b-12d3-a456-426614174000",
     event_type: "contact_submitted",
     consent_to_contact: true,
+    consent_version: "wisy-contact-v1-2026-09-11",
     contact: { email: "kunde@example.com" },
   });
 
@@ -78,6 +79,7 @@ test("stores a lead and its event in one transaction", async () => {
     route: "chat_proxy",
     ctaTarget: null,
     consentToContact: false,
+    consentVersion: null,
     contactName: null,
     contactEmail: null,
     contactPhone: null,

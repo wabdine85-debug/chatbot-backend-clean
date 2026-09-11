@@ -53,8 +53,9 @@ Unterauftragsverarbeiter und Drittlandtransfermechanismen sind im Repository
 - Zeitpunkte fuer Erstellung, Aktualisierung und letzte Aktivitaet.
 
 Kontaktname, E-Mail-Adresse und Telefonnummer sind technisch vorgesehen, werden
-im aktiven anonymen Funnel aber nicht gesetzt. Die Datenbank erlaubt diese
-Felder nur zusammen mit gesetzter Kontakteinwilligung und Einwilligungszeit.
+ueber die Kontaktstrecke nur nach aktiver Zustimmung gesetzt. Name und
+mindestens E-Mail-Adresse oder Telefonnummer sind erforderlich. Die Datenbank
+speichert dazu Einwilligungszeitpunkt und Einwilligungstextversion.
 
 ### `wisy_lead_events`
 
@@ -83,7 +84,7 @@ Freie Chatnachrichten werden von diesen beiden Tabellen nicht angenommen.
 ## Noch nicht aktiv
 
 - keine automatische Zuordnung des Shopify-Kontaktformulars zur Wisy-Session,
-- keine identifizierbare Kontaktdatenerfassung im Wisy-Widget,
+- keine stille oder automatische Kontaktdatenerfassung ohne Zustimmung,
 - keine Rueckmeldung eines Buchungsbeginns oder einer abgeschlossenen Buchung,
 - keine automatische 90-Tage-Loeschung anonymer Wisy-Leads,
 - keine automatische Loeschung historischer n8n-Executions durch dieses
@@ -103,5 +104,6 @@ Live-Datenschutztext korrekt abgebildet werden:
 - Umgang mit versehentlich eingegebenen Gesundheitsdaten,
 - fachliche beziehungsweise rechtliche Freigabe des finalen Textes.
 
-Bis dahin bleibt das Lead-Dashboard auf anonyme Intent- und CTA-Signale
-beschraenkt.
+Bis zur Kontaktfreigabe bleibt ein Dashboard-Eintrag auf anonyme Intent- und
+CTA-Signale beschraenkt. Freigegebene Kontaktanfragen werden als
+`contact_requested` angezeigt.

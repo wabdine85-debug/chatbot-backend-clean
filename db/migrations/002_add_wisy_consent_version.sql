@@ -1,0 +1,6 @@
+BEGIN;
+
+ALTER TABLE wisy_leads
+  ADD COLUMN IF NOT EXISTS consent_version VARCHAR(64);
+
+COMMIT;

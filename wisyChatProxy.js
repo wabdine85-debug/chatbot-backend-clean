@@ -1,8 +1,9 @@
 import { Router } from "express";
-import { recordLeadEvent } from "./leadTracking.js";
+import { recordLeadEvent, validateLeadEventPayload } from "./leadTracking.js";
 
 const DEFAULT_RATE_LIMIT = 30;
 const DEFAULT_RATE_WINDOW_MS = 60_000;
+export const CONTACT_CONSENT_VERSION = "wisy-contact-v1-2026-09-11";
 const ALLOWED_STOREFRONT_ORIGINS = new Set([
   "https://palaisdebeaute.de",
   "https://www.palaisdebeaute.de",
@@ -73,7 +74,39 @@ export function validateCtaEventPayload(body, origin) {
   }
 }
 
-export function sanitizeChatResponse(payload, sessionId) {
+export function validateContactCapturePayload(body, origin) {
+  if (!ALLOWED_STOREFRONT_ORIGINS.has(origin)) {
+    return { ok: false, error: "origin_not_allowed" };
+  }
+  if (!body || typeof body !== "object" || Array.isArray(body)) {
+    return { ok: false, error: "invalid_body" };
+  }
+  if (text(body.website, 200)) {
+    return { ok: false, error: "invalid_submission" };
+  }
+
+  const result = validateLeadEventPayload({
+    session_id: body.session_id ?? body.sessionId,
+    event_type: "contact_submitted",
+    status: "contact_requested",
+    source: "shopify_wisy",
+    route: "chat_contact_form_v1",
+    consent_to_contact: body.consent_to_contact,
+    consent_version: body.consent_version,
+    contact: body.contact,
+  });
+  if (!result.ok) return result;
+  if (!result.value.contactName) return { ok: false, error: "contact_name_required" };
+  if (!result.value.contactEmail && !result.value.contactPhone) {
+    return { ok: false, error: "contact_method_required" };
+  }
+  if (result.value.consentVersion !== CONTACT_CONSENT_VERSION) {
+    return { ok: false, error: "invalid_consent_version" };
+  }
+  return result;
+}
+
+export function sanitizeChatResponse(payload, sessionId, leadIntent = null) {
   const reply = text(payload?.reply, 12_000);
   const buttons = Array.isArray(payload?.buttons)
     ? payload.buttons
@@ -85,11 +118,15 @@ export function sanitizeChatResponse(payload, sessionId) {
       .filter((button) => button.label && button.value)
     : [];
 
-  return {
+  const response = {
     reply: reply ?? "Bitte versuchen Sie es erneut oder nutzen Sie unser Kontaktformular.",
     buttons,
     session_id: sessionId,
   };
+  if (["booking", "contact", "price", "treatment", "general"].includes(leadIntent)) {
+    response.lead_intent = leadIntent;
+  }
+  return response;
 }
 
 export function classifyLeadIntent(query) {
@@ -130,6 +167,7 @@ export async function tryRecordLeadIntent({
       route: "chat_proxy",
       ctaTarget: null,
       consentToContact: false,
+      consentVersion: null,
       contactName: null,
       contactEmail: null,
       contactPhone: null,
@@ -228,7 +266,11 @@ export function createWisyChatProxyRouter({
         recordLeadEventImpl,
       });
 
-      return res.json(sanitizeChatResponse(result, validation.value.sessionId));
+      return res.json(sanitizeChatResponse(
+        result,
+        validation.value.sessionId,
+        classifyLeadIntent(validation.value.query),
+      ));
     } catch (error) {
       console.error("Wisy chat proxy failed:", error.name);
       return res.status(502).json({
@@ -259,6 +301,7 @@ export function createWisyChatProxyRouter({
         route: validation.value.route,
         ctaTarget: validation.value.target,
         consentToContact: false,
+        consentVersion: null,
         contactName: null,
         contactEmail: null,
         contactPhone: null,
@@ -266,6 +309,22 @@ export function createWisyChatProxyRouter({
       return res.status(201).json({ ok: true });
     } catch (error) {
       console.error("Wisy CTA tracking failed:", error.name || "Error");
+      return res.status(500).json({ ok: false, error: "storage_failed" });
+    }
+  });
+
+  router.post("/contact", createFixedWindowRateLimiter({ maxRequests: 10 }), async (req, res) => {
+    const validation = validateContactCapturePayload(req.body, req.get("origin"));
+    if (!validation.ok) {
+      const status = validation.error === "origin_not_allowed" ? 403 : 400;
+      return res.status(status).json({ ok: false, error: validation.error });
+    }
+
+    try {
+      await recordLeadEventImpl(pool, validation.value);
+      return res.status(201).json({ ok: true });
+    } catch (error) {
+      console.error("Wisy contact capture failed:", error.name || "Error");
       return res.status(500).json({ ok: false, error: "storage_failed" });
     }
   });

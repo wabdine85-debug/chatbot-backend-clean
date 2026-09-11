@@ -8,6 +8,7 @@ import {
   createWisyChatProxyRouter,
   sanitizeChatResponse,
   tryRecordLeadIntent,
+  validateContactCapturePayload,
   validateCtaEventPayload,
   validateChatPayload,
 } from "../wisyChatProxy.js";
@@ -51,6 +52,32 @@ test("accepts only safe storefront CTA events", () => {
     validateCtaEventPayload({ session_id: "session-123", target: "https://palaisdebeaute.de/products/test" }, "https://evil.example"),
     { ok: false, error: "origin_not_allowed" },
   );
+});
+
+test("accepts contact details only with explicit versioned consent", () => {
+  const accepted = validateContactCapturePayload({
+    session_id: "session-123",
+    consent_to_contact: true,
+    consent_version: "wisy-contact-v1-2026-09-11",
+    contact: { name: "Testperson", email: "test@example.com" },
+  }, "https://palaisdebeaute.de");
+  assert.equal(accepted.ok, true);
+  assert.equal(accepted.value.status, "contact_requested");
+  assert.equal(accepted.value.contactEmail, "test@example.com");
+
+  assert.deepEqual(validateContactCapturePayload({
+    session_id: "session-123",
+    consent_to_contact: false,
+    consent_version: "wisy-contact-v1-2026-09-11",
+    contact: { name: "Testperson", email: "test@example.com" },
+  }, "https://palaisdebeaute.de"), { ok: false, error: "contact_requires_consent" });
+
+  assert.deepEqual(validateContactCapturePayload({
+    session_id: "session-123",
+    consent_to_contact: true,
+    consent_version: "wrong-version",
+    contact: { name: "Testperson", phone: "+49 611 123456" },
+  }, "https://palaisdebeaute.de"), { ok: false, error: "invalid_consent_version" });
 });
 
 test("records only a minimized CTA event from an allowed storefront", async (context) => {
@@ -102,12 +129,48 @@ test("records only a minimized CTA event from an allowed storefront", async (con
     route: "treatment",
     ctaTarget: "https://palaisdebeaute.de/products/hydrafacial?source=wisy",
     consentToContact: false,
+    consentVersion: null,
     contactName: null,
     contactEmail: null,
     contactPhone: null,
   }]);
   assert.equal(JSON.stringify(recorded).includes("must not be retained"), false);
   assert.equal(JSON.stringify(recorded).includes("must-not-be-retained@example.com"), false);
+});
+
+test("stores a public contact request only after explicit consent", async (context) => {
+  const recorded = [];
+  const app = express();
+  app.use(express.json());
+  app.use("/api/wisy", createWisyChatProxyRouter({
+    webhookUrl: "https://example.n8n.cloud/webhook/wisy-test",
+    webhookSecret: "a".repeat(32),
+    pool: {},
+    recordLeadEventImpl: async (_pool, event) => recorded.push(event),
+  }));
+  const server = app.listen(0, "127.0.0.1");
+  await once(server, "listening");
+  context.after(() => new Promise((resolve, reject) => {
+    server.close((error) => error ? reject(error) : resolve());
+  }));
+
+  const response = await fetch(`http://127.0.0.1:${server.address().port}/api/wisy/contact`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Origin: "https://palaisdebeaute.de" },
+    body: JSON.stringify({
+      session_id: "session-123",
+      consent_to_contact: true,
+      consent_version: "wisy-contact-v1-2026-09-11",
+      contact: { name: "Testperson", email: "test@example.com" },
+    }),
+  });
+
+  assert.equal(response.status, 201);
+  assert.equal(recorded.length, 1);
+  assert.equal(recorded[0].eventType, "contact_submitted");
+  assert.equal(recorded[0].status, "contact_requested");
+  assert.equal(recorded[0].consentToContact, true);
+  assert.equal(recorded[0].consentVersion, "wisy-contact-v1-2026-09-11");
 });
 
 test("limits upstream output to the supported response contract", () => {
@@ -125,6 +188,12 @@ test("limits upstream output to the supported response contract", () => {
     buttons: [{ label: "Beratung", value: "Ich möchte Beratung" }],
     session_id: "session-123",
   });
+});
+
+test("returns only a fixed lead intent for the contact UI", () => {
+  const result = sanitizeChatResponse({ reply: "Antwort" }, "session-123", "contact");
+  assert.equal(result.lead_intent, "contact");
+  assert.equal("lead_intent" in sanitizeChatResponse({ reply: "Antwort" }, "session-123", "unexpected"), false);
 });
 
 test("does not enable the proxy with incomplete server-only configuration", () => {

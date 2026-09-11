@@ -100,6 +100,7 @@ In `server.js` vorhanden:
 - `GET /whoami`
 - `POST /api/wisy/chat`
 - `POST /api/wisy/events` (minimiertes CTA-Klicktracking vom erlaubten Storefront)
+- `POST /api/wisy/contact` (versionierte, ausdruecklich freigegebene Kontaktanfrage)
 - `POST /api/internal/wisy/lead-events`
 - `GET /wisy-admin` (optional und passwortgeschuetzt)
 - `POST /chat_old`
@@ -159,6 +160,11 @@ Die Lead-Ansicht unter `/wisy-admin` ist durch ein separates
 strukturierte Funnel-Daten und keine freien Chattexte. Ohne das mindestens 20
 Zeichen lange Passwort registriert das Backend die Route nicht. Details stehen
 in `docs/WISY_LEAD_TRACKING.md`.
+
+Das Shopify-Live-Widget kann eine Kontaktanfrage mit Name und mindestens
+E-Mail-Adresse oder Telefonnummer erfassen. Die Route akzeptiert Kontaktdaten
+nur mit ausdruecklicher Zustimmung und der aktuell erwarteten Textversion;
+freie Chattexte werden nicht uebernommen.
 
 ## Tests
 

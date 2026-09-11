@@ -32,6 +32,8 @@ unterbricht die Chat-Antwort nicht.
 - Die Datenbankbedingung verhindert Kontaktdaten ohne gesetzte Einwilligung und Einwilligungszeitpunkt.
 - Freie Chatnachrichten gehoeren nicht in `wisy_leads` oder `wisy_lead_events`.
 - Medizinische Angaben oder Gesundheitsdetails duerfen nicht automatisch als Lead-Metadaten uebernommen werden.
+- Eine Kontaktanfrage benoetigt Name, mindestens E-Mail-Adresse oder Telefon,
+  aktive Zustimmung und die serverseitig erwartete Einwilligungstextversion.
 
 ## Datenschutz-Grenze fuer den naechsten Funnel-Schritt
 
@@ -41,13 +43,13 @@ Das Widget zeigt weiterhin den kurzen Hinweis, keine sensiblen
 Gesundheitsdaten einzugeben. Dieser Hinweis allein ist keine Grundlage fuer
 eine Verknuepfung mit identifizierbaren Kontaktdaten.
 
-- **Pflicht:** Noch keine automatische Verbindung zwischen Wisy-Session und
-  Shopify-Kontaktformular, Buchung, Name, E-Mail-Adresse oder Telefonnummer.
+- **Pflicht:** Keine automatische Verbindung zwischen Wisy-Session und
+  Shopify-Buchung oder externem Kontaktformular ohne passende Transparenz.
 - **Empfohlen:** Zuerst den Datenschutztext, die Rechtsgrundlage, Empfaenger,
   Aufbewahrung und den betrieblichen Prozess fachlich beziehungsweise rechtlich
   pruefen und live veroeffentlichen.
-- **Optional:** Danach eine datensparsame Quellenzuordnung und die Ereignisse
-  `contact_submitted`, `booking_started` und `booked` umsetzen.
+- **Optional:** Danach die Ereignisse `booking_started` und `booked` an den
+  tatsaechlichen Buchungsweg anbinden.
 - **Nicht empfohlen:** Freie Chattexte, Gesundheitsangaben oder unsichtbar
   angehaengte Session-IDs in Kontakt- oder Buchungsdaten uebernehmen.
 
@@ -80,8 +82,22 @@ Empfohlener technischer Ausgangspunkt:
 - Weiterfuehrende n8n-Ereignisse fuer den geschuetzten internen Backend-Endpunkt einrichten.
 - Weiterfuehrende Funnel-Ereignisse im aktiven n8n-Workflow ergaenzen.
 - Automatische Retention ausfuehren.
-- Identifizierbare Kontakt- oder Buchungsdaten einer Wisy-Session zuordnen;
-  dieser Schritt bleibt bis zur Datenschutzpruefung blockiert.
+- Buchungsbeginn und abgeschlossene Buchung einer Wisy-Session zuordnen.
+
+## Kontaktanfrage im Widget
+
+Die technische Kontaktstrecke nutzt `POST /api/wisy/contact`. Sie speichert nur
+Name, mindestens einen Kontaktweg, die pseudonyme Session-ID, den festen
+Ereignistyp `contact_submitted`, den Status `contact_requested`,
+Einwilligungszeitpunkt und Einwilligungstextversion. Die Route prueft
+Storefront-Origin, Eingabegrenzen, Kontaktformat und Einwilligung serverseitig
+und ist rate-limitiert. Freie Chattexte werden nicht angenommen.
+
+Das Widget bietet den Kontaktweg direkt in der Startauswahl an und zeigt ihn
+automatisch nach erkanntem Kontakt- oder Buchungsintent. Die sichtbare
+Einwilligung nennt den Kontaktzweck und verlinkt die Datenschutzhinweise. Eine
+fachliche beziehungsweise rechtliche Pruefung des finalen Live-Textes bleibt
+erforderlich; diese Dokumentation ist keine Rechtsberatung.
 
 ## Aktive Lead-Ansicht
 

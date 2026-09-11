@@ -99,6 +99,13 @@ Einwilligung nennt den Kontaktzweck und verlinkt die Datenschutzhinweise. Eine
 fachliche beziehungsweise rechtliche Pruefung des finalen Live-Textes bleibt
 erforderlich; diese Dokumentation ist keine Rechtsberatung.
 
+Nach erfolgreicher Datenbankspeicherung sendet das Backend die freigegebenen
+Kontaktdaten ohne Session-ID und ohne Chattext an den getrennten aktiven n8n-
+Workflow `Wisy Lead Notification`. Dieser verwendet Header-Authentifizierung
+und das vorhandene interne SMTP-Credential. Erfolgreiche und fehlerhafte
+Execution-Daten sind fuer diesen Workflow deaktiviert. Ein
+Benachrichtigungsfehler verwirft den bereits sicher gespeicherten Lead nicht.
+
 ## Aktive Lead-Ansicht
 
 Das Backend stellt die Lead-Ansicht unter `/wisy-admin` bereit. Sie wird nur

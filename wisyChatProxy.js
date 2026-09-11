@@ -221,6 +221,51 @@ function validWebhookUrl(value) {
   }
 }
 
+export function deriveLeadNotificationUrl(webhookUrl) {
+  if (!validWebhookUrl(webhookUrl)) return null;
+  const parsed = new URL(webhookUrl);
+  parsed.pathname = "/webhook/wisy-lead-notification";
+  parsed.search = "";
+  parsed.hash = "";
+  return parsed.href;
+}
+
+export async function tryNotifyContact({
+  webhookUrl,
+  webhookSecret,
+  contact,
+  fetchImpl = fetch,
+  logger = console,
+}) {
+  const notificationUrl = deriveLeadNotificationUrl(webhookUrl);
+  if (!notificationUrl || typeof webhookSecret !== "string" || webhookSecret.length < 32) return false;
+
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 10_000);
+  try {
+    const response = await fetchImpl(notificationUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Wisy-Webhook-Secret": webhookSecret,
+      },
+      body: JSON.stringify({
+        event_type: "contact_submitted",
+        consent_version: CONTACT_CONSENT_VERSION,
+        contact,
+      }),
+      signal: controller.signal,
+    });
+    if (!response.ok) throw new Error(`notification_http_${response.status}`);
+    return true;
+  } catch (error) {
+    logger.error("Wisy contact notification failed:", error.name || "Error");
+    return false;
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
 export function createWisyChatProxyRouter({
   webhookUrl,
   webhookSecret,
@@ -322,6 +367,16 @@ export function createWisyChatProxyRouter({
 
     try {
       await recordLeadEventImpl(pool, validation.value);
+      void tryNotifyContact({
+        webhookUrl,
+        webhookSecret,
+        fetchImpl,
+        contact: {
+          name: validation.value.contactName,
+          email: validation.value.contactEmail,
+          phone: validation.value.contactPhone,
+        },
+      });
       return res.status(201).json({ ok: true });
     } catch (error) {
       console.error("Wisy contact capture failed:", error.name || "Error");

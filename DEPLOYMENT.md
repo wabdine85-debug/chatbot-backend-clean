@@ -85,6 +85,11 @@ Workflow `wisy-v2-secure-staging` mit Header-Authentifizierung. Der fruehere
 Workflow `wisy` mit dem ungeschuetzten Pfad `/webhook/wisy` ist seit dem
 11. September 2026 deaktiviert, aber als Rueckfalloption nicht geloescht.
 
+Freigegebene Kontaktanfragen werden ueber den getrennten aktiven Workflow
+`Wisy Lead Notification` intern per SMTP gemeldet. Er verwendet dieselbe
+Header-Authentifizierung wie der geschuetzte Wisy-Pfad und speichert keine
+Execution-Daten.
+
 Nicht dokumentiert:
 
 - Import-/Export-Prozess

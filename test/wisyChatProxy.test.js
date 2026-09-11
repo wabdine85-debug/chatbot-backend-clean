@@ -6,7 +6,9 @@ import {
   classifyLeadIntent,
   createFixedWindowRateLimiter,
   createWisyChatProxyRouter,
+  deriveLeadNotificationUrl,
   sanitizeChatResponse,
+  tryNotifyContact,
   tryRecordLeadIntent,
   validateContactCapturePayload,
   validateCtaEventPayload,
@@ -80,6 +82,33 @@ test("accepts contact details only with explicit versioned consent", () => {
   }, "https://palaisdebeaute.de"), { ok: false, error: "invalid_consent_version" });
 });
 
+test("derives the isolated lead notification webhook on the same n8n host", () => {
+  assert.equal(
+    deriveLeadNotificationUrl("https://example.n8n.cloud/webhook/wisy-secure?ignored=1"),
+    "https://example.n8n.cloud/webhook/wisy-lead-notification",
+  );
+  assert.equal(deriveLeadNotificationUrl("https://evil.example/webhook/wisy"), null);
+});
+
+test("notifies internally without forwarding session or chat text", async () => {
+  let request;
+  const notified = await tryNotifyContact({
+    webhookUrl: "https://example.n8n.cloud/webhook/wisy-secure",
+    webhookSecret: "a".repeat(32),
+    contact: { name: "Testperson", email: "test@example.com", phone: null },
+    fetchImpl: async (url, options) => {
+      request = { url, options };
+      return { ok: true };
+    },
+  });
+  const body = JSON.parse(request.options.body);
+  assert.equal(notified, true);
+  assert.equal(request.url, "https://example.n8n.cloud/webhook/wisy-lead-notification");
+  assert.equal(body.contact.email, "test@example.com");
+  assert.equal("session_id" in body, false);
+  assert.equal("message" in body, false);
+});
+
 test("records only a minimized CTA event from an allowed storefront", async (context) => {
   const recorded = [];
   const app = express();
@@ -140,6 +169,7 @@ test("records only a minimized CTA event from an allowed storefront", async (con
 
 test("stores a public contact request only after explicit consent", async (context) => {
   const recorded = [];
+  const notifications = [];
   const app = express();
   app.use(express.json());
   app.use("/api/wisy", createWisyChatProxyRouter({
@@ -147,6 +177,10 @@ test("stores a public contact request only after explicit consent", async (conte
     webhookSecret: "a".repeat(32),
     pool: {},
     recordLeadEventImpl: async (_pool, event) => recorded.push(event),
+    fetchImpl: async (url, options) => {
+      notifications.push({ url, body: JSON.parse(options.body) });
+      return { ok: true };
+    },
   }));
   const server = app.listen(0, "127.0.0.1");
   await once(server, "listening");
@@ -171,6 +205,9 @@ test("stores a public contact request only after explicit consent", async (conte
   assert.equal(recorded[0].status, "contact_requested");
   assert.equal(recorded[0].consentToContact, true);
   assert.equal(recorded[0].consentVersion, "wisy-contact-v1-2026-09-11");
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.equal(notifications.length, 1);
+  assert.equal(notifications[0].body.contact.email, "test@example.com");
 });
 
 test("limits upstream output to the supported response contract", () => {

@@ -36,6 +36,12 @@ markiert.
 - OpenAI: Verarbeitung freier Chatfragen im AI-Pfad des n8n-Workflows.
 - PostgreSQL: Speicherung der strukturierten Wisy-Lead- und Ereignisdaten.
 
+Bei einer freigegebenen Kontaktanfrage uebermittelt Render Name und den
+angegebenen Kontaktweg zusaetzlich an einen getrennten n8n-Workflow, der eine
+interne SMTP-Benachrichtigung sendet. Session-ID und freie Chattexte werden
+nicht in diese Benachrichtigung aufgenommen. n8n speichert fuer diesen
+Benachrichtigungsworkflow weder erfolgreiche noch fehlerhafte Execution-Daten.
+
 Vertragsrollen, Auftragsverarbeitungsvertraege, konkrete Standorte,
 Unterauftragsverarbeiter und Drittlandtransfermechanismen sind im Repository
 `nicht dokumentiert` und muessen ausserhalb des Codes geprueft werden.
@@ -80,6 +86,9 @@ Freie Chatnachrichten werden von diesen beiden Tabellen nicht angenommen.
   `nicht dokumentiert`.
 - Aufbewahrung und Loeschung der n8n-Memory- und Execution-Daten sind
   `nicht dokumentiert`.
+- Die Aufbewahrung der internen Lead-Benachrichtigungen im Zielpostfach ist
+  `nicht dokumentiert` und muss in das betriebliche Loeschkonzept aufgenommen
+  werden.
 
 ## Noch nicht aktiv
 

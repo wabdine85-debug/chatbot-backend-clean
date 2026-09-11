@@ -52,6 +52,13 @@ Das Format orientiert sich grob an Keep a Changelog. Historische Aenderungen wer
   nicht geloescht oder ueberschrieben.
 - Sichtbaren Widget-Hinweis um die technisch belegte Verarbeitung ueber n8n
   und OpenAI sowie einen Link zu den Datenschutzhinweisen ergaenzt.
+- Getrennten n8n-Workflow `Wisy Lead Notification` mit Header-Authentifizierung,
+  vorhandenem internem SMTP-Credential und deaktivierter Speicherung von
+  Execution-Daten angelegt, strukturell geprueft, aktiviert und mit einer
+  markierten Testbenachrichtigung verifiziert.
+- Backend-Benachrichtigung nach erfolgreicher Kontaktspeicherung vorbereitet.
+  Sie uebermittelt nur Name und Kontaktweg, aber weder Session-ID noch
+  Chattext; Benachrichtigungsfehler verlieren den gespeicherten Lead nicht.
 - Lead-Dashboard rendert Kennzahlen und Zeilen jetzt serverseitig. Dadurch ist
   die Ansicht nicht mehr von einem zweiten JavaScript-API-Aufruf abhaengig, der
   in Safari trotz geladener und authentifizierter HTML-Seite haengen blieb.

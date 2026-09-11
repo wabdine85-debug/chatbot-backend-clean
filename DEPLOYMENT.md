@@ -15,7 +15,6 @@ Nicht gefunden:
 Gefunden:
 
 - hartcodierte Render-URL in `public/js/wisy.js`
-- hartcodierte Render-URL in `test-wisy.sh`
 - lokale Vercel-Projektdatei `.vercel/project.json`
 
 ## Render
@@ -59,7 +58,6 @@ Optional oder im Code referenziert:
 - `PORT`
 - `NODE_ENV`
 - `DEBUG`
-- `DATABASE_SSL` in `db.js`
 
 Die Phase-1-Routen werden nur aktiviert, wenn die
 zugehoerigen `WISY_*` Werte serverseitig gesetzt sind. Vor ihrer Aktivierung

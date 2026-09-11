@@ -4,22 +4,16 @@ Testdokumentation fuer das vorhandene Projekt.
 
 ## Aktueller Stand
 
-Ein automatisiertes Testsetup ist in `package.json` nicht dokumentiert.
-
-Vorhandenes Skript:
+Die automatisierte Testsuite ist in `package.json` dokumentiert:
 
 ```json
 {
-  "start": "node server.js"
+  "test": "node --test test/*.test.js"
 }
 ```
 
-Vorhandene manuelle Hilfsdateien:
-
-- `test-wisy.sh`
-- `wisy-test.html`
-- `gpt-test.js`
-- `check.js`
+Sie deckt Katalog-Audit, Lead-Validierung und -Transaktion, Chat-Proxy,
+CTA-Datenminimierung, Dashboard-Schutz und den Serverstart ab.
 
 ## Empfohlener Testablauf vor Aenderungen
 
@@ -41,7 +35,7 @@ Bei reinen Markdown-Aenderungen:
 
 ## Empfohlener Testablauf nach Codeaenderungen
 
-Codeaenderungen sind nicht Teil dieser Dokumentationserstellung. Fuer zukuenftige Aufgaben:
+Nach Codeaenderungen:
 
 1. Syntaxcheck ausfuehren, z. B.:
 
@@ -67,6 +61,10 @@ In `server.js` vorhanden:
 
 - `GET /`
 - `GET /whoami`
+- `POST /api/wisy/chat`
+- `POST /api/wisy/events`
+- `POST /api/internal/wisy/lead-events`
+- `GET /wisy-admin` (nur bei gesetztem Admin-Passwort)
 - `POST /chat_old`
 - `POST /chat`
 - `POST /api/chat/match`
@@ -142,36 +140,6 @@ Bei jeder n8n-Aenderung:
 
 ## Bekannte Testluecken
 
-- Kein automatisiertes Unit-Testsetup dokumentiert.
-- Kein automatisiertes Integrationstestsetup dokumentiert.
-- Kein dokumentiertes Datenbankschema fuer reproduzierbare Session-Tests.
-- Kein dokumentierter Render-Staging-Prozess.
-- Kein dokumentiertes n8n-Staging.
-
-## Vorhandene Testdateien und Hinweise
-
-### `test-wisy.sh`
-
-Manuelles Curl-Skript.
-
-Bekannter Hinweis:
-
-- Das Skript zeigt auf `/chat`, waehrend das Frontend auf `/api/chat/match` zeigt.
-- Die Shell-Syntax sollte vor produktiver Nutzung geprueft werden.
-
-### `wisy-test.html`
-
-Lokale HTML-Testdatei.
-
-Bekannter Hinweis:
-
-- Sie zeigt auf `http://localhost:3000/api/chat`.
-- Diese Route wurde in `server.js` nicht gefunden.
-
-### `gpt-test.js`
-
-Ein OpenAI-Testskript fuer eine einfache Chat-Completion.
-
-### `check.js`
-
-Prueft, ob `OPENAI_API_KEY` geladen ist, und gibt nur den Anfang des Keys aus.
+- Kein automatisierter Browser-Ende-zu-Ende-Test fuer das Shopify-Live-Widget.
+- Kein kontinuierlicher n8n-Regressionstest im Repository.
+- Kein reproduzierbarer Integrationstest gegen eine isolierte Testdatenbank.

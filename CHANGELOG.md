@@ -31,6 +31,17 @@ Das Format orientiert sich grob an Keep a Changelog. Historische Aenderungen wer
 
 ### Changed
 
+- Shopify-Live-Widget nach erfolgreichem Render-Ende-zu-Ende-Test um
+  datensparsame CTA-Klickerfassung erweitert; die live heruntergeladene Datei
+  wurde bytegenau gegen den geprueften lokalen Stand verifiziert.
+- Anklickbare Links im Shopify-Live-Widget auf HTTPS-Ziele der offiziellen
+  Domains `palaisdebeaute.de` und `www.palaisdebeaute.de` begrenzt.
+- Zwoelf belegte Legacy-/Fehldateien nach bytegenauer Sicherung im externen
+  Wisy-Systemarchiv aus dem aktiven Repository entfernt. Darunter waren ein
+  Skript mit partieller Secret-Ausgabe, veraltete manuelle Tests, doppelte
+  Sicherungen, ungenutzte Session-Hilfen, leere Unfall-Dateien und `.DS_Store`.
+- Projekt-, Test-, Architektur- und Betriebsdokumentation an den bereinigten
+  Ist-Zustand angepasst.
 - Datenschutzarmen, rate-limitierten CTA-Tracking-Endpunkt unter
   `POST /api/wisy/events` vorbereitet. Er akzeptiert nur erlaubte
   Storefront-Origins und HTTPS-Ziele von `palaisdebeaute.de`.

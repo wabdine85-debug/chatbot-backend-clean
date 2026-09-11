@@ -1,177 +1,89 @@
 # Known Issues
 
-Bekannte Risiken, technische Schulden und offene Punkte auf Basis des vorhandenen Projektstands.
+Aktuelle technische Schulden und offene Punkte nach dem Audit vom
+11. September 2026.
 
 ## Kritisch / Hoch
 
-### `/chat` wirkt leseseitig wartungs- bzw. legacy-verdaechtig
+### Mehrere historische Chat-Routen
 
-In `server.js` greift die Route `/chat` auf `matches` zu. In der gelesenen Route wurde keine vorherige Berechnung von `matches` gefunden.
-
-Wichtige Einordnung:
-
-- Der aktiv genutzte Chatbot auf der Website funktioniert laut Rueckmeldung des Projektinhabers.
-- Das vorhandene Frontend-Skript `public/js/wisy.js` zeigt auf `/api/chat/match`, nicht auf `/chat`.
-- Das Risiko betrifft nach aktuellem Stand vor allem Lesbarkeit, Wartbarkeit und moegliche alte Test-/Legacy-Pfade.
-- `test-wisy.sh` zeigt aktuell auf `/chat`.
-
-### Mehrere Chat-Routen existieren parallel
-
-Vorhanden:
+In `server.js` existieren neben dem produktiven Proxy weiterhin:
 
 - `/chat_old`
 - `/chat`
 - `/api/chat/match`
 
-Das Frontend-Skript zeigt auf `/api/chat/match`. Laut Projektinhaber wird der Chatbot bereits aktiv auf der Website genutzt und funktioniert. Nicht vollstaendig dokumentiert ist, ob `/chat` oder `/chat_old` noch irgendwo produktiv oder historisch verwendet werden.
+Das Shopify-Live-Widget verwendet `/api/wisy/chat`. Ob die drei historischen
+Routen noch extern genutzt werden, ist nicht durch Traffic-Daten belegt. Vor
+einer Entfernung muessen Render-Logs oder Aufrufer geprueft werden.
 
-### Frontend und Tests verwenden unterschiedliche Endpunkte
+### Ungeschuetzte Speicherung kompletter Chatverlaeufe
 
-Gefunden:
+Die Endpunkte `POST`, `GET` und `DELETE /api/chat/session` beziehungsweise
+`/api/chat/session/:session_id` koennen komplette Nachrichten in
+`chat_sessions` speichern oder ausgeben. Authentifizierung, Retention und eine
+aktive produktive Nutzung sind nicht dokumentiert. Das gelesene lokale und das
+Shopify-Frontend referenzieren diese Endpunkte nicht.
 
-- `public/js/wisy.js` nutzt Render `/api/chat/match`.
-- `test-wisy.sh` nutzt Render `/chat`.
-- `wisy-test.html` nutzt lokal `/api/chat`, diese Route wurde in `server.js` nicht gefunden.
+### Lead-Dashboard noch deaktiviert
 
-### Keine dokumentierte Render-Konfiguration
-
-Eine Datei `render.yaml` oder `render.yml` wurde nicht gefunden.
-
-Render wird ueber hartcodierte URLs referenziert, aber der Deployment-Prozess ist nicht im Repository dokumentiert.
+Die datensparsame Ansicht `/wisy-admin` ist implementiert, bleibt aber ohne ein
+separates `WISY_ADMIN_PASSWORD` deaktiviert. Die aktuelle Sitzung hat keinen
+verfuegbaren Render-Verwaltungszugriff, um diese Variable sicher zu setzen.
 
 ## Mittel
 
-### Doppelte Kataloglogik
+### Kataloge sind noch nicht eine einzige Datenquelle
 
-Treatment-/Kataloginformationen existieren an mehreren Stellen:
+Treatment-Daten existieren in `treatments.json`, im n8n-Katalog und koennen
+durch `pdb-treatments-export/index.mjs` aus Shopify exportiert werden. Ein
+Audit-Skript erkennt Abweichungen, synchronisiert die Quellen aber bewusst
+nicht automatisch. Zwei Produktzuordnungen sind weiterhin uneindeutig und
+wurden nicht geraten.
 
-- `treatments.json`
-- `treatments_backup.json`
-- eingebettet im n8n `katalog` Tool in `wisy.json`
-- moeglich generiert durch `pdb-treatments-export/index.mjs`
+### Lokaler n8n-Export ist dem Live-Workflow voraus
 
-Risiko:
+Eindeutig veraltete Produktlinks und redundante Einzelpreise sind im lokalen
+`wisy.json` korrigiert. Der aktive n8n-Workflow wurde in dieser Sitzung mangels
+n8n-Werkzeug nicht aktualisiert. Bei der spaeteren Uebernahme muss insbesondere
+die Email-Regel vor der Adresse-Regel bleiben.
 
-- Inhalte laufen auseinander.
-- Bot-Antworten koennen je nach Kanal unterschiedlich werden.
+### Funnel endet derzeit beim anonymen CTA-Klick
 
-### Zwei Datenbankzugriffsmuster
+Intent-Kategorien und erlaubte CTA-Klicks werden erfasst. Eine identifizierbare
+Kontaktanfrage, Buchungsbeginn und tatsaechliche Buchung werden noch nicht
+durchgaengig zur selben Wisy-Session zurueckgemeldet. Ohne diese Anbindung kann
+das Dashboard Interesse messen, aber keinen vollstaendigen Umsatz-Funnel.
 
-Gefunden:
+### Offenes globales CORS
 
-- eigener Postgres-Pool direkt in `server.js`
-- exportierter Pool in `db.js`
+`server.js` verwendet global `cors()`. Der oeffentliche CTA-Endpunkt validiert
+die Storefront-Origin zusaetzlich serverseitig und das Dashboard entfernt den
+CORS-Header. Fuer historische Routen ist die benoetigte Origin-Menge noch nicht
+dokumentiert.
 
-Risiko:
+### Lokales Frontend rendert weiterhin HTML
 
-- uneinheitliche SSL- und Verbindungslogik
-- schwerere Wartbarkeit
+`public/js/wisy.js` verwendet fuer Teile der Chatdarstellung `innerHTML`. Das
+produktive Shopify-Widget baut Bot-Inhalte dagegen mit DOM-Methoden auf und
+begrenzt anklickbare Links auf die offiziellen PDB-Domains. Das lokale Frontend
+sollte vor einer erneuten produktiven Verwendung entsprechend gehaertet werden.
 
-### Unterschiedliche Session-Tabellen
+## Niedrig / Betrieb
 
-Gefunden:
+### Keine festgelegte Node-Version
 
-- `chat_sessions`
-- `wisy_chat_sessions`
+Es gibt noch keine `.nvmrc`, `.node-version` oder `engines`-Angabe in
+`package.json`.
 
-Das Schema und die beabsichtigte Nutzung sind nicht dokumentiert.
+### Keine Render-Konfiguration im Repository
 
-### Chat-Session-Endpunkte koennen komplette Verlaeufe speichern
+Der produktive Service `chatbot-backend-clean` wird im Render-Dashboard
+konfiguriert. Eine `render.yaml` oder `render.yml` ist nicht vorhanden; Build,
+Start und Secret-Rotation sind deshalb nur teilweise reproduzierbar.
 
-In `server.js` existieren:
+### Automatische Aufbewahrungsloeschung fehlt
 
-- `POST /api/chat/session`
-- `GET /api/chat/session/:session_id`
-- `DELETE /api/chat/session/:session_id`
-
-Der aktuelle lokale Frontend-Pfad `public/js/wisy.js` referenziert diese Endpunkte nicht; das Live-Shopify-Widget sendet direkt an n8n. Eine produktive Nutzung der Session-Endpunkte wurde im Projekt nicht gefunden.
-
-Risiko:
-
-- `POST /api/chat/session` kann komplette Chatverlaeufe in `chat_sessions` speichern.
-- Authentifizierung, Retention-Frist und Datenloeschkonzept sind nicht dokumentiert.
-- Wenn Nutzer freiwillig sensible Angaben eingeben, koennen diese in gespeicherten Nachrichten landen.
-
-Empfehlung:
-
-- Vor Deaktivierung oder Aenderung Render-/Traffic-Logs pruefen.
-- Wenn ungenutzt: Session-Endpunkte entfernen oder hinter Auth/Feature-Flag legen.
-- Wenn genutzt: Retention, Loeschlogik und Datenschutzhinweise dokumentieren.
-
-### Offenes CORS
-
-`server.js` nutzt `cors()` ohne dokumentierte Origin-Einschraenkung.
-
-Ob das bewusst fuer Shopify/Embedding notwendig ist, ist nicht dokumentiert.
-
-### HTML-Rendering im Frontend
-
-`public/js/wisy.js` rendert Chat-Inhalte ueber `innerHTML`.
-
-Risiko:
-
-- erhoehte Vorsicht bei ungeprueften Antwortinhalten
-- bei AI-Antworten muss besonders auf kontrolliertes HTML geachtet werden
-
-### n8n Switch-Reihenfolge ist fachlich kritisch
-
-Die Email-Regel muss vor der Adresse-Regel stehen. Andernfalls kann `email adresse` als Adressanfrage erkannt werden.
-
-## Niedrig / Ordnung
-
-### Kein automatisiertes Testsetup in `package.json`
-
-`package.json` enthaelt nur:
-
-- `start`
-
-Kein `test`, `lint` oder `check` Script ist dokumentiert.
-
-### Keine dokumentierte Node-Version
-
-Nicht vorhanden:
-
-- `.nvmrc`
-- `.node-version`
-- `engines` in `package.json`
-
-### Ungewoehnliche Dateien im Repository
-
-Gefunden:
-
-- `-H`
-- `-d`
-
-Beide wurden als leere Dateien gesehen. Herkunft und Zweck sind nicht dokumentiert.
-
-### Lokale/metadatenartige Dateien
-
-Gefunden:
-
-- `.vercel/project.json`
-- `.DS_Store` im Unterprojekt
-
-Ob diese bewusst versioniert sind, ist nicht dokumentiert.
-
-## Produkt- und AI-Risiken
-
-### Halluzinierte Leistungen oder Preise
-
-Geschaeftsregel:
-
-- keine Preise oder Leistungen erfinden
-- bei fehlenden Informationen Kontaktformular empfehlen
-
-Risiko besteht besonders bei AI-Agent- oder Prompt-Aenderungen.
-
-### Inkonsistente Markenstimme
-
-Geschaeftsregel:
-
-- Studio immer `PDB Aesthetic Room`
-- niemals `Palais de Beaute` in Bot-Antworten
-- luxurioes, kompetent, klar, zielfuehrend
-
-### Conversion-Verlust durch unklare Antworten
-
-Wisy soll Besucher zur naechsten Handlung fuehren. Lange, unklare oder rein informative Antworten koennen Conversion reduzieren.
+Eine 90-Tage-Frist fuer inaktive anonyme Leads ist dokumentiert, aber noch
+nicht als geplanter Job umgesetzt. Die konkrete Frist muss mit
+Datenschutzerklaerung und betrieblichem Loeschkonzept uebereinstimmen.

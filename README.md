@@ -167,13 +167,6 @@ Die automatisierte Testsuite wird ausgefuehrt mit:
 npm test
 ```
 
-Zusaetzliche historische Hilfsdateien:
-
-- `test-wisy.sh`
-- `wisy-test.html`
-- `gpt-test.js`
-- `check.js`
-
 Details siehe `TESTING.md`.
 
 ## Dokumentation

@@ -113,23 +113,27 @@ https://chatbot-backend-clean-eord.onrender.com/api/chat/match
 Dateien:
 
 - `server.js`
-- `db.js`
-- `wisySessions.js`
+- `leadTracking.js`
+- `wisyLeadDashboard.js`
+- `db/migrations/001_create_wisy_lead_tracking.sql`
 
 Gefundene Tabellenreferenzen:
 
 - `chat_sessions`
-- `wisy_chat_sessions`
+- `wisy_leads`
+- `wisy_lead_events`
 
-Das Datenbankschema ist nicht dokumentiert.
-
-Migrationsdateien wurden nicht gefunden.
+Das Lead-Schema ist durch die Migration dokumentiert. Das Schema von
+`chat_sessions` ist weiterhin nicht im Repository definiert.
 
 ### Session-Speicherung
 
 `server.js` enthaelt Endpunkte zum Speichern, Laden und Loeschen von Chatverlaeufen in `chat_sessions`.
 
-Im aktuell gelesenen Frontend `public/js/wisy.js` wurde keine Nutzung dieser Session-Endpunkte gefunden; dort wird der Chatverlauf im Browser nur im RAM gehalten und an `/api/chat/match` gesendet. Das Live-Shopify-Widget nutzt n8n direkt und nicht diese Backend-Session-Endpunkte.
+Im aktuell gelesenen Frontend `public/js/wisy.js` wurde keine Nutzung dieser
+Session-Endpunkte gefunden; dort wird der Chatverlauf im Browser nur im RAM
+gehalten und an `/api/chat/match` gesendet. Das Live-Shopify-Widget nutzt den
+geschuetzten Render-Proxy zu n8n und nicht diese Session-Endpunkte.
 
 Nicht dokumentiert:
 

@@ -52,8 +52,6 @@ Ohne explizite Freigabe nicht aendern:
 - `public/js/wisy.js`: Frontend-Chatlogik mit Render-Endpunkt.
 - `public/wisy.html`: lokales/statisches Chat-Frontend.
 - `wisy.json`: n8n-Workflow-Export mit Webhook, Switch, AI Agent, OpenAI-Modell, Memory und `katalog` Tool.
-- `db.js`: exportierter Postgres-Pool.
-- `wisySessions.js`: Session-Hilfsfunktionen fuer `wisy_chat_sessions`.
 - `pdb-treatments-export/index.mjs`: Shopify-Produktexport-Skript.
 
 ## n8n-Regel

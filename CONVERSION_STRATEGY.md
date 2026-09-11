@@ -36,11 +36,12 @@ Aus dem Projekt ersichtlich:
 ## Conversion-Risiken
 
 - Unklare Rolle der parallelen Chat-Routen kann zu inkonsistentem Verhalten fuehren.
-- Der aktiv genutzte Website-Chat funktioniert laut Projektinhaber; das Frontend zeigt auf `/api/chat/match`.
-- `/chat` wirkt beim Lesen wartungs- bzw. legacy-verdaechtig, waehrend `test-wisy.sh` darauf zeigt.
+- Das lokale Frontend und das aktive Shopify-Widget verwenden unterschiedliche
+  Implementierungen; produktiv nutzt Shopify den geschuetzten Render-Proxy.
 - n8n-Katalog und `treatments.json` koennen unterschiedliche Empfehlungen erzeugen.
 - Zu viele oder falsche Optionen koennen Nutzer verwirren.
-- Fehlende Analytics machen Conversion-Erfolg nicht messbar.
+- CTA-Klicks und Intent-Kategorien sind messbar; Kontaktuebergabe und gebuchte
+  Termine sind noch nicht durchgaengig angebunden.
 - Fehlende Dokumentation fuer Premium-Mitgliedschaften begrenzt sichere Empfehlungen.
 
 ## Antwortmuster

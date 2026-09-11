@@ -4,7 +4,8 @@ Status: Datenbankmigration am 10. September 2026 produktiv angewendet. Die
 Tabellen wurden leer angelegt. Der n8n-Staging-Webhook ist mit Header-Auth
 abgesichert, Ende-zu-Ende ueber den Render-Proxy getestet und jetzt aktiv. Das
 Shopify-Live-Widget verwendet seit dem 11. September 2026 den geschuetzten
-Render-Proxy. Lead-Ansicht und Dashboard sind noch nicht live geschaltet.
+Render-Proxy und erfasst erlaubte CTA-Klicks datensparsam. Die Lead-Ansicht ist
+noch nicht live geschaltet.
 
 ## Ziel
 
@@ -56,7 +57,6 @@ Empfohlener technischer Ausgangspunkt:
 
 - Weiterfuehrende n8n-Ereignisse fuer den geschuetzten internen Backend-Endpunkt einrichten.
 - Weiterfuehrende Funnel-Ereignisse im aktiven n8n-Workflow ergaenzen.
-- CTA-Klicks im Shopify-Widget erfassen.
 - Die vorbereitete geschuetzte Lead-Ansicht unter `/wisy-admin` durch ein
   separates `WISY_ADMIN_PASSWORD` aktivieren und deployen.
 - Automatische Retention ausfuehren.
@@ -73,7 +73,7 @@ angezeigt. Kontaktfelder werden zusaetzlich in der Anwendung entfernt, falls
 keine Einwilligung gesetzt ist. Antworten verwenden `no-store` und restriktive
 Browser-Sicherheitsheader.
 
-Der vorbereitete Endpunkt `POST /api/wisy/events` nimmt ausschliesslich
+Der aktive Endpunkt `POST /api/wisy/events` nimmt ausschliesslich
 strukturierte CTA-Klicks aus erlaubten Storefront-Origins entgegen. Ziel-URLs
 muessen HTTPS verwenden und auf freigegebene Produkt-, Collection-, Kontakt-
 oder Premium-Pfade von `palaisdebeaute.de` zeigen. Freie Texte und Kontaktdaten

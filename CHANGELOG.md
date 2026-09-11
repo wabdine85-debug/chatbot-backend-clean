@@ -8,6 +8,10 @@ Das Format orientiert sich grob an Keep a Changelog. Historische Aenderungen wer
 
 ### Documentation
 
+- Datenschutzarmes Datenmodell fuer strukturiertes Wisy-Lead-Tracking unter
+  `docs/WISY_LEAD_TRACKING.md` dokumentiert. Die zugehoerige additive Migration
+  wurde auf die produktive Datenbank angewendet; die neuen Tabellen waren
+  danach leer.
 - Projektbasis-Dokumentation erstellt:
   - `AGENTS.md`
   - `README.md`
@@ -25,6 +29,50 @@ Das Format orientiert sich grob an Keep a Changelog. Historische Aenderungen wer
 
 ### Changed
 
+- Serverseitige, datensparsame Intent-Protokollierung in den vorbereiteten
+  Wisy-Proxy integriert. Gespeichert werden nur feste Kategorien wie
+  `booking`, `contact` oder `price`, niemals der freie Nachrichtentext.
+- Lead-Speicherfehler vom Chatpfad entkoppelt, damit ein Datenbankproblem die
+  Antwort an Kundinnen und Kunden nicht unterbricht.
+- Lokale Shopify-Widget-Arbeitskopie auf den vorbereiteten Render-Proxy
+  umgestellt und mit 600-Zeichen-Limit, Zeitlimit, Doppelsende-Schutz sowie
+  einer sichtbaren Fehlerantwort abgesichert. Es erfolgte kein Shopify-Push.
+- Serverseitigen Wisy-Chat-Proxy lokal vorbereitet. Er validiert Eingaben,
+  begrenzt Anfragen pro IP, setzt einen nur serverseitig vorhandenen
+  Auth-Header fuer n8n und reicht nur das erwartete Antwortformat weiter.
+- Proxy-Konfiguration auf HTTPS-Webhooks unter `n8n.cloud` und mindestens 32
+  Zeichen lange Secrets begrenzt. Ohne gueltige Konfiguration wird die Route
+  nicht aktiviert.
+- Produktionsabhaengigkeiten sicherheitsorientiert aktualisiert: direkte
+  `body-parser`-Abhaengigkeit entfernt, Express auf `5.2.1` aktualisiert und
+  die im Express-Router verwendete verwundbare transitive
+  `path-to-regexp`-Version `8.3.0` auf `8.4.2` begrenzt.
+- Testskript auf echte Dateien unter `test/*.test.js` begrenzt, damit das alte
+  manuelle `gpt-test.js` keinen externen OpenAI-Aufruf waehrend Unit-Tests
+  versucht.
+- Express-App fuer lokale Tests exportiert; im `test`-Modus startet kein
+  eigenstaendiger Netzwerk-Listener und `.env` wird nicht geladen.
+- Geschuetzten internen Endpunkt `POST /api/internal/wisy/lead-events` lokal
+  vorbereitet. Der Endpunkt akzeptiert nur strukturierte Funnel-Ereignisse,
+  lehnt freie Chattexte ab und verlangt vor Kontaktdaten eine ausdrueckliche
+  Einwilligung.
+- JSON-Request-Limit des Express-Backends auf `16kb` gesetzt.
+- `.gitignore` bereinigt und um `.env.*` sowie `.DS_Store` erweitert; die
+  wertfreie `.env.example` bleibt ausdruecklich versionierbar.
+- Migration fuer `wisy_leads` und
+  `wisy_lead_events` hinzugefuegt. Das Modell speichert keine freien
+  Chatnachrichten und erzwingt eine Einwilligung, bevor Kontaktdaten abgelegt
+  werden koennen.
+- Migration am 10. September 2026 auf der produktiven Datenbank angewendet;
+  beide neuen Tabellen wurden leer angelegt, bestehende Tabellen blieben
+  unveraendert.
+- Inaktiven n8n-Workflow `wisy-v2-secure-staging` mit separater Webhook-Route
+  und expliziter Regel gegen erfundene oder geschaetzte Preise angelegt. Der
+  aktive Workflow `wisy` blieb unveraendert.
+- Den Webhook des inaktiven Workflows `wisy-v2-secure-staging` mit einem
+  eigenen n8n-Header-Auth-Credential abgesichert. Der Secret-Wert wurde direkt
+  aus dem macOS-Schluesselbund uebertragen und nicht ausgegeben oder in einer
+  Projektdatei gespeichert.
 - n8n Workflow `wisy` aktualisiert:
   - `session_id` Mapping im AI-Pfad repariert, damit `Simple Memory` den vom Webhook gesendeten `session_id` Wert nutzen kann.
   - Beratung-Switch-Regel erweitert, damit sie `body.query` und `body.message` beruecksichtigt.
@@ -56,6 +104,8 @@ Das Format orientiert sich grob an Keep a Changelog. Historische Aenderungen wer
 - Shopify-Wisy-Widget datenschutzfreundlicher gemacht:
   - Session-ID wird im Live-Widget nicht mehr dauerhaft per `localStorage`, sondern nur noch tabbezogen per `sessionStorage` gespeichert.
   - Beim Schliessen des Widgets wird die Session-ID entfernt.
+- Shopify-Datenschutzerklaerung live um Abschnitt `KI-Chat-Assistent Wisy` erweitert:
+  - Verarbeitung ueber n8n/OpenAI, Session-ID per `sessionStorage`, Hinweis auf keine sensiblen Gesundheitsdaten und Kontaktformular-Alternative dokumentiert.
 - Datenschutzrelevante Debug-Logs reduziert:
   - Backend loggt in `/api/chat/match` keine freien Nutzereingaben mehr.
   - Backend loggt keine gekuerzten AI-Antwortinhalte mehr.
@@ -71,6 +121,15 @@ Das Format orientiert sich grob an Keep a Changelog. Historische Aenderungen wer
 
 ### Verified
 
+- Backend-Syntaxchecks und 14 automatisierte Tests fuer Validierung,
+  Authentifizierung, Transaktion, Intent-Klassifizierung, Fehlerentkopplung,
+  Rate-Limit und Health-Endpunkt bestanden.
+- Syntax und sicherheitsrelevante Merkmale der lokalen Shopify-Widget-Datei
+  geprueft. Ein Browserlauf war nicht moeglich, da Playwright lokal nicht
+  installiert ist; es wurde keine neue Testabhaengigkeit hinzugefuegt.
+- Isolierten n8n-Staging-Test ausgefuehrt: Request ohne Header wurde mit HTTP
+  403 abgelehnt, Request mit Header mit HTTP 200 beantwortet und die Session-ID
+  beibehalten. Der Staging-Workflow wurde danach erfolgreich deaktiviert.
 - n8n Webhook-Test fuer `E Mail`, `Beratung`, `Kuendigung`, `Kundogung`, `Erzaehl mir mehr ueber Unterspritzungen` und `10%` ausgefuehrt.
 - n8n Webhook-Test fuer `Ich moechte Beratung`, `Hautanalyse buchen` und `Wie bekomme ich den Rabattcode?` ausgefuehrt.
 - n8n Regressionstest fuer `Hautanalyse buchen`, `Ich brauche Beratung`, `E Mail`, `email adresse`, `Wie bekomme ich 10% Rabatt?` und `Erzaehl mir mehr ueber Unterspritzungen` ausgefuehrt.
@@ -83,7 +142,6 @@ Das Format orientiert sich grob an Keep a Changelog. Historische Aenderungen wer
 ### Notes
 
 - Die Dokumentation basiert auf dem vorhandenen Projektstand und den im Auftrag festgelegten Produkt- und Geschaeftsregeln.
-- Es wurden keine Backend-Codeaenderungen vorgenommen.
-- Es wurden keine Frontend-Codeaenderungen vorgenommen.
-- Es wurden keine `package.json`-Aenderungen vorgenommen.
-- Es wurden keine Render-Aenderungen vorgenommen.
+- Die drei benoetigten Wisy-Variablen wurden im Render-Service
+  `chatbot-backend-clean` mit `Save only` hinterlegt; es wurde kein Deploy
+  ausgeloest und kein Variablenwert dokumentiert.

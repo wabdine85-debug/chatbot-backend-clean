@@ -136,6 +136,11 @@ Das Format orientiert sich grob an Keep a Changelog. Historische Aenderungen wer
 - Isolierten n8n-Staging-Test ausgefuehrt: Request ohne Header wurde mit HTTP
   403 abgelehnt, Request mit Header mit HTTP 200 beantwortet und die Session-ID
   beibehalten. Der Staging-Workflow wurde danach erfolgreich deaktiviert.
+- Ende-zu-Ende-Test vom produktiven Render-Proxy zum abgesicherten n8n-v2-
+  Workflow mit einer anonymen, eindeutig markierten Test-Session bestanden:
+  HTTP 200, Antwort vorhanden und Session-ID beibehalten. Der v2-Workflow ist
+  danach aktiv geblieben; das Live-Shopify-Widget verwendet weiterhin den
+  bisherigen Workflow.
 - n8n Webhook-Test fuer `E Mail`, `Beratung`, `Kuendigung`, `Kundogung`, `Erzaehl mir mehr ueber Unterspritzungen` und `10%` ausgefuehrt.
 - n8n Webhook-Test fuer `Ich moechte Beratung`, `Hautanalyse buchen` und `Wie bekomme ich den Rabattcode?` ausgefuehrt.
 - n8n Regressionstest fuer `Hautanalyse buchen`, `Ich brauche Beratung`, `E Mail`, `email adresse`, `Wie bekomme ich 10% Rabatt?` und `Erzaehl mir mehr ueber Unterspritzungen` ausgefuehrt.
@@ -151,3 +156,6 @@ Das Format orientiert sich grob an Keep a Changelog. Historische Aenderungen wer
 - Die drei benoetigten Wisy-Variablen wurden im Render-Service
   `chatbot-backend-clean` mit `Save only` hinterlegt; es wurde kein Deploy
   ausgeloest und kein Variablenwert dokumentiert.
+- Die anonyme Test-Session `phase1-e2e-test-20260911` kann nach der finalen
+  Datenbankkontrolle aus den Lead-Tabellen entfernt werden; sie enthaelt keine
+  Kontakt- oder freien Chatdaten.

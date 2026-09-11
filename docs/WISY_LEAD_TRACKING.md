@@ -2,7 +2,8 @@
 
 Status: Datenbankmigration am 10. September 2026 produktiv angewendet. Die
 Tabellen wurden leer angelegt. Der n8n-Staging-Webhook ist mit Header-Auth
-abgesichert und getestet, bleibt aber inaktiv. Backend-Proxy, Lead-API und
+abgesichert, Ende-zu-Ende ueber den Render-Proxy getestet und jetzt aktiv. Das
+Shopify-Live-Widget ist noch nicht auf den Proxy umgestellt. Lead-Ansicht und
 Dashboard sind noch nicht live geschaltet.
 
 ## Ziel
@@ -66,7 +67,8 @@ Der inaktive Workflow `wisy-v2-secure-staging` wurde mit eigener Webhook-Route
 und expliziter Preis-Sicherheitsregel angelegt. Der Webhook verwendet das
 n8n-Credential `Wisy Backend Webhook Auth v2` fuer den Header
 `X-Wisy-Webhook-Secret`. Ein isolierter Test ergab ohne Authentifizierung HTTP
-403 und mit Authentifizierung HTTP 200; danach wurde der Workflow wieder
-deaktiviert. Der bisherige aktive Workflow `wisy` blieb unveraendert. Die
-v2-Version darf erst nach Backend-Deployment und vollstaendigem
-Ende-zu-Ende-Test dauerhaft aktiviert werden.
+403 und mit Authentifizierung HTTP 200; danach wurde der Workflow zunaechst
+wieder deaktiviert. Nach dem Backend-Deployment bestand auch der vollstaendige
+Test ueber den Render-Proxy mit HTTP 200 und erhaltener Session-ID. Der Workflow
+ist seitdem aktiv, wird vom Live-Shopify-Widget aber noch nicht verwendet. Der
+bisherige aktive Workflow `wisy` blieb aktiv und unveraendert.

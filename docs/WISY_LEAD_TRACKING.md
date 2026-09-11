@@ -95,6 +95,8 @@ angezeigt. Kontaktfelder werden zusaetzlich in der Anwendung entfernt, falls
 keine Einwilligung gesetzt ist. Antworten verwenden `no-store` und restriktive
 Browser-Sicherheitsheader. Der produktive Test bestaetigte HTTP 401 ohne
 Anmeldung, HTTP 200 mit Anmeldung sowie die Kontakt-Einwilligungsregel.
+Kennzahlen und Tabellenzeilen werden serverseitig gerendert, sodass die Ansicht
+nicht von einem separaten JavaScript-Nachladevorgang im Browser abhaengt.
 
 Der aktive Endpunkt `POST /api/wisy/events` nimmt ausschliesslich
 strukturierte CTA-Klicks aus erlaubten Storefront-Origins entgegen. Ziel-URLs

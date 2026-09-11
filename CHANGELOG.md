@@ -41,6 +41,11 @@ Das Format orientiert sich grob an Keep a Changelog. Historische Aenderungen wer
 
 ### Changed
 
+- Lead-Dashboard rendert Kennzahlen und Zeilen jetzt serverseitig. Dadurch ist
+  die Ansicht nicht mehr von einem zweiten JavaScript-API-Aufruf abhaengig, der
+  in Safari trotz geladener und authentifizierter HTML-Seite haengen blieb.
+  Statusfilter und Aktualisierung funktionieren als normale gleiche-origin
+  Seitenaufrufe; die Content-Security-Policy erlaubt kein JavaScript mehr.
 - Shopify-Wisy-Widget gegen Render-Free-Plan-Kaltstarts gehaertet: Beim Oeffnen
   wird der oeffentliche Render-Endpunkt einmal ohne Kundeninhalt aufgeweckt und
   das Browser-Zeitlimit fuer die erste Chatanfrage von 20 auf 45 Sekunden

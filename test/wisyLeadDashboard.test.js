@@ -6,6 +6,7 @@ import {
   createWisyLeadDashboardRouter,
   isValidBasicAuth,
   loadLeadDashboard,
+  renderLeadDashboard,
   sanitizeDashboardLead,
 } from "../wisyLeadDashboard.js";
 
@@ -64,6 +65,27 @@ test("loads aggregate metrics and clamps the result limit", async () => {
   assert.equal(calls.some((call) => /messages|query\s+FROM/i.test(call.sql)), false);
 });
 
+test("renders dashboard data server-side without executable JavaScript", () => {
+  const html = renderLeadDashboard({
+    generated_at: "2026-09-11T20:53:10.482Z",
+    summary: { total: 1, active_7d: 1, actionable: 0, contactable: 0, cta_clicks_7d: 0, booked: 0 },
+    leads: [{
+      session_id: "session-123",
+      status: "qualified",
+      intent: "<script>alert(1)</script>",
+      latest_event_type: "intent_detected",
+      latest_cta_target: null,
+      last_activity_at: "2026-09-11T20:53:10.482Z",
+    }],
+  });
+
+  assert.match(html, /Wisy Leads/);
+  assert.match(html, /session-123/);
+  assert.match(html, /&lt;script&gt;alert\(1\)&lt;\/script&gt;/);
+  assert.doesNotMatch(html, /<script>/);
+  assert.doesNotMatch(html, /Wird geladen/);
+});
+
 test("protects dashboard HTML and API with no-store security headers", async (context) => {
   const pool = {
     async query(sql) {
@@ -93,7 +115,11 @@ test("protects dashboard HTML and API with no-store security headers", async (co
   assert.equal(page.headers.get("access-control-allow-origin"), null);
   assert.equal(page.headers.get("cross-origin-resource-policy"), "same-origin");
   assert.match(page.headers.get("content-security-policy"), /frame-ancestors 'none'/);
-  assert.match(await page.text(), /Wisy Leads/);
+  assert.match(page.headers.get("content-security-policy"), /script-src 'none'/);
+  const pageHtml = await page.text();
+  assert.match(pageHtml, /Wisy Leads/);
+  assert.match(pageHtml, /test-session/);
+  assert.doesNotMatch(pageHtml, /Wird geladen/);
 
   const api = await fetch(`${baseUrl}/api`, { headers });
   assert.equal(api.status, 200);

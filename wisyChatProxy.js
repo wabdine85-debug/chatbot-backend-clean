@@ -1,0 +1,197 @@
+import { Router } from "express";
+import { recordLeadEvent } from "./leadTracking.js";
+
+const DEFAULT_RATE_LIMIT = 30;
+const DEFAULT_RATE_WINDOW_MS = 60_000;
+
+function text(value, maxLength) {
+  if (typeof value !== "string") return null;
+  const normalized = value.trim();
+  return normalized ? normalized.slice(0, maxLength) : null;
+}
+
+export function validateChatPayload(body) {
+  if (!body || typeof body !== "object" || Array.isArray(body)) {
+    return { ok: false, error: "invalid_body" };
+  }
+
+  const query = text(body.query ?? body.message, 600);
+  const sessionId = text(body.session_id ?? body.sessionId, 128);
+  if (!query) return { ok: false, error: "query_required" };
+  if (!sessionId || !/^[A-Za-z0-9_-]{6,128}$/.test(sessionId)) {
+    return { ok: false, error: "invalid_session_id" };
+  }
+
+  return { ok: true, value: { query, sessionId } };
+}
+
+export function sanitizeChatResponse(payload, sessionId) {
+  const reply = text(payload?.reply, 12_000);
+  const buttons = Array.isArray(payload?.buttons)
+    ? payload.buttons
+      .slice(0, 6)
+      .map((button) => ({
+        label: text(button?.label, 80),
+        value: text(button?.value, 500),
+      }))
+      .filter((button) => button.label && button.value)
+    : [];
+
+  return {
+    reply: reply ?? "Bitte versuchen Sie es erneut oder nutzen Sie unser Kontaktformular.",
+    buttons,
+    session_id: sessionId,
+  };
+}
+
+export function classifyLeadIntent(query) {
+  const normalized = query
+    .toLowerCase()
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9€ ]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  if (/\b(buchen|buchung|termin|appointment)\b/.test(normalized)) return "booking";
+  if (/\b(kontakt|anrufen|ruckruf|email|e mail|telefon|beratung)\b/.test(normalized)) return "contact";
+  if (/\b(preis|preise|kostet|kosten|teuer|euro)\b|€/.test(normalized)) return "price";
+  if (/\b(behandlung|hydrafacial|laser|botox|filler|microneedling|exosom|hautanalyse)\b/.test(normalized)) {
+    return "treatment";
+  }
+  return "general";
+}
+
+export async function tryRecordLeadIntent({
+  pool,
+  query,
+  sessionId,
+  recordLeadEventImpl = recordLeadEvent,
+  logger = console,
+}) {
+  if (!pool) return false;
+
+  try {
+    await recordLeadEventImpl(pool, {
+      sessionId,
+      eventType: "intent_detected",
+      status: "qualified",
+      source: "shopify_wisy",
+      intent: classifyLeadIntent(query),
+      treatmentInterest: null,
+      route: "chat_proxy",
+      ctaTarget: null,
+      consentToContact: false,
+      contactName: null,
+      contactEmail: null,
+      contactPhone: null,
+    });
+    return true;
+  } catch (error) {
+    logger.error("Wisy lead intent tracking failed:", error.name || "Error");
+    return false;
+  }
+}
+
+export function createFixedWindowRateLimiter({
+  maxRequests = DEFAULT_RATE_LIMIT,
+  windowMs = DEFAULT_RATE_WINDOW_MS,
+} = {}) {
+  const clients = new Map();
+
+  return (req, res, next) => {
+    const now = Date.now();
+    const key = req.ip || req.socket?.remoteAddress || "unknown";
+    const current = clients.get(key);
+
+    if (!current || current.resetAt <= now) {
+      clients.set(key, { count: 1, resetAt: now + windowMs });
+      return next();
+    }
+
+    current.count += 1;
+    if (current.count > maxRequests) {
+      const retryAfterSeconds = Math.max(1, Math.ceil((current.resetAt - now) / 1000));
+      res.set("Retry-After", String(retryAfterSeconds));
+      return res.status(429).json({ ok: false, error: "rate_limited" });
+    }
+
+    if (clients.size > 10_000) {
+      for (const [clientKey, value] of clients) {
+        if (value.resetAt <= now) clients.delete(clientKey);
+      }
+    }
+    return next();
+  };
+}
+
+function validWebhookUrl(value) {
+  try {
+    const parsed = new URL(value);
+    return parsed.protocol === "https:"
+      && (parsed.hostname === "n8n.cloud" || parsed.hostname.endsWith(".n8n.cloud"));
+  } catch (error) {
+    return false;
+  }
+}
+
+export function createWisyChatProxyRouter({
+  webhookUrl,
+  webhookSecret,
+  pool,
+  fetchImpl = fetch,
+  recordLeadEventImpl = recordLeadEvent,
+}) {
+  if (!validWebhookUrl(webhookUrl) || typeof webhookSecret !== "string" || webhookSecret.length < 32) {
+    return null;
+  }
+
+  const router = Router();
+  router.post("/chat", createFixedWindowRateLimiter(), async (req, res) => {
+    const validation = validateChatPayload(req.body);
+    if (!validation.ok) {
+      return res.status(400).json({ ok: false, error: validation.error });
+    }
+
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 20_000);
+    try {
+      const upstream = await fetchImpl(webhookUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Wisy-Webhook-Secret": webhookSecret,
+        },
+        body: JSON.stringify({
+          session_id: validation.value.sessionId,
+          query: validation.value.query,
+        }),
+        signal: controller.signal,
+      });
+
+      if (!upstream.ok) throw new Error(`upstream_http_${upstream.status}`);
+      const result = await upstream.json();
+
+      // Lead persistence must never add latency to the customer-facing reply.
+      void tryRecordLeadIntent({
+        pool,
+        query: validation.value.query,
+        sessionId: validation.value.sessionId,
+        recordLeadEventImpl,
+      });
+
+      return res.json(sanitizeChatResponse(result, validation.value.sessionId));
+    } catch (error) {
+      console.error("Wisy chat proxy failed:", error.name);
+      return res.status(502).json({
+        ok: false,
+        error: "chat_unavailable",
+        reply: "Wisy ist gerade nicht erreichbar. Bitte versuchen Sie es erneut oder nutzen Sie unser Kontaktformular.",
+      });
+    } finally {
+      clearTimeout(timeout);
+    }
+  });
+
+  return router;
+}

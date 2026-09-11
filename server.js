@@ -1,17 +1,18 @@
 import express from "express";
 import cors from "cors";
-import bodyParser from "body-parser";
 import dotenv from "dotenv";
 import OpenAI from "openai";
 import fs from "fs";
 import os from "os";
 import { isGeneralQuestion } from "./utils/generalQuestions.js";
 import { handleGeneralQuestions } from "./utils/handleGeneralQuestions.js";
+import { createWisyLeadRouter } from "./leadTracking.js";
+import { createWisyChatProxyRouter } from "./wisyChatProxy.js";
 
 
 
 // Nur lokal .env laden (nicht auf Render)
-if (process.env.NODE_ENV !== "production") {
+if (process.env.NODE_ENV !== "production" && process.env.NODE_ENV !== "test") {
   dotenv.config();
 }
 
@@ -25,9 +26,27 @@ const pool = new Pool({
 });
 
 const app = express();
+app.set("trust proxy", 1);
 app.use(cors());
-app.use(bodyParser.json());
+app.use(express.json({ limit: "16kb" }));
 app.use(express.static("public"));
+
+const wisyChatProxyRouter = createWisyChatProxyRouter({
+  webhookUrl: process.env.WISY_N8N_WEBHOOK_URL,
+  webhookSecret: process.env.WISY_N8N_WEBHOOK_SECRET,
+  pool,
+});
+if (wisyChatProxyRouter) {
+  app.use("/api/wisy", wisyChatProxyRouter);
+}
+
+const wisyLeadRouter = createWisyLeadRouter({
+  pool,
+  sharedSecret: process.env.WISY_N8N_SHARED_SECRET,
+});
+if (wisyLeadRouter) {
+  app.use("/api/internal/wisy", wisyLeadRouter);
+}
 
 const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 const CONTACT_URL = "https://palaisdebeaute.de/pages/contact";
@@ -763,4 +782,8 @@ if (message.startsWith("__cat__:")) {
 
 /* ---------- Server starten ---------- */
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`🚀 Backend läuft auf Port ${PORT}`));
+export { app };
+
+if (process.env.NODE_ENV !== "test") {
+  app.listen(PORT, () => console.log(`🚀 Backend läuft auf Port ${PORT}`));
+}

@@ -3,8 +3,8 @@
 Status: Datenbankmigration am 10. September 2026 produktiv angewendet. Die
 Tabellen wurden leer angelegt. Der n8n-Staging-Webhook ist mit Header-Auth
 abgesichert, Ende-zu-Ende ueber den Render-Proxy getestet und jetzt aktiv. Das
-Shopify-Live-Widget ist noch nicht auf den Proxy umgestellt. Lead-Ansicht und
-Dashboard sind noch nicht live geschaltet.
+Shopify-Live-Widget verwendet seit dem 11. September 2026 den geschuetzten
+Render-Proxy. Lead-Ansicht und Dashboard sind noch nicht live geschaltet.
 
 ## Ziel
 
@@ -54,7 +54,6 @@ Empfohlener technischer Ausgangspunkt:
 
 ## Noch nicht live geschaltet
 
-- Den lokal vorbereiteten Backend-Proxy und den geschuetzten API-Endpunkt deployen.
 - Weiterfuehrende n8n-Ereignisse fuer den geschuetzten internen Backend-Endpunkt einrichten.
 - Weiterfuehrende Funnel-Ereignisse im aktiven n8n-Workflow ergaenzen.
 - CTA-Klicks im Shopify-Widget erfassen.
@@ -70,5 +69,5 @@ n8n-Credential `Wisy Backend Webhook Auth v2` fuer den Header
 403 und mit Authentifizierung HTTP 200; danach wurde der Workflow zunaechst
 wieder deaktiviert. Nach dem Backend-Deployment bestand auch der vollstaendige
 Test ueber den Render-Proxy mit HTTP 200 und erhaltener Session-ID. Der Workflow
-ist seitdem aktiv, wird vom Live-Shopify-Widget aber noch nicht verwendet. Der
-bisherige aktive Workflow `wisy` blieb aktiv und unveraendert.
+ist seitdem aktiv und wird ueber den Render-Proxy vom Live-Shopify-Widget
+verwendet. Der bisherige aktive Workflow `wisy` blieb aktiv und unveraendert.

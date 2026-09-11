@@ -34,9 +34,13 @@ Das Format orientiert sich grob an Keep a Changelog. Historische Aenderungen wer
   `booking`, `contact` oder `price`, niemals der freie Nachrichtentext.
 - Lead-Speicherfehler vom Chatpfad entkoppelt, damit ein Datenbankproblem die
   Antwort an Kundinnen und Kunden nicht unterbricht.
-- Lokale Shopify-Widget-Arbeitskopie auf den vorbereiteten Render-Proxy
-  umgestellt und mit 600-Zeichen-Limit, Zeitlimit, Doppelsende-Schutz sowie
-  einer sichtbaren Fehlerantwort abgesichert. Es erfolgte kein Shopify-Push.
+- Shopify-Live-Widget im Theme `UPDATED PDB V3.3 PREMIUM FINAL` auf den
+  geschuetzten Render-Proxy umgestellt und mit 600-Zeichen-Limit, Zeitlimit,
+  Doppelsende-Schutz sowie einer sichtbaren Fehlerantwort abgesichert. Die
+  vorhandenen Layoutgroessen des Live-Themes blieben unveraendert.
+- Bot-Antworten im Shopify-Live-Widget werden ohne dynamisches Roh-HTML
+  aufgebaut. Nur validierte HTTPS-Links werden klickbar und externe Links
+  erhalten `noopener noreferrer`.
 - Serverseitigen Wisy-Chat-Proxy lokal vorbereitet. Er validiert Eingaben,
   begrenzt Anfragen pro IP, setzt einen nur serverseitig vorhandenen
   Auth-Header fuer n8n und reicht nur das erwartete Antwortformat weiter.
@@ -130,9 +134,17 @@ Das Format orientiert sich grob an Keep a Changelog. Historische Aenderungen wer
 - Vollstaendiger `npm audit` nach Entfernung der ungenutzten Vercel-CLI ohne
   bekannte Schwachstellen bestanden; zuvor war bereits der reine
   Produktions-Audit sauber.
-- Syntax und sicherheitsrelevante Merkmale der lokalen Shopify-Widget-Datei
-  geprueft. Ein Browserlauf war nicht moeglich, da Playwright lokal nicht
-  installiert ist; es wurde keine neue Testabhaengigkeit hinzugefuegt.
+- Shopify-Live-Dateien vor der Umschaltung gesichert, nach dem Upload erneut
+  aus Theme `200148746504` heruntergeladen und bytegenau mit der geprueften
+  Fassung verglichen. Die oeffentliche Storefront liefert den neuen
+  Render-Proxy, die sichere DOM-Ausgabe und das 600-Zeichen-Limit aus.
+- Isolierter Renderer-Test bestaetigt, dass eingeschleustes HTML nicht
+  ausgefuehrt, ein gueltiger HTTPS-Link sicher aufgebaut und ein unsicheres
+  URL-Schema nicht verlinkt wird.
+- Vollstaendiger Kundenpfad ueber den oeffentlichen Render-Proxy mit HTTP 200,
+  vorhandener Antwort und beibehaltener Test-Session verifiziert. Ein
+  grafischer Browserlauf war in der Sitzung nicht verfuegbar; es wurde keine
+  neue Testabhaengigkeit hinzugefuegt.
 - Isolierten n8n-Staging-Test ausgefuehrt: Request ohne Header wurde mit HTTP
   403 abgelehnt, Request mit Header mit HTTP 200 beantwortet und die Session-ID
   beibehalten. Der Staging-Workflow wurde danach erfolgreich deaktiviert.
@@ -154,8 +166,8 @@ Das Format orientiert sich grob an Keep a Changelog. Historische Aenderungen wer
 
 - Die Dokumentation basiert auf dem vorhandenen Projektstand und den im Auftrag festgelegten Produkt- und Geschaeftsregeln.
 - Die drei benoetigten Wisy-Variablen wurden im Render-Service
-  `chatbot-backend-clean` mit `Save only` hinterlegt; es wurde kein Deploy
-  ausgeloest und kein Variablenwert dokumentiert.
+  `chatbot-backend-clean` hinterlegt und der Service anschliessend erfolgreich
+  live deployt. Kein Variablenwert wurde dokumentiert.
 - Die anonyme Test-Session `phase1-e2e-test-20260911` kann nach der finalen
   Datenbankkontrolle aus den Lead-Tabellen entfernt werden; sie enthaelt keine
   Kontakt- oder freien Chatdaten.

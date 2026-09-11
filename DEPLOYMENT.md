@@ -4,7 +4,8 @@ Deployment-Dokumentation fuer den vorhandenen Projektstand.
 
 ## Aktueller Stand
 
-Render wird im Projekt referenziert, aber eine Render-Konfigurationsdatei wurde nicht gefunden.
+Der produktive Backend-Service ist `chatbot-backend-clean` auf Render. Eine
+Render-Konfigurationsdatei wurde im Repository nicht gefunden.
 
 Nicht gefunden:
 
@@ -25,7 +26,7 @@ Aus dem vorhandenen Frontend-Skript:
 https://chatbot-backend-clean-eord.onrender.com/api/chat/match
 ```
 
-Der genaue Render-Service, Build-Befehl, Start-Befehl, Environment-Setup und Deployment-Prozess sind im Repository nicht dokumentiert.
+Der genaue Render-Build-Befehl ist nicht im Repository dokumentiert.
 
 Wahrscheinlicher Startbefehl aus `package.json`:
 
@@ -59,12 +60,13 @@ Optional oder im Code referenziert:
 - `DEBUG`
 - `DATABASE_SSL` in `db.js`
 
-Die lokal vorbereiteten Phase-1-Routen werden nur aktiviert, wenn die
+Die Phase-1-Routen werden nur aktiviert, wenn die
 zugehoerigen `WISY_*` Werte serverseitig gesetzt sind. Vor ihrer Aktivierung
-muessen Datenbankmigration, n8n Header-Authentifizierung und Shopify-Umschaltung
-als gemeinsamer, rueckrollbarer Go-live erfolgen.
+wurden Datenbankmigration, n8n Header-Authentifizierung und Shopify-Umschaltung
+als gemeinsamer, rueckrollbarer Go-live durchgefuehrt.
 
-Ob alle auf Render gesetzt sind, ist nicht dokumentiert.
+Die drei `WISY_*` Variablen sind im produktiven Render-Service gesetzt; ihre
+Werte werden nicht dokumentiert.
 
 ## Vercel
 
@@ -133,11 +135,9 @@ Nach Deployment:
 
 ## Offene Deployment-Fragen
 
-- Welcher Render-Service ist produktiv?
 - Gibt es ein Staging?
 - Welche Datenbank ist produktiv?
-- Welche Route ist verbindlich produktiv?
-- Wird n8n parallel produktiv genutzt?
+- Wie werden die produktiven Render-Variablen regelmaessig rotiert?
 - Wie werden `treatments.json` und n8n `katalog` synchron gehalten?
 - Werden `chat_sessions` oder `wisy_chat_sessions` produktiv benoetigt?
 - Welche Retention gilt fuer gespeicherte Chatverlaeufe?

@@ -6,6 +6,8 @@ abgesichert, Ende-zu-Ende ueber den Render-Proxy getestet und jetzt aktiv. Das
 Shopify-Live-Widget verwendet seit dem 11. September 2026 den geschuetzten
 Render-Proxy und erfasst erlaubte CTA-Klicks datensparsam. Die Lead-Ansicht ist
 seit dem 11. September 2026 passwortgeschuetzt live geschaltet.
+Die versionierte Kontaktanfrage und die interne Benachrichtigung sind seit dem
+11. September 2026 ebenfalls produktiv aktiv und Ende-zu-Ende getestet.
 
 ## Ziel
 

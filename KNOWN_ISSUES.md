@@ -10,15 +10,17 @@ Aktuelle technische Schulden und offene Punkte nach dem Audit vom
 Der am 11. September 2026 erneut gelesene Live-Text unter
 `/policies/privacy-policy` enthaelt keinen auffindbaren Abschnitt zu Wisy,
 OpenAI, n8n, der pseudonymen Session-ID oder dem anonymen Intent-/CTA-Tracking.
-Das Live-Widget weist zwar darauf hin, keine sensiblen Gesundheitsdaten
-einzugeben; dieser Hinweis ersetzt keine vollstaendige Datenschutzinformation.
+Das Live-Widget weist inzwischen auf die Verarbeitung ueber n8n und OpenAI,
+den Ausschluss sensibler Gesundheitsdaten und die Datenschutzhinweise hin.
+Dieser Hinweis ersetzt keine vollstaendige Datenschutzinformation.
 
 **Pflicht:** Bis Transparenz, Rechtsgrundlage, Empfaenger, Aufbewahrung und
 Betroffenenrechte fachlich beziehungsweise rechtlich geprueft und im Live-Text
-abgebildet sind, duerfen Wisy-Sessions nicht still mit Namen, E-Mail-Adresse,
-Telefonnummer, Kontaktformularen oder Buchungen verknuepft werden. Der derzeitige
-anonyme Funnel kann weiter betrieben und ausgewertet werden; eine rechtliche
-Bewertung wird damit nicht behauptet.
+abgebildet sind, duerfen Wisy-Sessions nicht still mit externen
+Kontaktformularen oder Buchungen verknuepft werden. Die direkte Wisy-
+Kontaktanfrage verwendet eine sichtbare, versionierte Kontaktfreigabe; ihre
+finale fachliche beziehungsweise rechtliche Bewertung bleibt dennoch offen.
+Eine rechtliche Konformitaet wird damit nicht behauptet.
 
 ### Mehrere historische Chat-Routen
 

@@ -4,7 +4,9 @@ Stand: 11. September 2026.
 
 ## Einordnung
 
-Der produktive n8n-Katalog und `treatments.json` sind nicht identisch. Eine
+Der produktive n8n-Katalog und `treatments.json` haben weiterhin bewusst
+unterschiedliche Umfaenge. Eindeutig veraltete Links und redundante
+Einzelpreise wurden jedoch in beiden aktiven Quellen korrigiert. Eine
 automatische, rein lesende Pruefung steht unter
 `scripts/audit-wisy-catalog.mjs` zur Verfuegung.
 
@@ -33,15 +35,20 @@ Der Snapshot gehoert nicht ins Repository.
   oder Beschreibung.
 - Mehrere Produktlinks zeigten auf fehlende oder nicht gelistete
   Shopify-Produkte. Neun eindeutige Zuordnungen wurden in `treatments.json`
-  und acht davon im lokalen n8n-Export korrigiert; EMS Sculpt war in n8n
-  bereits korrekt.
+  und acht davon im lokalen sowie produktiven abgesicherten n8n-Workflow
+  korrigiert; EMS Sculpt war in n8n bereits korrekt.
 - Drei in n8n hinterlegte Einzelpreise wichen vom Shopify-Stand ab:
   Alexandrit, HydraFacial und Forma. Alle vier separat gepflegten
-  Einzelbehandlungspreise wurden aus dem lokalen n8n-Katalog entfernt, damit
-  sie nicht parallel zu Shopify veralten; der vierte Preis war aktuell noch
-  korrekt.
+  Einzelbehandlungspreise wurden aus dem lokalen und produktiven n8n-Katalog
+  entfernt, damit sie nicht parallel zu Shopify veralten; der vierte Preis war
+  aktuell noch korrekt.
 - Die Premium-Preise 149 EUR, 169 EUR und 199 EUR wurden auf der oeffentlichen
   Premium-Seite bestaetigt.
+- Der aktive abgesicherte n8n-Workflow wurde zuerst als unveroeffentlichter
+  Entwurf aktualisiert, strukturell geprueft und danach veroeffentlicht. Fuenf
+  Live-Regressionen ueber den Render-Proxy waren erfolgreich.
+- Der fruehere ungeschuetzte Workflow `wisy` wurde anschliessend nach
+  bestaetigter Nichtnutzung seit der Umschaltung deaktiviert, nicht geloescht.
 
 ## Bewertung
 

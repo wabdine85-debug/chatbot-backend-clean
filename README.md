@@ -154,10 +154,11 @@ Eine lokale Vercel-Verknuepfung existiert unter `.vercel/project.json`; das ist 
 
 ## Lead-Ansicht
 
-Die optionale Lead-Ansicht unter `/wisy-admin` bleibt deaktiviert, solange
-`WISY_ADMIN_PASSWORD` nicht gesetzt ist. Bei Aktivierung lautet der
-Benutzername `wisy`. Sie zeigt strukturierte Funnel-Daten und keine freien
-Chattexte. Details stehen in `docs/WISY_LEAD_TRACKING.md`.
+Die Lead-Ansicht unter `/wisy-admin` ist durch ein separates
+`WISY_ADMIN_PASSWORD` geschuetzt; der Benutzername lautet `wisy`. Sie zeigt
+strukturierte Funnel-Daten und keine freien Chattexte. Ohne das mindestens 20
+Zeichen lange Passwort registriert das Backend die Route nicht. Details stehen
+in `docs/WISY_LEAD_TRACKING.md`.
 
 ## Tests
 
@@ -184,3 +185,6 @@ Weitere Dokumente:
 - `ROADMAP.md`
 - `TESTING.md`
 - `CHANGELOG.md`
+- `docs/WISY_CATALOG_AUDIT.md`
+- `docs/WISY_LEAD_TRACKING.md`
+- `docs/WISY_PRIVACY_FACTS.md`

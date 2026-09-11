@@ -8,6 +8,16 @@ Das Format orientiert sich grob an Keep a Changelog. Historische Aenderungen wer
 
 ### Documentation
 
+- Erneuten Live-Abgleich der Shopify-Datenschutzerklaerung dokumentiert: Der
+  zuvor protokollierte Wisy-Abschnitt ist im aktuell ausgelieferten Text nicht
+  auffindbar. Eine Verknuepfung pseudonymer Wisy-Sessions mit identifizierbaren
+  Kontakt- oder Buchungsdaten bleibt deshalb bis zur fachlichen beziehungsweise
+  rechtlichen Pruefung ausdruecklich gesperrt.
+- Technisches Wisy-Datenschutz-Faktenblatt mit aktivem Datenfluss,
+  gespeicherten Feldern, beteiligten Systemen, nicht dokumentierten
+  Aufbewahrungsfragen und Pflichtpunkten vor identifizierbarem Lead-Closing
+  ergaenzt.
+
 - Reproduzierbaren Katalog-Audit und den am 11. September 2026 festgestellten
   Drift zwischen Backend, n8n und Shopify dokumentiert.
 - Datenschutzarmes Datenmodell fuer strukturiertes Wisy-Lead-Tracking unter
@@ -31,6 +41,21 @@ Das Format orientiert sich grob an Keep a Changelog. Historische Aenderungen wer
 
 ### Changed
 
+- Shopify-Wisy-Widget gegen Render-Free-Plan-Kaltstarts gehaertet: Beim Oeffnen
+  wird der oeffentliche Render-Endpunkt einmal ohne Kundeninhalt aufgeweckt und
+  das Browser-Zeitlimit fuer die erste Chatanfrage von 20 auf 45 Sekunden
+  erhoeht. Die live ausgelieferte Datei und ein Chat-/Kontaktfall wurden danach
+  erfolgreich geprueft.
+- Passwortgeschuetzte Lead-Ansicht auf Render aktiviert und produktiv auf
+  Authentifizierung, Security-Header, Datenstruktur, Kontakt-Einwilligung und
+  Ausschluss freier Chattexte geprueft.
+- Acht belegte Produktlinks und vier redundant gepflegte Einzelpreise nach
+  unveroeffentlichtem Entwurfscheck im aktiven abgesicherten n8n-Workflow
+  korrigiert. Entwurf und aktive Version wurden anschliessend strukturell
+  verifiziert; fuenf Live-Regressionen ueber den Render-Proxy bestanden.
+- Alten ungeschuetzten n8n-Workflow `wisy` nach erneuter Aktivitaetspruefung
+  deaktiviert, aber nicht geloescht. Der alte Webhook liefert danach HTTP 404,
+  waehrend der geschuetzte Render-Pfad weiterhin HTTP 200 liefert.
 - Shopify-Live-Widget nach erfolgreichem Render-Ende-zu-Ende-Test um
   datensparsame CTA-Klickerfassung erweitert; die live heruntergeladene Datei
   wurde bytegenau gegen den geprueften lokalen Stand verifiziert.

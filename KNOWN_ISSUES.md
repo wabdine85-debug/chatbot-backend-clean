@@ -5,6 +5,21 @@ Aktuelle technische Schulden und offene Punkte nach dem Audit vom
 
 ## Kritisch / Hoch
 
+### Wisy fehlt in der aktuellen Datenschutzerklaerung
+
+Der am 11. September 2026 erneut gelesene Live-Text unter
+`/policies/privacy-policy` enthaelt keinen auffindbaren Abschnitt zu Wisy,
+OpenAI, n8n, der pseudonymen Session-ID oder dem anonymen Intent-/CTA-Tracking.
+Das Live-Widget weist zwar darauf hin, keine sensiblen Gesundheitsdaten
+einzugeben; dieser Hinweis ersetzt keine vollstaendige Datenschutzinformation.
+
+**Pflicht:** Bis Transparenz, Rechtsgrundlage, Empfaenger, Aufbewahrung und
+Betroffenenrechte fachlich beziehungsweise rechtlich geprueft und im Live-Text
+abgebildet sind, duerfen Wisy-Sessions nicht still mit Namen, E-Mail-Adresse,
+Telefonnummer, Kontaktformularen oder Buchungen verknuepft werden. Der derzeitige
+anonyme Funnel kann weiter betrieben und ausgewertet werden; eine rechtliche
+Bewertung wird damit nicht behauptet.
+
 ### Mehrere historische Chat-Routen
 
 In `server.js` existieren neben dem produktiven Proxy weiterhin:
@@ -25,12 +40,6 @@ Die Endpunkte `POST`, `GET` und `DELETE /api/chat/session` beziehungsweise
 aktive produktive Nutzung sind nicht dokumentiert. Das gelesene lokale und das
 Shopify-Frontend referenzieren diese Endpunkte nicht.
 
-### Lead-Dashboard noch deaktiviert
-
-Die datensparsame Ansicht `/wisy-admin` ist implementiert, bleibt aber ohne ein
-separates `WISY_ADMIN_PASSWORD` deaktiviert. Die aktuelle Sitzung hat keinen
-verfuegbaren Render-Verwaltungszugriff, um diese Variable sicher zu setzen.
-
 ## Mittel
 
 ### Kataloge sind noch nicht eine einzige Datenquelle
@@ -41,19 +50,20 @@ Audit-Skript erkennt Abweichungen, synchronisiert die Quellen aber bewusst
 nicht automatisch. Zwei Produktzuordnungen sind weiterhin uneindeutig und
 wurden nicht geraten.
 
-### Lokaler n8n-Export ist dem Live-Workflow voraus
-
-Eindeutig veraltete Produktlinks und redundante Einzelpreise sind im lokalen
-`wisy.json` korrigiert. Der aktive n8n-Workflow wurde in dieser Sitzung mangels
-n8n-Werkzeug nicht aktualisiert. Bei der spaeteren Uebernahme muss insbesondere
-die Email-Regel vor der Adresse-Regel bleiben.
-
 ### Funnel endet derzeit beim anonymen CTA-Klick
 
 Intent-Kategorien und erlaubte CTA-Klicks werden erfasst. Eine identifizierbare
 Kontaktanfrage, Buchungsbeginn und tatsaechliche Buchung werden noch nicht
 durchgaengig zur selben Wisy-Session zurueckgemeldet. Ohne diese Anbindung kann
 das Dashboard Interesse messen, aber keinen vollstaendigen Umsatz-Funnel.
+
+**Empfohlen nach Datenschutzpruefung:** Kontakt- und Buchungsereignisse nur mit
+einer klaren Information fuer Kundinnen und Kunden, dokumentierter
+Rechtsgrundlage und datensparsamer Zuordnung ergaenzen. Freie Chattexte und
+Gesundheitsangaben bleiben ausgeschlossen.
+
+**Nicht empfohlen:** Kontaktformular-Daten ohne sichtbaren Hinweis oder
+Einwilligungs-/Rechtsgrundlagenkonzept automatisch einer Wisy-Session zuordnen.
 
 ### Offenes globales CORS
 

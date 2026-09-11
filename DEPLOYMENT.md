@@ -64,8 +64,9 @@ zugehoerigen `WISY_*` Werte serverseitig gesetzt sind. Vor ihrer Aktivierung
 wurden Datenbankmigration, n8n Header-Authentifizierung und Shopify-Umschaltung
 als gemeinsamer, rueckrollbarer Go-live durchgefuehrt.
 
-Die drei `WISY_*` Variablen sind im produktiven Render-Service gesetzt; ihre
-Werte werden nicht dokumentiert.
+Die vier `WISY_*` Variablen sind im produktiven Render-Service gesetzt; ihre
+Werte werden nicht dokumentiert. Die Dashboard-Anmeldung wurde nach dem Deploy
+erfolgreich gegen HTML und API getestet.
 
 ## Vercel
 
@@ -79,14 +80,16 @@ Die Datei verweist auf eine lokale Vercel-Projektverknuepfung. Eine produktive V
 
 `wisy.json` ist ein n8n-Workflow-Export.
 
+Produktiv verwendet das Shopify-Widget ueber den Render-Proxy den aktiven
+Workflow `wisy-v2-secure-staging` mit Header-Authentifizierung. Der fruehere
+Workflow `wisy` mit dem ungeschuetzten Pfad `/webhook/wisy` ist seit dem
+11. September 2026 deaktiviert, aber als Rueckfalloption nicht geloescht.
+
 Nicht dokumentiert:
 
-- n8n-Instanz-URL
 - Import-/Export-Prozess
-- Aktivierungsprozess
 - Staging-Workflow
-- Credential-Konfiguration
-- Webhook-Produktiv-URL
+- vollstaendiger Credential-Rotationsprozess
 
 Bekannt aus `wisy.json`:
 
@@ -121,6 +124,8 @@ Vor Deployment:
 - Keine direkte Gmail-Adresse in Antworten.
 - Keine erfundenen Preise oder Leistungen.
 - n8n Switch-Reihenfolge pruefen, falls `wisy.json` betroffen ist.
+- Bei neuer Kontakt-/Buchungszuordnung zuerst den aktuellen Live-Datenschutztext
+  und das dokumentierte Einwilligungs-/Rechtsgrundlagenkonzept pruefen.
 - `CHANGELOG.md` aktualisieren.
 
 Nach Deployment:
@@ -140,3 +145,5 @@ Nach Deployment:
 - Wie werden `treatments.json` und n8n `katalog` synchron gehalten?
 - Werden `chat_sessions` oder `wisy_chat_sessions` produktiv benoetigt?
 - Welche Retention gilt fuer gespeicherte Chatverlaeufe?
+- Wer gibt den Datenschutztext und die Rechtsgrundlage fuer eine spaetere
+  Wisy-Kontakt-/Buchungszuordnung fachlich beziehungsweise rechtlich frei?

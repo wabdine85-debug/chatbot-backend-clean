@@ -5,7 +5,7 @@ Tabellen wurden leer angelegt. Der n8n-Staging-Webhook ist mit Header-Auth
 abgesichert, Ende-zu-Ende ueber den Render-Proxy getestet und jetzt aktiv. Das
 Shopify-Live-Widget verwendet seit dem 11. September 2026 den geschuetzten
 Render-Proxy und erfasst erlaubte CTA-Klicks datensparsam. Die Lead-Ansicht ist
-noch nicht live geschaltet.
+seit dem 11. September 2026 passwortgeschuetzt live geschaltet.
 
 ## Ziel
 
@@ -33,6 +33,28 @@ unterbricht die Chat-Antwort nicht.
 - Freie Chatnachrichten gehoeren nicht in `wisy_leads` oder `wisy_lead_events`.
 - Medizinische Angaben oder Gesundheitsdetails duerfen nicht automatisch als Lead-Metadaten uebernommen werden.
 
+## Datenschutz-Grenze fuer den naechsten Funnel-Schritt
+
+Der erneute Live-Abgleich am 11. September 2026 fand in der aktuell
+ausgelieferten Shopify-Datenschutzerklaerung keinen auffindbaren Wisy-Abschnitt.
+Das Widget zeigt weiterhin den kurzen Hinweis, keine sensiblen
+Gesundheitsdaten einzugeben. Dieser Hinweis allein ist keine Grundlage fuer
+eine Verknuepfung mit identifizierbaren Kontaktdaten.
+
+- **Pflicht:** Noch keine automatische Verbindung zwischen Wisy-Session und
+  Shopify-Kontaktformular, Buchung, Name, E-Mail-Adresse oder Telefonnummer.
+- **Empfohlen:** Zuerst den Datenschutztext, die Rechtsgrundlage, Empfaenger,
+  Aufbewahrung und den betrieblichen Prozess fachlich beziehungsweise rechtlich
+  pruefen und live veroeffentlichen.
+- **Optional:** Danach eine datensparsame Quellenzuordnung und die Ereignisse
+  `contact_submitted`, `booking_started` und `booked` umsetzen.
+- **Nicht empfohlen:** Freie Chattexte, Gesundheitsangaben oder unsichtbar
+  angehaengte Session-IDs in Kontakt- oder Buchungsdaten uebernehmen.
+
+Diese technische Dokumentation ist keine Rechtsberatung und behauptet keine
+DSGVO-Konformitaet. Der technisch belegte Datenfluss und die offenen Angaben
+sind in `docs/WISY_PRIVACY_FACTS.md` zusammengefasst.
+
 ## Vorgesehener Funnel
 
 1. `session_started`
@@ -57,21 +79,22 @@ Empfohlener technischer Ausgangspunkt:
 
 - Weiterfuehrende n8n-Ereignisse fuer den geschuetzten internen Backend-Endpunkt einrichten.
 - Weiterfuehrende Funnel-Ereignisse im aktiven n8n-Workflow ergaenzen.
-- Die vorbereitete geschuetzte Lead-Ansicht unter `/wisy-admin` durch ein
-  separates `WISY_ADMIN_PASSWORD` aktivieren und deployen.
 - Automatische Retention ausfuehren.
+- Identifizierbare Kontakt- oder Buchungsdaten einer Wisy-Session zuordnen;
+  dieser Schritt bleibt bis zur Datenschutzpruefung blockiert.
 
-## Vorbereitete Lead-Ansicht
+## Aktive Lead-Ansicht
 
-Das Backend enthaelt eine standardmaessig deaktivierte Lead-Ansicht unter
-`/wisy-admin`. Sie wird nur registriert, wenn `WISY_ADMIN_PASSWORD` mindestens
-20 Zeichen lang ist. Der Benutzername lautet `wisy`.
+Das Backend stellt die Lead-Ansicht unter `/wisy-admin` bereit. Sie wird nur
+registriert, wenn `WISY_ADMIN_PASSWORD` mindestens 20 Zeichen lang ist. Der
+Benutzername lautet `wisy`; das separate Passwort liegt nicht im Repository.
 
 Die Ansicht zeigt Kennzahlen, Status, Intent, Treatment-Interesse, letzten
 Funnel-Schritt und Aktivitaetszeit. Freie Chattexte werden weder abgefragt noch
 angezeigt. Kontaktfelder werden zusaetzlich in der Anwendung entfernt, falls
 keine Einwilligung gesetzt ist. Antworten verwenden `no-store` und restriktive
-Browser-Sicherheitsheader.
+Browser-Sicherheitsheader. Der produktive Test bestaetigte HTTP 401 ohne
+Anmeldung, HTTP 200 mit Anmeldung sowie die Kontakt-Einwilligungsregel.
 
 Der aktive Endpunkt `POST /api/wisy/events` nimmt ausschliesslich
 strukturierte CTA-Klicks aus erlaubten Storefront-Origins entgegen. Ziel-URLs
@@ -89,4 +112,7 @@ n8n-Credential `Wisy Backend Webhook Auth v2` fuer den Header
 wieder deaktiviert. Nach dem Backend-Deployment bestand auch der vollstaendige
 Test ueber den Render-Proxy mit HTTP 200 und erhaltener Session-ID. Der Workflow
 ist seitdem aktiv und wird ueber den Render-Proxy vom Live-Shopify-Widget
-verwendet. Der bisherige aktive Workflow `wisy` blieb aktiv und unveraendert.
+verwendet. Der alte ungeschuetzte Workflow `wisy` wurde am 11. September 2026
+nach einem Traffic-Metadatencheck deaktiviert, aber nicht geloescht. Sein alter
+Webhook antwortete danach mit HTTP 404; der geschuetzte Proxy weiterhin mit
+HTTP 200.

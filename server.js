@@ -8,6 +8,7 @@ import { isGeneralQuestion } from "./utils/generalQuestions.js";
 import { handleGeneralQuestions } from "./utils/handleGeneralQuestions.js";
 import { createWisyLeadRouter } from "./leadTracking.js";
 import { createWisyChatProxyRouter } from "./wisyChatProxy.js";
+import { createWisyLeadDashboardRouter } from "./wisyLeadDashboard.js";
 
 
 
@@ -46,6 +47,14 @@ const wisyLeadRouter = createWisyLeadRouter({
 });
 if (wisyLeadRouter) {
   app.use("/api/internal/wisy", wisyLeadRouter);
+}
+
+const wisyLeadDashboardRouter = createWisyLeadDashboardRouter({
+  pool,
+  adminPassword: process.env.WISY_ADMIN_PASSWORD,
+});
+if (wisyLeadDashboardRouter) {
+  app.use("/wisy-admin", wisyLeadDashboardRouter);
 }
 
 const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });

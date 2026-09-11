@@ -52,6 +52,7 @@ Im Hauptprojekt benoetigte Variablen laut gefundenem Code:
 - `WISY_N8N_WEBHOOK_URL`
 - `WISY_N8N_WEBHOOK_SECRET`
 - `WISY_N8N_SHARED_SECRET`
+- `WISY_ADMIN_PASSWORD` (optional; aktiviert `/wisy-admin`, mindestens 20 Zeichen)
 
 Optional oder im Code referenziert:
 

@@ -77,6 +77,7 @@ Im Hauptprojekt wurden folgende Variablennamen gefunden:
 - `WISY_N8N_WEBHOOK_URL`
 - `WISY_N8N_WEBHOOK_SECRET`
 - `WISY_N8N_SHARED_SECRET`
+- `WISY_ADMIN_PASSWORD` (optional, aktiviert die geschuetzte Lead-Ansicht)
 
 Im Unterprojekt `pdb-treatments-export` wurden folgende Variablennamen gefunden:
 
@@ -86,9 +87,10 @@ Im Unterprojekt `pdb-treatments-export` wurden folgende Variablennamen gefunden:
 
 Konkrete Werte sind nicht dokumentiert und duerfen nicht ausgegeben werden.
 
-Die drei `WISY_*` Variablen gehoeren zur lokal vorbereiteten Phase-1-Architektur.
-Ohne gueltige serverseitige Werte bleiben Chat-Proxy und Lead-Endpunkt
-deaktiviert. Secrets duerfen nur in den jeweiligen Secret-Stores liegen.
+Die n8n-bezogenen `WISY_*` Variablen gehoeren zur Phase-1-Architektur. Ohne
+gueltige serverseitige Werte bleiben Chat-Proxy und interner Lead-Endpunkt
+deaktiviert. Die Lead-Ansicht benoetigt ein eigenes Passwort mit mindestens 20
+Zeichen. Secrets duerfen nur in den jeweiligen Secret-Stores liegen.
 
 ## Wichtige Endpunkte
 
@@ -96,6 +98,9 @@ In `server.js` vorhanden:
 
 - `GET /`
 - `GET /whoami`
+- `POST /api/wisy/chat`
+- `POST /api/internal/wisy/lead-events`
+- `GET /wisy-admin` (optional und passwortgeschuetzt)
 - `POST /chat_old`
 - `POST /chat`
 - `POST /api/chat/match`
@@ -103,7 +108,9 @@ In `server.js` vorhanden:
 - `GET /api/chat/session/:session_id`
 - `DELETE /api/chat/session/:session_id`
 
-Der vom vorhandenen Frontend-Skript genutzte produktive Pfad scheint `POST /api/chat/match` auf Render zu sein.
+Das Shopify-Live-Widget nutzt `POST /api/wisy/chat` auf Render. Die aelteren
+lokalen Frontend-Dateien nutzen weiterhin `/api/chat/match` und sind getrennt
+zu bewerten.
 
 ## Frontend
 
@@ -144,11 +151,22 @@ Eine Render-Konfigurationsdatei wie `render.yaml` oder `render.yml` wurde im Rep
 
 Eine lokale Vercel-Verknuepfung existiert unter `.vercel/project.json`; das ist keine Render-Konfiguration.
 
+## Lead-Ansicht
+
+Die optionale Lead-Ansicht unter `/wisy-admin` bleibt deaktiviert, solange
+`WISY_ADMIN_PASSWORD` nicht gesetzt ist. Bei Aktivierung lautet der
+Benutzername `wisy`. Sie zeigt strukturierte Funnel-Daten und keine freien
+Chattexte. Details stehen in `docs/WISY_LEAD_TRACKING.md`.
+
 ## Tests
 
-Ein automatisiertes Testskript ist in `package.json` nicht dokumentiert.
+Die automatisierte Testsuite wird ausgefuehrt mit:
 
-Vorhandene Hilfsdateien:
+```sh
+npm test
+```
+
+Zusaetzliche historische Hilfsdateien:
 
 - `test-wisy.sh`
 - `wisy-test.html`

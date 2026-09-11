@@ -57,8 +57,21 @@ Empfohlener technischer Ausgangspunkt:
 - Weiterfuehrende n8n-Ereignisse fuer den geschuetzten internen Backend-Endpunkt einrichten.
 - Weiterfuehrende Funnel-Ereignisse im aktiven n8n-Workflow ergaenzen.
 - CTA-Klicks im Shopify-Widget erfassen.
-- Geschuetzte Lead-Ansicht bereitstellen.
+- Die vorbereitete geschuetzte Lead-Ansicht unter `/wisy-admin` durch ein
+  separates `WISY_ADMIN_PASSWORD` aktivieren und deployen.
 - Automatische Retention ausfuehren.
+
+## Vorbereitete Lead-Ansicht
+
+Das Backend enthaelt eine standardmaessig deaktivierte Lead-Ansicht unter
+`/wisy-admin`. Sie wird nur registriert, wenn `WISY_ADMIN_PASSWORD` mindestens
+20 Zeichen lang ist. Der Benutzername lautet `wisy`.
+
+Die Ansicht zeigt Kennzahlen, Status, Intent, Treatment-Interesse, letzten
+Funnel-Schritt und Aktivitaetszeit. Freie Chattexte werden weder abgefragt noch
+angezeigt. Kontaktfelder werden zusaetzlich in der Anwendung entfernt, falls
+keine Einwilligung gesetzt ist. Antworten verwenden `no-store` und restriktive
+Browser-Sicherheitsheader.
 
 ## n8n Staging
 

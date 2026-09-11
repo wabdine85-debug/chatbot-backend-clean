@@ -31,6 +31,10 @@ Das Format orientiert sich grob an Keep a Changelog. Historische Aenderungen wer
 
 ### Changed
 
+- Standardmaessig deaktivierte, passwortgeschuetzte Lead-Ansicht unter
+  `/wisy-admin` vorbereitet. Sie zeigt nur strukturierte Funnel-Daten, fragt
+  keine Chattexte ab, verhindert Caching und blendet Kontaktdaten ohne
+  Einwilligung aus.
 - Neun eindeutig belegte veraltete Produktlinks in `treatments.json` und acht
   entsprechende Links im lokalen n8n-Export auf aktive Shopify-Produkte
   korrigiert. Vier separat gepflegte Einzelpreise aus dem n8n-Katalog
@@ -138,9 +142,10 @@ Das Format orientiert sich grob an Keep a Changelog. Historische Aenderungen wer
   Backend und n8n hinterlegten Produktlinks geprueft. Mehrere veraltete Links
   und drei abweichende Einzelpreise wurden identifiziert; uneindeutige
   Zuordnungen wurden nicht automatisch veraendert.
-- Backend-Syntaxchecks und 18 automatisierte Tests fuer Katalog-Audit,
+- Backend-Syntaxchecks und 23 automatisierte Tests fuer Katalog-Audit,
   Validierung, Authentifizierung, Transaktion, Intent-Klassifizierung,
-  Fehlerentkopplung, Rate-Limit und Health-Endpunkt bestanden.
+  Fehlerentkopplung, Dashboard-Datenschutz, Rate-Limit und Health-Endpunkt
+  bestanden.
 - Vollstaendiger `npm audit` nach Entfernung der ungenutzten Vercel-CLI ohne
   bekannte Schwachstellen bestanden; zuvor war bereits der reine
   Produktions-Audit sauber.

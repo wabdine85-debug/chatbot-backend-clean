@@ -73,6 +73,12 @@ angezeigt. Kontaktfelder werden zusaetzlich in der Anwendung entfernt, falls
 keine Einwilligung gesetzt ist. Antworten verwenden `no-store` und restriktive
 Browser-Sicherheitsheader.
 
+Der vorbereitete Endpunkt `POST /api/wisy/events` nimmt ausschliesslich
+strukturierte CTA-Klicks aus erlaubten Storefront-Origins entgegen. Ziel-URLs
+muessen HTTPS verwenden und auf freigegebene Produkt-, Collection-, Kontakt-
+oder Premium-Pfade von `palaisdebeaute.de` zeigen. Freie Texte und Kontaktdaten
+werden nicht akzeptiert.
+
 ## n8n Staging
 
 Der inaktive Workflow `wisy-v2-secure-staging` wurde mit eigener Webhook-Route

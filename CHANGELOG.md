@@ -31,6 +31,11 @@ Das Format orientiert sich grob an Keep a Changelog. Historische Aenderungen wer
 
 ### Changed
 
+- Datenschutzarmen, rate-limitierten CTA-Tracking-Endpunkt unter
+  `POST /api/wisy/events` vorbereitet. Er akzeptiert nur erlaubte
+  Storefront-Origins und HTTPS-Ziele von `palaisdebeaute.de`.
+- Lead-Dashboard um CTA-Klicks der letzten sieben Tage und den letzten sicher
+  validierten Ziel-Link erweitert.
 - Standardmaessig deaktivierte, passwortgeschuetzte Lead-Ansicht unter
   `/wisy-admin` vorbereitet. Sie zeigt nur strukturierte Funnel-Daten, fragt
   keine Chattexte ab, verhindert Caching und blendet Kontaktdaten ohne
@@ -142,10 +147,10 @@ Das Format orientiert sich grob an Keep a Changelog. Historische Aenderungen wer
   Backend und n8n hinterlegten Produktlinks geprueft. Mehrere veraltete Links
   und drei abweichende Einzelpreise wurden identifiziert; uneindeutige
   Zuordnungen wurden nicht automatisch veraendert.
-- Backend-Syntaxchecks und 23 automatisierte Tests fuer Katalog-Audit,
+- Backend-Syntaxchecks und 25 automatisierte Tests fuer Katalog-Audit,
   Validierung, Authentifizierung, Transaktion, Intent-Klassifizierung,
-  Fehlerentkopplung, Dashboard-Datenschutz, Rate-Limit und Health-Endpunkt
-  bestanden.
+  Fehlerentkopplung, CTA-Datenminimierung, Dashboard-Datenschutz, Rate-Limit
+  und Health-Endpunkt bestanden.
 - Vollstaendiger `npm audit` nach Entfernung der ungenutzten Vercel-CLI ohne
   bekannte Schwachstellen bestanden; zuvor war bereits der reine
   Produktions-Audit sauber.

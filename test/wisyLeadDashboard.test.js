@@ -51,14 +51,14 @@ test("loads aggregate metrics and clamps the result limit", async () => {
     async query(sql, values) {
       calls.push({ sql, values });
       if (sql.includes("COUNT(*)::int AS total")) {
-        return { rows: [{ total: 5, active_7d: 3, actionable: 2, booked: 1, contactable: 1 }] };
+        return { rows: [{ total: 5, active_7d: 3, actionable: 2, booked: 1, contactable: 1, cta_clicks_7d: 4 }] };
       }
       return { rows: [{ id: 1, session_id: "session-123", consent_to_contact: true, event_count: 4 }] };
     },
   };
 
   const result = await loadLeadDashboard(pool, 9999);
-  assert.deepEqual(result.summary, { total: 5, active_7d: 3, actionable: 2, booked: 1, contactable: 1 });
+  assert.deepEqual(result.summary, { total: 5, active_7d: 3, actionable: 2, booked: 1, contactable: 1, cta_clicks_7d: 4 });
   assert.equal(result.leads.length, 1);
   assert.deepEqual(calls[1].values, [200]);
   assert.equal(calls.some((call) => /messages|query\s+FROM/i.test(call.sql)), false);
@@ -68,7 +68,7 @@ test("protects dashboard HTML and API with no-store security headers", async (co
   const pool = {
     async query(sql) {
       if (sql.includes("COUNT(*)::int AS total")) {
-        return { rows: [{ total: 1, active_7d: 1, actionable: 0, booked: 0, contactable: 0 }] };
+        return { rows: [{ total: 1, active_7d: 1, actionable: 0, booked: 0, contactable: 0, cta_clicks_7d: 0 }] };
       }
       return { rows: [{ id: 1, session_id: "test-session", consent_to_contact: false, event_count: 1 }] };
     },

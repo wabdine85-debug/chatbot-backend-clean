@@ -1,11 +1,14 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { once } from "node:events";
+import express from "express";
 import {
   classifyLeadIntent,
   createFixedWindowRateLimiter,
   createWisyChatProxyRouter,
   sanitizeChatResponse,
   tryRecordLeadIntent,
+  validateCtaEventPayload,
   validateChatPayload,
 } from "../wisyChatProxy.js";
 
@@ -24,6 +27,87 @@ test("rejects missing or malformed sessions", () => {
     validateChatPayload({ query: "Hallo", session_id: "!" }),
     { ok: false, error: "invalid_session_id" },
   );
+});
+
+test("accepts only safe storefront CTA events", () => {
+  const result = validateCtaEventPayload({
+    session_id: "session-123",
+    target: "https://palaisdebeaute.de/pages/contact?from=wisy#form",
+  }, "https://palaisdebeaute.de");
+
+  assert.deepEqual(result, {
+    ok: true,
+    value: {
+      sessionId: "session-123",
+      route: "contact",
+      target: "https://palaisdebeaute.de/pages/contact?from=wisy",
+    },
+  });
+  assert.deepEqual(
+    validateCtaEventPayload({ session_id: "session-123", target: "https://evil.example/products/test" }, "https://palaisdebeaute.de"),
+    { ok: false, error: "invalid_target" },
+  );
+  assert.deepEqual(
+    validateCtaEventPayload({ session_id: "session-123", target: "https://palaisdebeaute.de/products/test" }, "https://evil.example"),
+    { ok: false, error: "origin_not_allowed" },
+  );
+});
+
+test("records only a minimized CTA event from an allowed storefront", async (context) => {
+  const recorded = [];
+  const app = express();
+  app.use(express.json());
+  app.use("/api/wisy", createWisyChatProxyRouter({
+    webhookUrl: "https://example.n8n.cloud/webhook/wisy-test",
+    webhookSecret: "a".repeat(32),
+    pool: {},
+    recordLeadEventImpl: async (_pool, event) => recorded.push(event),
+  }));
+  const server = app.listen(0, "127.0.0.1");
+  await once(server, "listening");
+  context.after(() => new Promise((resolve, reject) => {
+    server.close((error) => error ? reject(error) : resolve());
+  }));
+
+  const endpoint = `http://127.0.0.1:${server.address().port}/api/wisy/events`;
+  const blocked = await fetch(endpoint, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Origin: "https://evil.example" },
+    body: JSON.stringify({
+      session_id: "session-123",
+      target: "https://palaisdebeaute.de/pages/contact",
+    }),
+  });
+  assert.equal(blocked.status, 403);
+  assert.equal(recorded.length, 0);
+
+  const accepted = await fetch(endpoint, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Origin: "https://palaisdebeaute.de" },
+    body: JSON.stringify({
+      session_id: "session-123",
+      target: "https://palaisdebeaute.de/products/hydrafacial?source=wisy",
+      message: "must not be retained",
+      contact: { email: "must-not-be-retained@example.com" },
+    }),
+  });
+  assert.equal(accepted.status, 201);
+  assert.deepEqual(recorded, [{
+    sessionId: "session-123",
+    eventType: "cta_clicked",
+    status: "qualified",
+    source: "shopify_wisy",
+    intent: null,
+    treatmentInterest: null,
+    route: "treatment",
+    ctaTarget: "https://palaisdebeaute.de/products/hydrafacial?source=wisy",
+    consentToContact: false,
+    contactName: null,
+    contactEmail: null,
+    contactPhone: null,
+  }]);
+  assert.equal(JSON.stringify(recorded).includes("must not be retained"), false);
+  assert.equal(JSON.stringify(recorded).includes("must-not-be-retained@example.com"), false);
 });
 
 test("limits upstream output to the supported response contract", () => {

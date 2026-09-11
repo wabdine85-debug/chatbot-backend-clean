@@ -99,6 +99,7 @@ In `server.js` vorhanden:
 - `GET /`
 - `GET /whoami`
 - `POST /api/wisy/chat`
+- `POST /api/wisy/events` (minimiertes CTA-Klicktracking vom erlaubten Storefront)
 - `POST /api/internal/wisy/lead-events`
 - `GET /wisy-admin` (optional und passwortgeschuetzt)
 - `POST /chat_old`

@@ -3,6 +3,11 @@ import { recordLeadEvent } from "./leadTracking.js";
 
 const DEFAULT_RATE_LIMIT = 30;
 const DEFAULT_RATE_WINDOW_MS = 60_000;
+const ALLOWED_STOREFRONT_ORIGINS = new Set([
+  "https://palaisdebeaute.de",
+  "https://www.palaisdebeaute.de",
+  "https://padebeeeee.myshopify.com",
+]);
 
 function text(value, maxLength) {
   if (typeof value !== "string") return null;
@@ -23,6 +28,49 @@ export function validateChatPayload(body) {
   }
 
   return { ok: true, value: { query, sessionId } };
+}
+
+export function validateCtaEventPayload(body, origin) {
+  if (!ALLOWED_STOREFRONT_ORIGINS.has(origin)) {
+    return { ok: false, error: "origin_not_allowed" };
+  }
+  if (!body || typeof body !== "object" || Array.isArray(body)) {
+    return { ok: false, error: "invalid_body" };
+  }
+
+  const sessionId = text(body.session_id ?? body.sessionId, 128);
+  if (!sessionId || !/^[A-Za-z0-9_-]{6,128}$/.test(sessionId)) {
+    return { ok: false, error: "invalid_session_id" };
+  }
+
+  try {
+    const target = new URL(text(body.target, 500));
+    const allowedHost = target.hostname === "palaisdebeaute.de"
+      || target.hostname === "www.palaisdebeaute.de";
+    const allowedPath = target.pathname.startsWith("/products/")
+      || target.pathname.startsWith("/collections/")
+      || target.pathname === "/pages/contact"
+      || target.pathname === "/pages/premium";
+    if (target.protocol !== "https:" || !allowedHost || !allowedPath) {
+      return { ok: false, error: "invalid_target" };
+    }
+
+    const route = target.pathname === "/pages/contact"
+      ? "contact"
+      : target.pathname === "/pages/premium"
+        ? "premium"
+        : "treatment";
+    return {
+      ok: true,
+      value: {
+        sessionId,
+        route,
+        target: `${target.origin}${target.pathname}${target.search}`,
+      },
+    };
+  } catch {
+    return { ok: false, error: "invalid_target" };
+  }
 }
 
 export function sanitizeChatResponse(payload, sessionId) {
@@ -190,6 +238,35 @@ export function createWisyChatProxyRouter({
       });
     } finally {
       clearTimeout(timeout);
+    }
+  });
+
+  router.post("/events", createFixedWindowRateLimiter(), async (req, res) => {
+    const validation = validateCtaEventPayload(req.body, req.get("origin"));
+    if (!validation.ok) {
+      const status = validation.error === "origin_not_allowed" ? 403 : 400;
+      return res.status(status).json({ ok: false, error: validation.error });
+    }
+
+    try {
+      await recordLeadEventImpl(pool, {
+        sessionId: validation.value.sessionId,
+        eventType: "cta_clicked",
+        status: "qualified",
+        source: "shopify_wisy",
+        intent: null,
+        treatmentInterest: null,
+        route: validation.value.route,
+        ctaTarget: validation.value.target,
+        consentToContact: false,
+        contactName: null,
+        contactEmail: null,
+        contactPhone: null,
+      });
+      return res.status(201).json({ ok: true });
+    } catch (error) {
+      console.error("Wisy CTA tracking failed:", error.name || "Error");
+      return res.status(500).json({ ok: false, error: "storage_failed" });
     }
   });
 

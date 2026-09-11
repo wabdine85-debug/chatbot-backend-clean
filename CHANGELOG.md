@@ -47,6 +47,9 @@ Das Format orientiert sich grob an Keep a Changelog. Historische Aenderungen wer
   `body-parser`-Abhaengigkeit entfernt, Express auf `5.2.1` aktualisiert und
   die im Express-Router verwendete verwundbare transitive
   `path-to-regexp`-Version `8.3.0` auf `8.4.2` begrenzt.
+- Ungenutzte Vercel-CLI aus den Entwicklungsabhaengigkeiten entfernt. Ihre
+  transitive Abhaengigkeitskette verursachte beim Render-Build 24 Audit-Hinweise,
+  obwohl sie nicht zur Laufzeit verwendet wurde.
 - Testskript auf echte Dateien unter `test/*.test.js` begrenzt, damit das alte
   manuelle `gpt-test.js` keinen externen OpenAI-Aufruf waehrend Unit-Tests
   versucht.
@@ -124,6 +127,9 @@ Das Format orientiert sich grob an Keep a Changelog. Historische Aenderungen wer
 - Backend-Syntaxchecks und 14 automatisierte Tests fuer Validierung,
   Authentifizierung, Transaktion, Intent-Klassifizierung, Fehlerentkopplung,
   Rate-Limit und Health-Endpunkt bestanden.
+- Vollstaendiger `npm audit` nach Entfernung der ungenutzten Vercel-CLI ohne
+  bekannte Schwachstellen bestanden; zuvor war bereits der reine
+  Produktions-Audit sauber.
 - Syntax und sicherheitsrelevante Merkmale der lokalen Shopify-Widget-Datei
   geprueft. Ein Browserlauf war nicht moeglich, da Playwright lokal nicht
   installiert ist; es wurde keine neue Testabhaengigkeit hinzugefuegt.

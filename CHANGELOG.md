@@ -8,6 +8,8 @@ Das Format orientiert sich grob an Keep a Changelog. Historische Aenderungen wer
 
 ### Documentation
 
+- Reproduzierbaren Katalog-Audit und den am 11. September 2026 festgestellten
+  Drift zwischen Backend, n8n und Shopify dokumentiert.
 - Datenschutzarmes Datenmodell fuer strukturiertes Wisy-Lead-Tracking unter
   `docs/WISY_LEAD_TRACKING.md` dokumentiert. Die zugehoerige additive Migration
   wurde auf die produktive Datenbank angewendet; die neuen Tabellen waren
@@ -29,6 +31,10 @@ Das Format orientiert sich grob an Keep a Changelog. Historische Aenderungen wer
 
 ### Changed
 
+- Neun eindeutig belegte veraltete Produktlinks in `treatments.json` und acht
+  entsprechende Links im lokalen n8n-Export auf aktive Shopify-Produkte
+  korrigiert. Vier separat gepflegte Einzelpreise aus dem n8n-Katalog
+  entfernt; bestaetigte Premium-Preise blieben erhalten.
 - Serverseitige, datensparsame Intent-Protokollierung in den vorbereiteten
   Wisy-Proxy integriert. Gespeichert werden nur feste Kategorien wie
   `booking`, `contact` oder `price`, niemals der freie Nachrichtentext.
@@ -128,9 +134,13 @@ Das Format orientiert sich grob an Keep a Changelog. Historische Aenderungen wer
 
 ### Verified
 
-- Backend-Syntaxchecks und 14 automatisierte Tests fuer Validierung,
-  Authentifizierung, Transaktion, Intent-Klassifizierung, Fehlerentkopplung,
-  Rate-Limit und Health-Endpunkt bestanden.
+- Gesamten Shopify-Produktkatalog mit `read_products` rein lesend gegen die in
+  Backend und n8n hinterlegten Produktlinks geprueft. Mehrere veraltete Links
+  und drei abweichende Einzelpreise wurden identifiziert; uneindeutige
+  Zuordnungen wurden nicht automatisch veraendert.
+- Backend-Syntaxchecks und 18 automatisierte Tests fuer Katalog-Audit,
+  Validierung, Authentifizierung, Transaktion, Intent-Klassifizierung,
+  Fehlerentkopplung, Rate-Limit und Health-Endpunkt bestanden.
 - Vollstaendiger `npm audit` nach Entfernung der ungenutzten Vercel-CLI ohne
   bekannte Schwachstellen bestanden; zuvor war bereits der reine
   Produktions-Audit sauber.

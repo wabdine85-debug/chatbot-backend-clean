@@ -185,7 +185,7 @@
 {
   "id": "microneedling",
   "name": "Microneedling",
-  "url": "https://palaisdebeaute.de/products/microneedling",
+  "url": "https://palaisdebeaute.de/products/microneedling-behandlung",
   "category": "Hautregeneration",
   "priority": 5,
   "summary": "Gezielte Mikronadelbehandlung zur Anregung der Kollagen- und Elastinproduktion – verbessert Hautstruktur, Porenbild, feine Linien und Aknenarben nachhaltig.",
@@ -224,7 +224,7 @@
   {
   "id": "mesotherapie",
   "name": "Mesotherapie",
-  "url": "https://palaisdebeaute.de/products/mesotherapie",
+  "url": "https://palaisdebeaute.de/products/meso-therapie",
   "category": "Hautregeneration",
   "priority": 6,
   "summary": "Injektionsbasierte Behandlung mit individuell abgestimmten Wirkstoffen zur Hautregeneration, Durchfeuchtung und Straffung – für ein sichtbar frisches und ebenmäßiges Hautbild.",
@@ -373,7 +373,7 @@
 {
   "id": "ems-sculpt-neo",
   "name": "EMS Sculpt NEO",
-  "url": "https://palaisdebeaute.de/products/ems-sculpt-neo",
+  "url": "https://palaisdebeaute.de/products/emsculpt",
   "category": "Körperformung",
   "priority": 9,
   "summary": "Elektromuskuläre Stimulation zur gezielten Aktivierung und Kräftigung der Muskulatur sowie gleichzeitigen Fettreduktion – ideal zur Körperformung ohne Training.",
@@ -413,7 +413,7 @@
 {
   "id": "kryolipolyse",
   "name": "Kryolipolyse CRYO 4S",
-  "url": "https://palaisdebeaute.de/products/kryolipolyse",
+  "url": "https://palaisdebeaute.de/products/kryolipolyse-1",
   "category": "Körperformung",
   "priority": 8,
   "summary": "Nicht-invasive Kältebehandlung zur gezielten Reduktion lokaler Fettdepots durch kontrollierte Kühlung – formt die Silhouette ohne Operation oder Ausfallzeit.",
@@ -486,7 +486,7 @@
 {
   "id": "nad-infusion",
   "name": "NAD+ Infusion",
-  "url": "https://palaisdebeaute.de/products/nad-infusion",
+  "url": "https://palaisdebeaute.de/products/nad-infusionen",
   "category": "Infusionstherapie",
   "priority": 8,
   "summary": "Intravenöse Therapie zur Unterstützung der zellulären Energieproduktion und Regeneration – kann Vitalität, Konzentration und allgemeines Wohlbefinden fördern.",
@@ -556,7 +556,7 @@
 {
   "id": "lash-lifting",
   "name": "Lash Lifting",
-  "url": "https://palaisdebeaute.de/products/lash-lifting",
+  "url": "https://palaisdebeaute.de/products/lash-lifting-booster-ink-wimpernfarbung",
   "category": "Beauty",
   "priority": 4,
   "summary": "Schonende Behandlung zur Anhebung und Formung der natürlichen Wimpern – sorgt für einen offenen, ausdrucksstarken Blick ganz ohne Extensions.",
@@ -589,7 +589,7 @@
 {
   "id": "lash-lifting-booster",
   "name": "Lash Lifting mit Booster",
-  "url": "https://palaisdebeaute.de/products/lash-lifting-booster",
+  "url": "https://palaisdebeaute.de/products/lash-lifting-booster-ink-wimpernfarbung",
   "category": "Beauty",
   "priority": 5,
   "summary": "Wimpernlifting mit zusätzlichem Pflege-Booster zur Stärkung und Regeneration der Naturwimpern – für mehr Glanz, Elastizität und ein intensiveres Ergebnis.",
@@ -621,7 +621,7 @@
 {
   "id": "wimpern-faerben",
   "name": "Wimpern färben",
-  "url": "https://palaisdebeaute.de/products/wimpernfaerben",
+  "url": "https://palaisdebeaute.de/products/wimpernfarbung",
   "category": "Beauty",
   "priority": 2,
   "summary": "Schonende Farbbehandlung zur Intensivierung der natürlichen Wimpernfarbe – verleiht mehr Ausdruck und Tiefe ganz ohne tägliches Mascara.",
@@ -652,7 +652,7 @@
 {
   "id": "augenbrauen-faerben",
   "name": "Augenbrauen färben",
-  "url": "https://palaisdebeaute.de/products/augenbrauenfaerben",
+  "url": "https://palaisdebeaute.de/products/augenbraunfarbung",
   "category": "Beauty",
   "priority": 2,
 "summary": "Gezielte Farbbehandlung zur Betonung und Harmonisierung der Augenbrauen – sorgt für klare Konturen und einen ausdrucksstarken, gepflegten Look.",

@@ -60,7 +60,9 @@ test("accepts contact details only with explicit versioned consent", () => {
   const accepted = validateContactCapturePayload({
     session_id: "session-123",
     consent_to_contact: true,
-    consent_version: "wisy-contact-v1-2026-09-11",
+    consent_version: "wisy-contact-v2-2026-09-12",
+    contact_topic: "appointment_consultation",
+    preferred_contact_method: "email",
     contact: { name: "Testperson", email: "test@example.com" },
   }, "https://palaisdebeaute.de");
   assert.equal(accepted.ok, true);
@@ -70,7 +72,9 @@ test("accepts contact details only with explicit versioned consent", () => {
   assert.deepEqual(validateContactCapturePayload({
     session_id: "session-123",
     consent_to_contact: false,
-    consent_version: "wisy-contact-v1-2026-09-11",
+    consent_version: "wisy-contact-v2-2026-09-12",
+    contact_topic: "appointment_consultation",
+    preferred_contact_method: "email",
     contact: { name: "Testperson", email: "test@example.com" },
   }, "https://palaisdebeaute.de"), { ok: false, error: "contact_requires_consent" });
 
@@ -78,8 +82,28 @@ test("accepts contact details only with explicit versioned consent", () => {
     session_id: "session-123",
     consent_to_contact: true,
     consent_version: "wrong-version",
+    contact_topic: "callback",
+    preferred_contact_method: "phone",
     contact: { name: "Testperson", phone: "+49 611 123456" },
   }, "https://palaisdebeaute.de"), { ok: false, error: "invalid_consent_version" });
+
+  assert.deepEqual(validateContactCapturePayload({
+    session_id: "session-123",
+    consent_to_contact: true,
+    consent_version: "wisy-contact-v2-2026-09-12",
+    contact_topic: "free_text_is_not_allowed",
+    preferred_contact_method: "email",
+    contact: { name: "Testperson", email: "test@example.com" },
+  }, "https://palaisdebeaute.de"), { ok: false, error: "invalid_contact_topic" });
+
+  assert.deepEqual(validateContactCapturePayload({
+    session_id: "session-123",
+    consent_to_contact: true,
+    consent_version: "wisy-contact-v2-2026-09-12",
+    contact_topic: "callback",
+    preferred_contact_method: "phone",
+    contact: { name: "Testperson", email: "test@example.com" },
+  }, "https://palaisdebeaute.de"), { ok: false, error: "contact_phone_required" });
 });
 
 test("derives the isolated lead notification webhook on the same n8n host", () => {
@@ -96,6 +120,8 @@ test("notifies internally without forwarding session or chat text", async () => 
     webhookUrl: "https://example.n8n.cloud/webhook/wisy-secure",
     webhookSecret: "a".repeat(32),
     contact: { name: "Testperson", email: "test@example.com", phone: null },
+    contactTopic: "pricing_offer",
+    preferredContactMethod: "email",
     fetchImpl: async (url, options) => {
       request = { url, options };
       return { ok: true };
@@ -105,6 +131,8 @@ test("notifies internally without forwarding session or chat text", async () => 
   assert.equal(notified, true);
   assert.equal(request.url, "https://example.n8n.cloud/webhook/wisy-lead-notification");
   assert.equal(body.contact.email, "test@example.com");
+  assert.equal(body.contact_topic, "pricing_offer");
+  assert.equal(body.preferred_contact_method, "email");
   assert.equal("session_id" in body, false);
   assert.equal("message" in body, false);
 });
@@ -162,6 +190,8 @@ test("records only a minimized CTA event from an allowed storefront", async (con
     contactName: null,
     contactEmail: null,
     contactPhone: null,
+    contactTopic: null,
+    preferredContactMethod: null,
   }]);
   assert.equal(JSON.stringify(recorded).includes("must not be retained"), false);
   assert.equal(JSON.stringify(recorded).includes("must-not-be-retained@example.com"), false);
@@ -194,7 +224,9 @@ test("stores a public contact request only after explicit consent", async (conte
     body: JSON.stringify({
       session_id: "session-123",
       consent_to_contact: true,
-      consent_version: "wisy-contact-v1-2026-09-11",
+      consent_version: "wisy-contact-v2-2026-09-12",
+      contact_topic: "pricing_offer",
+      preferred_contact_method: "email",
       contact: { name: "Testperson", email: "test@example.com" },
     }),
   });
@@ -205,9 +237,12 @@ test("stores a public contact request only after explicit consent", async (conte
   assert.equal(recorded[0].eventType, "contact_submitted");
   assert.equal(recorded[0].status, "contact_requested");
   assert.equal(recorded[0].consentToContact, true);
-  assert.equal(recorded[0].consentVersion, "wisy-contact-v1-2026-09-11");
+  assert.equal(recorded[0].consentVersion, "wisy-contact-v2-2026-09-12");
+  assert.equal(recorded[0].contactTopic, "pricing_offer");
+  assert.equal(recorded[0].preferredContactMethod, "email");
   assert.equal(notifications.length, 1);
   assert.equal(notifications[0].body.contact.email, "test@example.com");
+  assert.equal(notifications[0].body.contact_topic, "pricing_offer");
 });
 
 test("limits upstream output to the supported response contract", () => {

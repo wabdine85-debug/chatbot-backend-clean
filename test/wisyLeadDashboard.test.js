@@ -37,12 +37,16 @@ test("never exposes contact fields without consent", () => {
     contact_name: "Must not appear",
     contact_email: "hidden@example.com",
     contact_phone: "+49 123",
+    contact_topic: "callback",
+    preferred_contact_method: "phone",
     event_count: "2",
   });
 
   assert.equal(lead.contact_name, null);
   assert.equal(lead.contact_email, null);
   assert.equal(lead.contact_phone, null);
+  assert.equal(lead.contact_topic, null);
+  assert.equal(lead.preferred_contact_method, null);
   assert.equal(lead.event_count, 2);
 });
 
@@ -73,6 +77,11 @@ test("renders dashboard data server-side without executable JavaScript", () => {
       session_id: "session-123",
       status: "qualified",
       intent: "<script>alert(1)</script>",
+      contact_topic: "pricing_offer",
+      preferred_contact_method: "email",
+      consent_to_contact: true,
+      contact_name: "Testperson",
+      contact_email: "test@example.com",
       latest_event_type: "intent_detected",
       latest_cta_target: null,
       last_activity_at: "2026-09-11T20:53:10.482Z",
@@ -84,6 +93,8 @@ test("renders dashboard data server-side without executable JavaScript", () => {
   assert.match(html, /&lt;script&gt;alert\(1\)&lt;\/script&gt;/);
   assert.doesNotMatch(html, /<script>/);
   assert.doesNotMatch(html, /Wird geladen/);
+  assert.match(html, /Preis \/ Angebot/);
+  assert.match(html, /Bevorzugt: E-Mail/);
 });
 
 test("protects dashboard HTML and API with no-store security headers", async (context) => {

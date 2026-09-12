@@ -25,6 +25,16 @@ const STATUSES = new Set([
   "closed_lost",
 ]);
 
+const CONTACT_TOPICS = new Set([
+  "appointment_consultation",
+  "treatment_selection",
+  "pricing_offer",
+  "callback",
+  "other",
+]);
+
+const PREFERRED_CONTACT_METHODS = new Set(["email", "phone", "either"]);
+
 const STATUS_BY_EVENT = {
   session_started: "new",
   intent_detected: "qualified",
@@ -72,8 +82,16 @@ export function validateLeadEventPayload(body) {
   const contactName = optionalText(contact.name, 160);
   const contactEmail = optionalText(contact.email, 320);
   const contactPhone = optionalText(contact.phone, 40);
+  const contactTopic = optionalText(body.contact_topic, 64);
+  const preferredContactMethod = optionalText(body.preferred_contact_method, 16);
 
-  if (!consentToContact && (contactName || contactEmail || contactPhone)) {
+  if (!consentToContact && (
+    contactName
+    || contactEmail
+    || contactPhone
+    || contactTopic
+    || preferredContactMethod
+  )) {
     return { ok: false, error: "contact_requires_consent" };
   }
   if (consentToContact && !consentVersion) {
@@ -84,6 +102,12 @@ export function validateLeadEventPayload(body) {
   }
   if (contactPhone && !/^[+()0-9\s/-]{6,40}$/.test(contactPhone)) {
     return { ok: false, error: "invalid_contact_phone" };
+  }
+  if (contactTopic && !CONTACT_TOPICS.has(contactTopic)) {
+    return { ok: false, error: "invalid_contact_topic" };
+  }
+  if (preferredContactMethod && !PREFERRED_CONTACT_METHODS.has(preferredContactMethod)) {
+    return { ok: false, error: "invalid_preferred_contact_method" };
   }
 
   return {
@@ -102,6 +126,8 @@ export function validateLeadEventPayload(body) {
       contactName,
       contactEmail,
       contactPhone,
+      contactTopic,
+      preferredContactMethod,
     },
   };
 }
@@ -133,9 +159,11 @@ export async function recordLeadEvent(pool, event) {
           contact_phone,
           consent_to_contact,
           consent_version,
-          consent_at
+          consent_at,
+          contact_topic,
+          preferred_contact_method
         )
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, CASE WHEN $9 THEN NOW() ELSE NULL END)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, CASE WHEN $9 THEN NOW() ELSE NULL END, $11, $12)
         ON CONFLICT (session_id) DO UPDATE SET
           source = EXCLUDED.source,
           status = CASE
@@ -158,6 +186,8 @@ export async function recordLeadEvent(pool, event) {
           consent_to_contact = wisy_leads.consent_to_contact OR EXCLUDED.consent_to_contact,
           consent_version = COALESCE(EXCLUDED.consent_version, wisy_leads.consent_version),
           consent_at = COALESCE(wisy_leads.consent_at, EXCLUDED.consent_at),
+          contact_topic = COALESCE(EXCLUDED.contact_topic, wisy_leads.contact_topic),
+          preferred_contact_method = COALESCE(EXCLUDED.preferred_contact_method, wisy_leads.preferred_contact_method),
           updated_at = NOW(),
           last_activity_at = NOW()
         RETURNING id
@@ -173,6 +203,8 @@ export async function recordLeadEvent(pool, event) {
         event.contactPhone,
         event.consentToContact,
         event.consentVersion,
+        event.contactTopic,
+        event.preferredContactMethod,
       ],
     );
 

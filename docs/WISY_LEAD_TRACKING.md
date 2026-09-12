@@ -8,6 +8,9 @@ Render-Proxy und erfasst erlaubte CTA-Klicks datensparsam. Die Lead-Ansicht ist
 seit dem 11. September 2026 passwortgeschuetzt live geschaltet.
 Die versionierte Kontaktanfrage und die interne Benachrichtigung sind seit dem
 11. September 2026 ebenfalls produktiv aktiv und Ende-zu-Ende getestet.
+Die additive Kontakterweiterung `003_add_wisy_contact_context.sql` wurde am
+12. September 2026 produktiv angewendet und auf beide Spalten sowie beide
+Wertepruefungen verifiziert.
 
 ## Ziel
 
@@ -89,20 +92,24 @@ Empfohlener technischer Ausgangspunkt:
 ## Kontaktanfrage im Widget
 
 Die technische Kontaktstrecke nutzt `POST /api/wisy/contact`. Sie speichert nur
-Name, mindestens einen Kontaktweg, die pseudonyme Session-ID, den festen
+Name, mindestens einen Kontaktweg, ein fest ausgewaehltes Anliegen, den
+bevorzugten Kontaktweg, die pseudonyme Session-ID, den festen
 Ereignistyp `contact_submitted`, den Status `contact_requested`,
 Einwilligungszeitpunkt und Einwilligungstextversion. Die Route prueft
 Storefront-Origin, Eingabegrenzen, Kontaktformat und Einwilligung serverseitig
 und ist rate-limitiert. Freie Chattexte werden nicht angenommen.
 
-Das Widget bietet den Kontaktweg direkt in der Startauswahl an und zeigt ihn
-automatisch nach erkanntem Kontakt- oder Buchungsintent. Die sichtbare
+Das Widget bietet den Kontaktweg direkt in der Startauswahl, dauerhaft als
+dezente Concierge-Leiste ueber dem Eingabefeld und automatisch nach erkanntem
+Kontakt- oder Buchungsintent an. Das Anliegen wird aus einer festen Liste
+gewaehlt; es gibt bewusst keinen freien Betreff. Bei erkanntem Termin-,
+Behandlungs- oder Preisintent wird die passende Auswahl vorbelegt. Die sichtbare
 Einwilligung nennt den Kontaktzweck und verlinkt die Datenschutzhinweise. Eine
 fachliche beziehungsweise rechtliche Pruefung des finalen Live-Textes bleibt
 erforderlich; diese Dokumentation ist keine Rechtsberatung.
 
 Nach erfolgreicher Datenbankspeicherung sendet das Backend die freigegebenen
-Kontaktdaten ohne Session-ID und ohne Chattext an den getrennten aktiven n8n-
+Kontaktdaten sowie Anliegen und bevorzugten Kontaktweg ohne Session-ID und ohne Chattext an den getrennten aktiven n8n-
 Workflow `Wisy Lead Notification`. Dieser verwendet Header-Authentifizierung
 und das vorhandene interne SMTP-Credential. Erfolgreiche und fehlerhafte
 Execution-Daten sind fuer diesen Workflow deaktiviert. Ein

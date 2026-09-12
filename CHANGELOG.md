@@ -41,6 +41,22 @@ Das Format orientiert sich grob an Keep a Changelog. Historische Aenderungen wer
 
 ### Changed
 
+- Wisy-Kontaktstrecke um einen dauerhaft erreichbaren, dezenten
+  `Persoenliche Beratung`-CTA erweitert. Das Formular erfasst jetzt statt
+  eines freien Betreffs ein festes Anliegen und den bevorzugten Kontaktweg;
+  erkannter Termin-, Behandlungs- oder Preisintent kann das Anliegen
+  vorbelegen. Nach erfolgreicher Anfrage wird der CTA fuer die laufende
+  Widget-Sitzung als gesendet markiert.
+- Kontaktvalidierung, PostgreSQL-Modell, Lead-Dashboard und interne
+  Benachrichtigungsdaten um die erlaubten Felder `contact_topic` und
+  `preferred_contact_method` erweitert. Die neue additive Migration
+  `003_add_wisy_contact_context.sql` wurde produktiv angewendet und
+  verifiziert; sie loescht oder ueberschreibt keine bestehenden Leads.
+- Sichtbaren Widget-Datenschutzhinweis und versionierte Zustimmung an die
+  tatsaechlich gespeicherten Kontaktfelder und den gewaehlten Kontaktweg
+  angepasst. Freie Betreff- und Chattexte bleiben aus dem Lead-Datensatz und
+  der internen Kontaktbenachrichtigung ausgeschlossen.
+
 - Datenschutzarme Kontaktstrecke fuer Wisy aktiviert: Das Shopify-Widget
   bietet eine persoenliche Kontaktanfrage direkt und nach erkanntem Kontakt-
   oder Buchungsintent an. Der neue rate-limitierte Endpunkt

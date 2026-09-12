@@ -3,7 +3,7 @@ import { recordLeadEvent, validateLeadEventPayload } from "./leadTracking.js";
 
 const DEFAULT_RATE_LIMIT = 30;
 const DEFAULT_RATE_WINDOW_MS = 60_000;
-export const CONTACT_CONSENT_VERSION = "wisy-contact-v1-2026-09-11";
+export const CONTACT_CONSENT_VERSION = "wisy-contact-v2-2026-09-12";
 const ALLOWED_STOREFRONT_ORIGINS = new Set([
   "https://palaisdebeaute.de",
   "https://www.palaisdebeaute.de",
@@ -93,12 +93,24 @@ export function validateContactCapturePayload(body, origin) {
     route: "chat_contact_form_v1",
     consent_to_contact: body.consent_to_contact,
     consent_version: body.consent_version,
+    contact_topic: body.contact_topic,
+    preferred_contact_method: body.preferred_contact_method,
     contact: body.contact,
   });
   if (!result.ok) return result;
   if (!result.value.contactName) return { ok: false, error: "contact_name_required" };
   if (!result.value.contactEmail && !result.value.contactPhone) {
     return { ok: false, error: "contact_method_required" };
+  }
+  if (!result.value.contactTopic) return { ok: false, error: "contact_topic_required" };
+  if (!result.value.preferredContactMethod) {
+    return { ok: false, error: "preferred_contact_method_required" };
+  }
+  if (result.value.preferredContactMethod === "email" && !result.value.contactEmail) {
+    return { ok: false, error: "contact_email_required" };
+  }
+  if (result.value.preferredContactMethod === "phone" && !result.value.contactPhone) {
+    return { ok: false, error: "contact_phone_required" };
   }
   if (result.value.consentVersion !== CONTACT_CONSENT_VERSION) {
     return { ok: false, error: "invalid_consent_version" };
@@ -171,6 +183,8 @@ export async function tryRecordLeadIntent({
       contactName: null,
       contactEmail: null,
       contactPhone: null,
+      contactTopic: null,
+      preferredContactMethod: null,
     });
     return true;
   } catch (error) {
@@ -234,6 +248,8 @@ export async function tryNotifyContact({
   webhookUrl,
   webhookSecret,
   contact,
+  contactTopic,
+  preferredContactMethod,
   fetchImpl = fetch,
   logger = console,
 }) {
@@ -252,6 +268,8 @@ export async function tryNotifyContact({
       body: JSON.stringify({
         event_type: "contact_submitted",
         consent_version: CONTACT_CONSENT_VERSION,
+        contact_topic: contactTopic,
+        preferred_contact_method: preferredContactMethod,
         contact,
       }),
       signal: controller.signal,
@@ -350,6 +368,8 @@ export function createWisyChatProxyRouter({
         contactName: null,
         contactEmail: null,
         contactPhone: null,
+        contactTopic: null,
+        preferredContactMethod: null,
       });
       return res.status(201).json({ ok: true });
     } catch (error) {
@@ -376,6 +396,8 @@ export function createWisyChatProxyRouter({
           email: validation.value.contactEmail,
           phone: validation.value.contactPhone,
         },
+        contactTopic: validation.value.contactTopic,
+        preferredContactMethod: validation.value.preferredContactMethod,
       });
       return res.status(201).json({ ok: true, notification_queued: notificationQueued });
     } catch (error) {

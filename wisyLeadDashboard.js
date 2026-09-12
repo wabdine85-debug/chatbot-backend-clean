@@ -5,6 +5,18 @@ import { createFixedWindowRateLimiter } from "./wisyChatProxy.js";
 const DASHBOARD_USERNAME = "wisy";
 const DEFAULT_LIMIT = 100;
 const MAX_LIMIT = 200;
+const CONTACT_TOPIC_LABELS = {
+  appointment_consultation: "Termin / Beratung",
+  treatment_selection: "Behandlung auswählen",
+  pricing_offer: "Preis / Angebot",
+  callback: "Rückruf",
+  other: "Sonstiges",
+};
+const CONTACT_METHOD_LABELS = {
+  email: "E-Mail",
+  phone: "Telefon",
+  either: "E-Mail oder Telefon",
+};
 
 function safeEqual(receivedValue, expectedValue) {
   const received = Buffer.from(receivedValue, "utf8");
@@ -48,6 +60,8 @@ export function sanitizeDashboardLead(row) {
     contact_name: consentToContact ? row.contact_name : null,
     contact_email: consentToContact ? row.contact_email : null,
     contact_phone: consentToContact ? row.contact_phone : null,
+    contact_topic: consentToContact ? row.contact_topic : null,
+    preferred_contact_method: consentToContact ? row.preferred_contact_method : null,
     consent_to_contact: consentToContact,
     created_at: row.created_at,
     last_activity_at: row.last_activity_at,
@@ -91,6 +105,8 @@ export async function loadLeadDashboard(pool, requestedLimit = DEFAULT_LIMIT) {
         lead.contact_name,
         lead.contact_email,
         lead.contact_phone,
+        lead.contact_topic,
+        lead.preferred_contact_method,
         lead.consent_to_contact,
         lead.created_at,
         lead.last_activity_at,
@@ -164,10 +180,15 @@ export function renderLeadDashboard(data, requestedStatus = "") {
       .filter(Boolean)
       .map(escapeHtml)
       .join("<br>") || "–";
+    const topic = CONTACT_TOPIC_LABELS[lead.contact_topic] || lead.treatment_interest || "–";
+    const contactMethod = CONTACT_METHOD_LABELS[lead.preferred_contact_method];
+    const contactWithMethod = contactMethod === undefined || contact === "–"
+      ? contact
+      : `${contact}<br><small>Bevorzugt: ${escapeHtml(contactMethod)}</small>`;
     const cta = lead.latest_cta_target
       ? `<a href="${escapeHtml(lead.latest_cta_target)}" target="_blank" rel="noopener noreferrer">Öffnen</a>`
       : "–";
-    return `<tr><td>${dashboardDate(lead.last_activity_at)}</td><td><span class="badge">${dashboardValue(lead.status)}</span></td><td>${dashboardValue(lead.intent)}</td><td>${dashboardValue(lead.treatment_interest)}</td><td>${dashboardValue(lead.latest_event_type)}</td><td>${cta}</td><td class="contact">${contact}</td><td>${dashboardValue(lead.session_id)}</td></tr>`;
+    return `<tr><td>${dashboardDate(lead.last_activity_at)}</td><td><span class="badge">${dashboardValue(lead.status)}</span></td><td>${dashboardValue(lead.intent)}</td><td>${dashboardValue(topic)}</td><td>${dashboardValue(lead.latest_event_type)}</td><td>${cta}</td><td class="contact">${contactWithMethod}</td><td>${dashboardValue(lead.session_id)}</td></tr>`;
   }).join("");
 
   return `<!doctype html>
@@ -199,7 +220,7 @@ export function renderLeadDashboard(data, requestedStatus = "") {
     <div class="metric"><strong>${data.summary.booked}</strong><span>Gebucht</span></div>
   </section>
   <form class="toolbar" method="get" action="./"><label for="status">Status:</label><select id="status" name="status">${statusOptions}</select><button type="submit">Filtern</button></form>
-  <div class="table-wrap"><table><thead><tr><th>Letzte Aktivität</th><th>Status</th><th>Intent</th><th>Interesse</th><th>Letzter Schritt</th><th>CTA-Ziel</th><th>Kontakt</th><th>Session</th></tr></thead><tbody>${rows}</tbody></table>${visibleLeads.length ? "" : '<div class="empty">Keine Leads für diesen Filter.</div>'}</div>
+  <div class="table-wrap"><table><thead><tr><th>Letzte Aktivität</th><th>Status</th><th>Intent</th><th>Anliegen</th><th>Letzter Schritt</th><th>CTA-Ziel</th><th>Kontakt</th><th>Session</th></tr></thead><tbody>${rows}</tbody></table>${visibleLeads.length ? "" : '<div class="empty">Keine Leads für diesen Filter.</div>'}</div>
 </main>
 </body>
 </html>`;

@@ -1,6 +1,6 @@
 # Wisy Datenschutz-Faktenblatt
 
-Stand: 11. September 2026
+Stand: 12. September 2026
 
 Dieses Dokument beschreibt ausschliesslich den technisch belegten Ist-Zustand.
 Es ist keine Rechtsberatung, keine Datenschutzerklaerung und keine Behauptung
@@ -60,8 +60,12 @@ Unterauftragsverarbeiter und Drittlandtransfermechanismen sind im Repository
 
 Kontaktname, E-Mail-Adresse und Telefonnummer sind technisch vorgesehen, werden
 ueber die Kontaktstrecke nur nach aktiver Zustimmung gesetzt. Name und
-mindestens E-Mail-Adresse oder Telefonnummer sind erforderlich. Die Datenbank
-speichert dazu Einwilligungszeitpunkt und Einwilligungstextversion.
+mindestens E-Mail-Adresse oder Telefonnummer sind erforderlich. Zusaetzlich
+werden ausschliesslich ein fest ausgewaehltes Anliegen (`Termin / Beratung`,
+`Behandlung auswaehlen`, `Preis / Angebot`, `Rueckruf` oder `Sonstiges`) und
+der bevorzugte Kontaktweg (`E-Mail`, `Telefon` oder `E-Mail oder Telefon`)
+gespeichert. Ein freier Betreff oder Nachrichtentext ist nicht vorgesehen. Die
+Datenbank speichert dazu Einwilligungszeitpunkt und Einwilligungstextversion.
 
 ### `wisy_lead_events`
 

@@ -7,7 +7,7 @@ const DEFAULT_LIMIT = 100;
 const MAX_LIMIT = 200;
 const CONTACT_TOPIC_LABELS = {
   appointment_consultation: "Termin / Beratung",
-  treatment_selection: "Behandlung auswählen",
+  treatment_selection: "Beratung zur Behandlungsauswahl",
   pricing_offer: "Preis / Angebot",
   callback: "Rückruf",
   other: "Sonstiges",
@@ -16,6 +16,35 @@ const CONTACT_METHOD_LABELS = {
   email: "E-Mail",
   phone: "Telefon",
   either: "E-Mail oder Telefon",
+};
+const STATUS_LABELS = {
+  new: "Neu",
+  qualified: "Interesse erkannt",
+  contact_requested: "Kontakt angefragt",
+  handoff_created: "Übergabe erstellt",
+  booking_started: "Buchung begonnen",
+  booked: "Termin gebucht",
+  closed_lost: "Ohne Abschluss",
+};
+const INTENT_LABELS = {
+  general: "Allgemeine Frage",
+  treatment: "Behandlung",
+  contact: "Persönlicher Kontakt",
+  booking: "Termin / Buchung",
+  price: "Preis / Angebot",
+};
+const EVENT_LABELS = {
+  session_started: "Gespräch begonnen",
+  intent_detected: "Interesse erkannt",
+  recommendation_shown: "Empfehlung angezeigt",
+  cta_shown: "Nächster Schritt angezeigt",
+  cta_clicked: "Link geöffnet",
+  contact_consent_granted: "Kontakt freigegeben",
+  contact_submitted: "Kontaktanfrage gesendet",
+  handoff_created: "Übergabe erstellt",
+  booking_started: "Buchung begonnen",
+  booked: "Termin gebucht",
+  closed_lost: "Ohne Abschluss beendet",
 };
 
 function safeEqual(receivedValue, expectedValue) {
@@ -124,7 +153,12 @@ export async function loadLeadDashboard(pool, requestedLimit = DEFAULT_LIMIT) {
         LIMIT 1
       ) AS latest ON TRUE
       GROUP BY lead.id, latest.event_type, latest.occurred_at, latest.cta_target
-      ORDER BY lead.last_activity_at DESC
+      ORDER BY
+        CASE
+          WHEN lead.status IN ('contact_requested', 'handoff_created', 'booking_started') THEN 0
+          ELSE 1
+        END,
+        lead.last_activity_at DESC
       LIMIT $1
     `, [limit]),
   ]);
@@ -168,27 +202,47 @@ function dashboardValue(value) {
   return value === null || value === undefined || value === "" ? "–" : escapeHtml(value);
 }
 
+function dashboardLabel(labels, value) {
+  return value ? dashboardValue(labels[value] || value) : "–";
+}
+
+function contactDetails(lead) {
+  if (!lead.consent_to_contact) return '<span class="muted">Noch keine Kontaktfreigabe</span>';
+
+  const parts = [];
+  if (lead.contact_name) parts.push(`<strong>${escapeHtml(lead.contact_name)}</strong>`);
+  if (lead.contact_email) {
+    const email = escapeHtml(lead.contact_email);
+    parts.push(`<a href="mailto:${email}">${email}</a>`);
+  }
+  if (lead.contact_phone) {
+    const phone = escapeHtml(lead.contact_phone);
+    const phoneTarget = String(lead.contact_phone).replace(/[^+0-9]/g, "");
+    parts.push(phoneTarget ? `<a href="tel:${escapeHtml(phoneTarget)}">${phone}</a>` : phone);
+  }
+
+  const method = CONTACT_METHOD_LABELS[lead.preferred_contact_method];
+  if (method) parts.push(`<small>Gewünscht: ${escapeHtml(method)}</small>`);
+  return parts.join("<br>") || "–";
+}
+
 export function renderLeadDashboard(data, requestedStatus = "") {
   const statuses = [...new Set(data.leads.map((lead) => lead.status).filter(Boolean))].sort();
   const selectedStatus = statuses.includes(requestedStatus) ? requestedStatus : "";
   const visibleLeads = data.leads.filter((lead) => !selectedStatus || lead.status === selectedStatus);
   const statusOptions = ["", ...statuses]
-    .map((status) => `<option value="${escapeHtml(status)}"${status === selectedStatus ? " selected" : ""}>${status ? escapeHtml(status) : "Alle"}</option>`)
+    .map((status) => `<option value="${escapeHtml(status)}"${status === selectedStatus ? " selected" : ""}>${status ? dashboardLabel(STATUS_LABELS, status) : "Alle"}</option>`)
     .join("");
   const rows = visibleLeads.map((lead) => {
-    const contact = [lead.contact_name, lead.contact_email, lead.contact_phone]
-      .filter(Boolean)
-      .map(escapeHtml)
-      .join("<br>") || "–";
     const topic = CONTACT_TOPIC_LABELS[lead.contact_topic] || lead.treatment_interest || "–";
-    const contactMethod = CONTACT_METHOD_LABELS[lead.preferred_contact_method];
-    const contactWithMethod = contactMethod === undefined || contact === "–"
-      ? contact
-      : `${contact}<br><small>Bevorzugt: ${escapeHtml(contactMethod)}</small>`;
     const cta = lead.latest_cta_target
       ? `<a href="${escapeHtml(lead.latest_cta_target)}" target="_blank" rel="noopener noreferrer">Öffnen</a>`
       : "–";
-    return `<tr><td>${dashboardDate(lead.last_activity_at)}</td><td><span class="badge">${dashboardValue(lead.status)}</span></td><td>${dashboardValue(lead.intent)}</td><td>${dashboardValue(topic)}</td><td>${dashboardValue(lead.latest_event_type)}</td><td>${cta}</td><td class="contact">${contactWithMethod}</td><td>${dashboardValue(lead.session_id)}</td></tr>`;
+    const reference = lead.session_id
+      ? `<details><summary>Anzeigen</summary><code>${escapeHtml(lead.session_id)}</code></details>`
+      : "–";
+    const badgeClass = lead.status === "contact_requested" ? " badge--action" : lead.status === "booked" ? " badge--success" : "";
+    return `<tr><td>${dashboardDate(lead.last_activity_at)}</td><td><span class="badge${badgeClass}">${dashboardLabel(STATUS_LABELS, lead.status)}</span></td><td>${dashboardLabel(INTENT_LABELS, lead.intent)}</td><td>${dashboardValue(topic)}</td><td>${dashboardLabel(EVENT_LABELS, lead.latest_event_type)}</td><td>${cta}</td><td class="contact">${contactDetails(lead)}</td><td class="reference">${reference}</td></tr>`;
   }).join("");
 
   return `<!doctype html>
@@ -202,9 +256,9 @@ export function renderLeadDashboard(data, requestedStatus = "") {
     *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.5 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
     main{width:min(1180px,calc(100% - 32px));margin:40px auto 64px}header{display:flex;justify-content:space-between;gap:20px;align-items:end;margin-bottom:24px}
     h1{font:600 clamp(28px,4vw,44px)/1.1 Georgia,serif;margin:0 0 6px}.eyebrow{color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.15em;text-transform:uppercase}
-    .muted{color:var(--muted)}button,select,.button{border:1px solid var(--line);background:#fff;border-radius:10px;padding:10px 13px;color:var(--ink);font:inherit}.button,button{cursor:pointer;background:var(--dark);color:#fff;text-decoration:none}
+    .muted{color:var(--muted)}a{color:#654832;text-underline-offset:2px}button,select,.button{border:1px solid var(--line);background:#fff;border-radius:10px;padding:10px 13px;color:var(--ink);font:inherit}.button,button{cursor:pointer;background:var(--dark);color:#fff;text-decoration:none}
     .metrics{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px;margin-bottom:18px}.metric{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px}.metric strong{display:block;font:600 28px Georgia,serif}.metric span{color:var(--muted);font-size:12px}
-    .toolbar{display:flex;gap:10px;align-items:center;margin:18px 0}.table-wrap{overflow:auto;background:#fff;border:1px solid var(--line);border-radius:16px}table{width:100%;border-collapse:collapse;min-width:950px}th,td{text-align:left;padding:13px 14px;border-bottom:1px solid var(--line);vertical-align:top}th{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);background:#fffdfb;position:sticky;top:0}.badge{display:inline-block;padding:3px 8px;border-radius:999px;background:#f1ebe6;font-size:12px}.contact{white-space:pre-line}.empty{padding:40px;text-align:center;color:var(--muted)}
+    .toolbar{display:flex;gap:10px;align-items:center;margin:18px 0}.table-wrap{overflow:auto;background:#fff;border:1px solid var(--line);border-radius:16px}table{width:100%;border-collapse:collapse;min-width:1050px}th,td{text-align:left;padding:13px 14px;border-bottom:1px solid var(--line);vertical-align:top}th{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);background:#fffdfb;position:sticky;top:0}.badge{display:inline-block;padding:3px 8px;border-radius:999px;background:#f1ebe6;font-size:12px;white-space:nowrap}.badge--action{background:#f5e4c6;color:#5c3b0b}.badge--success{background:#deeee2;color:#245332}.contact{white-space:normal}.contact a{display:inline-block}.reference{max-width:190px}.reference summary{cursor:pointer;color:var(--muted);font-size:12px}.reference code{display:block;margin-top:6px;overflow-wrap:anywhere;font-size:11px;color:var(--muted)}.empty{padding:40px;text-align:center;color:var(--muted)}
     @media(max-width:800px){main{margin-top:24px}.metrics{grid-template-columns:repeat(2,1fr)}header{align-items:start;flex-direction:column}}
   </style>
 </head>
@@ -214,13 +268,13 @@ export function renderLeadDashboard(data, requestedStatus = "") {
   <section class="metrics" aria-label="Kennzahlen">
     <div class="metric"><strong>${data.summary.total}</strong><span>Leads gesamt</span></div>
     <div class="metric"><strong>${data.summary.active_7d}</strong><span>Aktiv in 7 Tagen</span></div>
-    <div class="metric"><strong>${data.summary.actionable}</strong><span>Handlungsrelevant</span></div>
-    <div class="metric"><strong>${data.summary.contactable}</strong><span>Kontakt freigegeben</span></div>
+    <div class="metric"><strong>${data.summary.actionable}</strong><span>Jetzt bearbeiten</span></div>
+    <div class="metric"><strong>${data.summary.contactable}</strong><span>Kontaktanfragen</span></div>
     <div class="metric"><strong>${data.summary.cta_clicks_7d}</strong><span>CTA-Klicks in 7 Tagen</span></div>
     <div class="metric"><strong>${data.summary.booked}</strong><span>Gebucht</span></div>
   </section>
   <form class="toolbar" method="get" action="./"><label for="status">Status:</label><select id="status" name="status">${statusOptions}</select><button type="submit">Filtern</button></form>
-  <div class="table-wrap"><table><thead><tr><th>Letzte Aktivität</th><th>Status</th><th>Intent</th><th>Anliegen</th><th>Letzter Schritt</th><th>CTA-Ziel</th><th>Kontakt</th><th>Session</th></tr></thead><tbody>${rows}</tbody></table>${visibleLeads.length ? "" : '<div class="empty">Keine Leads für diesen Filter.</div>'}</div>
+  <div class="table-wrap"><table><thead><tr><th>Letzte Aktivität</th><th>Status</th><th>Interesse</th><th>Anliegen</th><th>Letzter Schritt</th><th>Geöffneter Link</th><th>Kontakt</th><th>Technische Referenz</th></tr></thead><tbody>${rows}</tbody></table>${visibleLeads.length ? "" : '<div class="empty">Keine Leads für diesen Filter.</div>'}</div>
 </main>
 </body>
 </html>`;

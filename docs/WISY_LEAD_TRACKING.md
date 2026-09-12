@@ -42,17 +42,18 @@ unterbricht die Chat-Antwort nicht.
 
 ## Datenschutz-Grenze fuer den naechsten Funnel-Schritt
 
-Der erneute Live-Abgleich am 11. September 2026 fand in der aktuell
-ausgelieferten Shopify-Datenschutzerklaerung keinen auffindbaren Wisy-Abschnitt.
-Das Widget zeigt weiterhin den kurzen Hinweis, keine sensiblen
-Gesundheitsdaten einzugeben. Dieser Hinweis allein ist keine Grundlage fuer
-eine Verknuepfung mit identifizierbaren Kontaktdaten.
+Der Live-Abgleich am 12. September 2026 bestaetigte einen Wisy-Abschnitt in der
+Shopify-Datenschutzerklaerung. Er wurde am selben Tag um das strukturierte
+Lead-Tracking, die freiwillige Kontaktanfrage, beteiligte Systeme, die
+Einwilligungsgrundlage und den Widerruf ergaenzt. Widget-Hinweis und
+Formularzustimmung nennen den konkreten Kontaktzweck und verlinken diesen Text.
 
 - **Pflicht:** Keine automatische Verbindung zwischen Wisy-Session und
-  Shopify-Buchung oder externem Kontaktformular ohne passende Transparenz.
-- **Empfohlen:** Zuerst den Datenschutztext, die Rechtsgrundlage, Empfaenger,
-  Aufbewahrung und den betrieblichen Prozess fachlich beziehungsweise rechtlich
-  pruefen und live veroeffentlichen.
+  Shopify-Buchung oder externem Kontaktformular ohne eine weitere passende
+  Transparenz- und Zweckpruefung.
+- **Empfohlen:** Den veroeffentlichten Text, Auftragsverarbeitung,
+  Drittlandtransfers, konkrete Aufbewahrungsfristen und den betrieblichen
+  Widerrufs- und Loeschprozess fachlich beziehungsweise rechtlich pruefen.
 - **Optional:** Danach die Ereignisse `booking_started` und `booked` an den
   tatsaechlichen Buchungsweg anbinden.
 - **Nicht empfohlen:** Freie Chattexte, Gesundheitsangaben oder unsichtbar
@@ -108,6 +109,12 @@ Einwilligung nennt den Kontaktzweck und verlinkt die Datenschutzhinweise. Eine
 fachliche beziehungsweise rechtliche Pruefung des finalen Live-Textes bleibt
 erforderlich; diese Dokumentation ist keine Rechtsberatung.
 
+Die Option `treatment_selection` wird kundenorientiert als
+`Beratung zur Behandlungsauswahl` angezeigt. Sie kennzeichnet einen
+Beratungswunsch und oeffnet bewusst keinen vollstaendigen Treatment-Dropdown im
+Kontaktformular. Die sichtbaren Widget-Texte verwenden einheitlich die
+hoefliche Sie-Ansprache.
+
 Nach erfolgreicher Datenbankspeicherung sendet das Backend die freigegebenen
 Kontaktdaten sowie Anliegen und bevorzugten Kontaktweg ohne Session-ID und ohne Chattext an den getrennten aktiven n8n-
 Workflow `Wisy Lead Notification`. Dieser verwendet Header-Authentifizierung
@@ -123,10 +130,14 @@ Das Backend stellt die Lead-Ansicht unter `/wisy-admin` bereit. Sie wird nur
 registriert, wenn `WISY_ADMIN_PASSWORD` mindestens 20 Zeichen lang ist. Der
 Benutzername lautet `wisy`; das separate Passwort liegt nicht im Repository.
 
-Die Ansicht zeigt Kennzahlen, Status, Intent, Treatment-Interesse, letzten
-Funnel-Schritt und Aktivitaetszeit. Freie Chattexte werden weder abgefragt noch
-angezeigt. Kontaktfelder werden zusaetzlich in der Anwendung entfernt, falls
-keine Einwilligung gesetzt ist. Antworten verwenden `no-store` und restriktive
+Die Ansicht zeigt Kennzahlen, Status, Interesse, Anliegen, letzten
+Funnel-Schritt und Aktivitaetszeit. Kontaktanfragen werden vor rein anonymen
+Signalen sortiert. Technische Werte erhalten verstaendliche deutsche
+Bezeichnungen; freigegebene E-Mail-Adressen und Telefonnummern sind direkt
+nutzbar. Die vollstaendige Session-ID bleibt als eingeklappte technische
+Referenz erreichbar. Freie Chattexte werden weder abgefragt noch angezeigt.
+Kontaktfelder werden zusaetzlich in der Anwendung entfernt, falls keine
+Einwilligung gesetzt ist. Antworten verwenden `no-store` und restriktive
 Browser-Sicherheitsheader. Der produktive Test bestaetigte HTTP 401 ohne
 Anmeldung, HTTP 200 mit Anmeldung sowie die Kontakt-Einwilligungsregel.
 Kennzahlen und Tabellenzeilen werden serverseitig gerendert, sodass die Ansicht

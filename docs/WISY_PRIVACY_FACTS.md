@@ -103,11 +103,13 @@ Freie Chatnachrichten werden von diesen beiden Tabellen nicht angenommen.
 - keine automatische Loeschung historischer n8n-Executions durch dieses
   Repository.
 
-## Pflicht vor identifizierbarem Lead-Closing
+## Offene Pflichtpunkte fuer den dauerhaften Betrieb
 
-Vor einer Verknuepfung mit Name, E-Mail-Adresse, Telefonnummer,
-Kontaktformular oder Buchung muessen mindestens geklaert und anschliessend im
-Live-Datenschutztext korrekt abgebildet werden:
+Die freiwillige Wisy-Kontaktanfrage ist mit eigener Zustimmung und einem am
+12. September 2026 technisch aktualisierten Live-Datenschutztext aktiv. Vor
+weiteren Verknuepfungen mit Kontaktformularen oder Buchungen und fuer den
+dauerhaften Betrieb muessen mindestens weiter geprueft und betrieblich
+abgesichert werden:
 
 - Zweck und Rechtsgrundlage je Verarbeitungsschritt,
 - erforderliche Information oder Einwilligung und deren Nachweis,
@@ -117,6 +119,7 @@ Live-Datenschutztext korrekt abgebildet werden:
 - Umgang mit versehentlich eingegebenen Gesundheitsdaten,
 - fachliche beziehungsweise rechtliche Freigabe des finalen Textes.
 
-Bis zur Kontaktfreigabe bleibt ein Dashboard-Eintrag auf anonyme Intent- und
-CTA-Signale beschraenkt. Freigegebene Kontaktanfragen werden als
-`contact_requested` angezeigt.
+Bis zur ausdruecklichen Kontaktfreigabe bleibt ein Dashboard-Eintrag auf
+anonyme Intent- und CTA-Signale beschraenkt. Freigegebene Kontaktanfragen werden
+als `contact_requested` mit festem Anliegen und bevorzugtem Kontaktweg
+angezeigt.

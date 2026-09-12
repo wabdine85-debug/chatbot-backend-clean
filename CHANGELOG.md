@@ -41,6 +41,17 @@ Das Format orientiert sich grob an Keep a Changelog. Historische Aenderungen wer
 
 ### Changed
 
+- Kundenansprache im produktiven Wisy-Widget fuer Hinweis, Kontaktformular,
+  Erfolgs- und Fehlertexte sowie Eingabeplatzhalter konsequent auf die
+  hoefliche Sie-Form vereinheitlicht. Das Anliegen `Behandlung auswaehlen`
+  heisst nun eindeutig `Beratung zur Behandlungsauswahl`; der technische Wert
+  und damit bestehende Auswertungen bleiben unveraendert.
+- Lead-Ansicht fuer den betrieblichen Alltag verstaendlicher gestaltet:
+  Kontaktanfragen werden vor rein anonymen Signalen sortiert, technische
+  Status-, Intent- und Ereigniswerte deutsch beschriftet, freigegebene E-Mail-
+  Adressen und Telefonnummern direkt verlinkt und die vollstaendige Session-ID
+  standardmaessig eingeklappt. Die Ansicht bleibt serverseitig und ohne
+  ausfuehrbares JavaScript.
 - Wisy-Kontaktstrecke um einen dauerhaft erreichbaren, dezenten
   `Persoenliche Beratung`-CTA erweitert. Das Formular erfasst jetzt statt
   eines freien Betreffs ein festes Anliegen und den bevorzugten Kontaktweg;
@@ -56,6 +67,20 @@ Das Format orientiert sich grob an Keep a Changelog. Historische Aenderungen wer
   tatsaechlich gespeicherten Kontaktfelder und den gewaehlten Kontaktweg
   angepasst. Freie Betreff- und Chattexte bleiben aus dem Lead-Datensatz und
   der internen Kontaktbenachrichtigung ausgeschlossen.
+- Bestehenden Wisy-Abschnitt der produktiven Shopify-Datenschutzerklaerung am
+  12. September 2026 um strukturiertes Lead-Tracking, freiwillige
+  Kontaktanfragen, beteiligte Systeme, Einwilligung und Widerruf ergaenzt. Der
+  unmittelbar vor der Aenderung erneut gelesene Richtlinientext entsprach der
+  Sicherung; Shopify meldete keine Mutationsfehler und der Live-Text wurde
+  anschliessend geprueft.
+- Internen n8n-Benachrichtigungsworkflow so erweitert, dass das feste Anliegen
+  im E-Mail-Betreff und der bevorzugte Kontaktweg im Inhalt erscheinen. Der
+  aktive Drei-Node-Workflow speichert weiterhin weder erfolgreiche noch
+  fehlerhafte Execution-Daten.
+- Wisy-Widget auf niedrigen und mobilen Viewports nahezu auf die verfuegbare
+  Hoehe erweitert und den Formularscroll gegen eine konkurrierende
+  Begruessungsanimation abgesichert. Ein isolierter Live-Browsertest bestaetigte
+  den sichtbaren Formularanfang, alle Auswahllisten und den Datenschutzlink.
 
 - Datenschutzarme Kontaktstrecke fuer Wisy aktiviert: Das Shopify-Widget
   bietet eine persoenliche Kontaktanfrage direkt und nach erkanntem Kontakt-

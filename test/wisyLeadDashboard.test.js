@@ -66,6 +66,7 @@ test("loads aggregate metrics and clamps the result limit", async () => {
   assert.deepEqual(result.summary, { total: 5, active_7d: 3, actionable: 2, booked: 1, contactable: 1, cta_clicks_7d: 4 });
   assert.equal(result.leads.length, 1);
   assert.deepEqual(calls[1].values, [200]);
+  assert.match(calls[1].sql, /WHEN lead\.status IN \('contact_requested', 'handoff_created', 'booking_started'\) THEN 0/);
   assert.equal(calls.some((call) => /messages|query\s+FROM/i.test(call.sql)), false);
 });
 
@@ -82,6 +83,7 @@ test("renders dashboard data server-side without executable JavaScript", () => {
       consent_to_contact: true,
       contact_name: "Testperson",
       contact_email: "test@example.com",
+      contact_phone: "+49 611 123456",
       latest_event_type: "intent_detected",
       latest_cta_target: null,
       last_activity_at: "2026-09-11T20:53:10.482Z",
@@ -94,7 +96,13 @@ test("renders dashboard data server-side without executable JavaScript", () => {
   assert.doesNotMatch(html, /<script>/);
   assert.doesNotMatch(html, /Wird geladen/);
   assert.match(html, /Preis \/ Angebot/);
-  assert.match(html, /Bevorzugt: E-Mail/);
+  assert.match(html, /Gewünscht: E-Mail/);
+  assert.match(html, /Interesse erkannt/);
+  assert.match(html, /mailto:test@example\.com/);
+  assert.match(html, /tel:\+49611123456/);
+  assert.match(html, /<details><summary>Anzeigen<\/summary>/);
+  assert.doesNotMatch(html, />qualified</);
+  assert.doesNotMatch(html, />intent_detected</);
 });
 
 test("protects dashboard HTML and API with no-store security headers", async (context) => {

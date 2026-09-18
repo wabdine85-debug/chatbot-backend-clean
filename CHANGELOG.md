@@ -6,6 +6,21 @@ Das Format orientiert sich grob an Keep a Changelog. Historische Aenderungen wer
 
 ## Unreleased
 
+### Added
+
+- Wisy-Lead-Bearbeitung auf den bestaetigten Ein-Personen-Ablauf reduziert:
+  - keine neue Datenbankmigration, Teamkonten, Zustaendigkeiten oder
+    Wiedervorlagen,
+  - fokussierte Detailansicht zum Pruefen einer Kontaktanfrage,
+  - eine einzige Aktion `Als an Noureen weitergeleitet markieren`,
+  - Wiederverwendung des bestehenden Status und Ereignisses
+    `handoff_created`,
+  - transaktionale und idempotente Speicherung,
+  - zeitlich begrenzter CSRF-Token und Same-Origin-Pruefung.
+
+- Den vereinfachten manuellen Uebergabeprozess und seine Sicherheitsgrenzen
+  unter `docs/WISY_LEAD_OPERATIONS.md` dokumentiert.
+
 ### Documentation
 
 - Erneuten Live-Abgleich der Shopify-Datenschutzerklaerung dokumentiert: Der
@@ -40,6 +55,16 @@ Das Format orientiert sich grob an Keep a Changelog. Historische Aenderungen wer
 - Dokumentation zur `/chat`-Route praezisiert: Der Website-Chat funktioniert laut Projektinhaber aktiv; das gelesene Risiko betrifft `/chat` als wartungs- bzw. legacy-verdaechtigen Pfad, waehrend das vorhandene Frontend auf `/api/chat/match` zeigt.
 
 ### Changed
+
+- Passwortgeschuetzte Wisy-Lead-Ansicht als responsive operative Arbeitsansicht
+  neu strukturiert: priorisierte Arbeitsliste, getrennte Ansichten fuer
+  Kontaktanfragen und Buchungen, klarere Einordnung anonymer Signale,
+  URL-stabile Filter und mobile Lead-Karten. Die Ansicht bleibt serverseitig,
+  ohne ausfuehrbares JavaScript und ohne neue Abhaengigkeit.
+- UI-Feinschliff der Arbeitsansicht: klare Bezeichnung `Wisy Leads`, sichtbarer
+  Datenstand, praezisere Link- und Referenztexte, maschinenlesbare Zeitangaben,
+  Skip-Link, vollstaendige Fokuszustaende und robustere Darstellung langer
+  Kontaktdaten.
 
 - Kundenansprache im produktiven Wisy-Widget fuer Hinweis, Kontaktformular,
   Erfolgs- und Fehlertexte sowie Eingabeplatzhalter konsequent auf die

@@ -157,9 +157,12 @@ Eine lokale Vercel-Verknuepfung existiert unter `.vercel/project.json`; das ist 
 
 Die Lead-Ansicht unter `/wisy-admin` ist durch ein separates
 `WISY_ADMIN_PASSWORD` geschuetzt; der Benutzername lautet `wisy`. Sie zeigt
-strukturierte Funnel-Daten und keine freien Chattexte. Ohne das mindestens 20
-Zeichen lange Passwort registriert das Backend die Route nicht. Details stehen
-in `docs/WISY_LEAD_TRACKING.md`.
+strukturierte Funnel-Daten und keine freien Chattexte. Kontaktanfragen koennen
+nach der tatsaechlichen manuellen Weiterleitung an Noureen als uebergeben
+markiert werden. Dabei werden nur der bereits vorhandene Status
+`handoff_created` und das gleichnamige Funnel-Ereignis verwendet; eine weitere
+Datenbankmigration oder Teamkonten sind nicht erforderlich. Details stehen in
+`docs/WISY_LEAD_TRACKING.md` und `docs/WISY_LEAD_OPERATIONS.md`.
 
 Das Shopify-Live-Widget kann eine Kontaktanfrage mit Name und mindestens
 E-Mail-Adresse oder Telefonnummer erfassen. Die Route akzeptiert Kontaktdaten

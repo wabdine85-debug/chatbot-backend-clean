@@ -101,7 +101,7 @@ Storefront-Origin, Eingabegrenzen, Kontaktformat und Einwilligung serverseitig
 und ist rate-limitiert. Freie Chattexte werden nicht angenommen.
 
 Das Widget bietet den Kontaktweg direkt in der Startauswahl, dauerhaft als
-dezente Concierge-Leiste ueber dem Eingabefeld und automatisch nach erkanntem
+dezente Beratungsleiste ueber dem Eingabefeld und automatisch nach erkanntem
 Kontakt- oder Buchungsintent an. Das Anliegen wird aus einer festen Liste
 gewaehlt; es gibt bewusst keinen freien Betreff. Bei erkanntem Termin-,
 Behandlungs- oder Preisintent wird die passende Auswahl vorbelegt. Die sichtbare
@@ -142,6 +142,14 @@ Browser-Sicherheitsheader. Der produktive Test bestaetigte HTTP 401 ohne
 Anmeldung, HTTP 200 mit Anmeldung sowie die Kontakt-Einwilligungsregel.
 Kennzahlen und Tabellenzeilen werden serverseitig gerendert, sodass die Ansicht
 nicht von einem separaten JavaScript-Nachladevorgang im Browser abhaengt.
+
+Die operative Bearbeitungslogik und ihre Sicherheitsgrenzen sind in
+`docs/WISY_LEAD_OPERATIONS.md` dokumentiert. Es gibt bewusst keine
+Teamkonten, Zustaendigkeiten oder Wiedervorlagen. Nach einer tatsaechlich
+erfolgten manuellen Weiterleitung an Noureen kann eine Kontaktanfrage mit dem
+vorhandenen Status und Ereignis `handoff_created` markiert werden. Die
+Aenderung ist CSRF-geschuetzt und transaktional; eine weitere
+Datenbankmigration ist nicht erforderlich.
 
 Der aktive Endpunkt `POST /api/wisy/events` nimmt ausschliesslich
 strukturierte CTA-Klicks aus erlaubten Storefront-Origins entgegen. Ziel-URLs

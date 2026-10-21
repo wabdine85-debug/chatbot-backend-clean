@@ -6,6 +6,14 @@ Das Format orientiert sich grob an Keep a Changelog. Historische Aenderungen wer
 
 ## Unreleased
 
+### Fixed
+
+- Im aktiven Wisy-n8n-Workflow werden Kosten- und Anrechnungsfragen zur
+  einzigen Beratung mit Hautanalyse (0,00 EUR) vor allgemeinen
+  Beratungsanfragen beantwortet. Reine Buchungsanfragen behalten ihren
+  bisherigen Zweig. Der lokale `wisy.json`-Export spiegelt die Regel,
+  traegt aber weiterhin die ID des deaktivierten Altworkflows.
+
 ### Added
 
 - Wisy-Lead-Bearbeitung auf den bestaetigten Ein-Personen-Ablauf reduziert:

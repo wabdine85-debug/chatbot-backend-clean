@@ -302,6 +302,37 @@
                 },
                 "conditions": [
                   {
+                    "id": "db634d49-6470-44dc-a4a0-e0eff1051680",
+                    "leftValue": "={{ ($json.body.query || $json.body.message || \"\").toLowerCase() }}",
+                    "rightValue": "^(?!.*(?:mitglied|member|premium|\\babo\\b|sepa)).*(?:beratung|hautanalyse|haut analyse)",
+                    "operator": {
+                      "type": "string",
+                      "operation": "regex"
+                    }
+                  },
+                  {
+                    "id": "7d95b34b-4711-4543-a220-f9f89b2dc6fe",
+                    "leftValue": "={{ ($json.body.query || $json.body.message || \"\").toLowerCase() }}",
+                    "rightValue": "preis|kosten|kostet|kostenlos|gratis|umsonst|bezahl|gebühr|entgelt|anrechn|angerechn|verrechn|gutschreib",
+                    "operator": {
+                      "type": "string",
+                      "operation": "regex"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
                     "id": "97ce0b5d-aa7f-40d5-a05d-16b39087ce8a",
                     "leftValue": "={{ ($json.body.query || $json.body.message || \"\").toLowerCase() }}",
                     "rightValue": "beratung|hautanalyse|haut analyse|professionelle hautanalyse|beratungstermin|erstberatung|analyse buchen|hautanalyse buchen",
@@ -1058,6 +1089,35 @@
       ],
       "id": "codex-respond-gutschein-klaerung-2026-07-16",
       "name": "Respond Gutschein Klärung"
+    },
+    {
+      "id": "fe0568ed-ccb6-4a04-a83b-efaef35dc720",
+      "name": "Edit Beratung Kosten",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        416,
+        368
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4c7a9fe6-6eed-4ac9-b25c-86582b2e10a2",
+              "name": "reply",
+              "value": "Der persönliche Beratungstermin mit Hautanalyse bei PDB Aesthetic Room kostet 0,00 €. Da für diesen Termin keine Beratungsgebühr anfällt, gibt es auch keinen Betrag, der auf eine spätere Behandlung angerechnet werden müsste.\n\nBeratungstermin buchen\nhttps://palaisdebeaute.de/products/professionelle-hautanalyse-beratung\n\nKontaktformular für individuelle Fragen\nhttps://palaisdebeaute.de/pages/contact",
+              "type": "string"
+            },
+            {
+              "id": "485c0dc3-7000-439b-a604-7ac7cb46979e",
+              "name": "session_id",
+              "value": "={{$json.body.session_id || $json.body.sessionId || \"\"}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      }
     }
   ],
   "connections": {
@@ -1154,6 +1214,13 @@
         [
           {
             "node": "Edit Kontakt",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Beratung Kosten",
             "type": "main",
             "index": 0
           }
@@ -1393,6 +1460,17 @@
         [
           {
             "node": "Respond Gutschein Klärung",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Beratung Kosten": {
+      "main": [
+        [
+          {
+            "node": "Respond Beratung",
             "type": "main",
             "index": 0
           }

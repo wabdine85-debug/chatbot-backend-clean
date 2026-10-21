@@ -103,6 +103,10 @@ Nach n8n-, AI-, Katalog- oder Conversion-Aenderungen sollten mindestens diese Fr
 | `Parken` | Antwort darf nur dokumentierte Parkinformationen verwenden. |
 | `Ich brauche Beratung` | Antwort zeigt Hautanalyse-Selbstterminierung und Kontaktformular. |
 | `Hautanalyse buchen` | Antwort zeigt Hautanalyse-Selbstterminierung und Kontaktformular. |
+| `kostet der beratungstermin` | Antwort nennt 0,00 EUR und den Buchungslink. |
+| `Ist die Beratung kostenlos?` | Antwort nennt 0,00 EUR. |
+| `Was kostet die Hautanalyse?` | Antwort nennt 0,00 EUR fuer denselben Termin. |
+| `Wird die Beratung bei einer Behandlung angerechnet?` | Antwort erklaert, dass keine Beratungsgebuehr anfaellt, die angerechnet werden koennte. |
 | `Ich moechte eine professionelle Hautanalyse` | Antwort zeigt Hautanalyse-Selbstterminierung und Kontaktformular. |
 | `Erzaehl mir mehr ueber Unterspritzungen` | Antwort nennt Botox/Botulinum/Faltenunterspritzung und Hyaluron Filler, sofern Links genannt werden nur dokumentierte Links verwenden. |
 | `Bietet ihr Botox oder Botulinum an?` | Antwort bestaetigt Botox/Botulinum nur auf Basis dokumentierter Leistung und verweist auf die dokumentierte Faltenunterspritzung. |

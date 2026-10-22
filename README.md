@@ -112,7 +112,11 @@ In `server.js` vorhanden:
 
 Das Shopify-Live-Widget nutzt `POST /api/wisy/chat` auf Render. Die aelteren
 lokalen Frontend-Dateien nutzen weiterhin `/api/chat/match` und sind getrennt
-zu bewerten.
+zu bewerten. Ein Abbild der beiden Wisy-Dateien des aktiven Shopify-Themes
+liegt unter `shopify-live-widget/assets/wisy.js` und
+`shopify-live-widget/snippets/wisy-chat.liquid`. Vor Theme-Aenderungen den
+Live-Stand erneut abrufen und abgleichen. Ein Git-Push veroeffentlicht diese
+Dateien nicht automatisch im Shopify-Theme.
 
 ## Frontend
 

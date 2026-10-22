@@ -104,9 +104,9 @@ Nach n8n-, AI-, Katalog- oder Conversion-Aenderungen sollten mindestens diese Fr
 | `Ich brauche Beratung` | Antwort zeigt Hautanalyse-Selbstterminierung und Kontaktformular. |
 | `Hautanalyse buchen` | Antwort zeigt Hautanalyse-Selbstterminierung und Kontaktformular. |
 | `kostet der beratungstermin` | Antwort nennt 0,00 EUR und den Buchungslink. |
-| `Ist die Beratung kostenlos?` | Antwort nennt 0,00 EUR. |
+| `Ist die Beratung kostenlos?` | Kurze Antwort nennt kostenlos (0 EUR) und nur die Terminbuchung. |
 | `Was kostet die Hautanalyse?` | Antwort nennt 0,00 EUR fuer denselben Termin. |
-| `Wird die Beratung bei einer Behandlung angerechnet?` | Antwort erklaert, dass keine Beratungsgebuehr anfaellt, die angerechnet werden koennte. |
+| `Wird die Beratung bei einer Behandlung angerechnet?` | Separater Anrechnungszweig erklaert, dass keine Beratungsgebuehr anfaellt, die angerechnet werden koennte. |
 | `Ich moechte eine professionelle Hautanalyse` | Antwort zeigt Hautanalyse-Selbstterminierung und Kontaktformular. |
 | `Erzaehl mir mehr ueber Unterspritzungen` | Antwort nennt Botox/Botulinum/Faltenunterspritzung und Hyaluron Filler, sofern Links genannt werden nur dokumentierte Links verwenden. |
 | `Bietet ihr Botox oder Botulinum an?` | Antwort bestaetigt Botox/Botulinum nur auf Basis dokumentierter Leistung und verweist auf die dokumentierte Faltenunterspritzung. |
@@ -141,6 +141,15 @@ Bei jeder n8n-Aenderung:
 - Speziell `email adresse` testen.
 - AI Agent auf Halluzinationen pruefen.
 - `katalog` Tool auf korrekte Links und korrekte Verfuegbarkeit pruefen.
+
+## Shopify-Live-Widget
+
+Nach Aenderungen am aktiven Shopify-Theme direkt im Store pruefen:
+
+- `Ist die Beratung kostenlos?` zeigt einen Buchungslink und oeffnet kein Kontaktformular automatisch.
+- Die feste Schaltflaeche `Persoenlichen Kontakt anfragen` / `Rueckruf oder E-Mail →` ist auf Desktop und Mobilgeraeten als klickbar erkennbar; ein Klick oeffnet das Formular.
+- Kontaktseiten-Links tragen `Kontakt aufnehmen`, Buchungslinks `Details & Reservierung`.
+- Fuer Theme-Aenderungen die Dateien des tatsaechlich aktiven Themes abrufen; die lokale Theme-Kopie unter `premium-system` ist kein verifizierter Live-Stand.
 
 ## Bekannte Testluecken
 

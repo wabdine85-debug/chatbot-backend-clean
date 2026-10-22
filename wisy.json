@@ -311,6 +311,37 @@
                     }
                   },
                   {
+                    "id": "da0e4fac-dfb1-4534-9126-0322439f55c1",
+                    "leftValue": "={{ ($json.body.query || $json.body.message || \"\").toLowerCase() }}",
+                    "rightValue": "anrechn|angerechn|verrechn|gutschreib",
+                    "operator": {
+                      "type": "string",
+                      "operation": "regex"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "db634d49-6470-44dc-a4a0-e0eff1051680",
+                    "leftValue": "={{ ($json.body.query || $json.body.message || \"\").toLowerCase() }}",
+                    "rightValue": "^(?!.*(?:mitglied|member|premium|\\babo\\b|sepa)).*(?:beratung|hautanalyse|haut analyse)",
+                    "operator": {
+                      "type": "string",
+                      "operation": "regex"
+                    }
+                  },
+                  {
                     "id": "7d95b34b-4711-4543-a220-f9f89b2dc6fe",
                     "leftValue": "={{ ($json.body.query || $json.body.message || \"\").toLowerCase() }}",
                     "rightValue": "preis|kosten|kostet|kostenlos|gratis|umsonst|bezahl|gebühr|entgelt|anrechn|angerechn|verrechn|gutschreib",
@@ -1105,7 +1136,36 @@
             {
               "id": "4c7a9fe6-6eed-4ac9-b25c-86582b2e10a2",
               "name": "reply",
-              "value": "Der persönliche Beratungstermin mit Hautanalyse bei PDB Aesthetic Room kostet 0,00 €. Da für diesen Termin keine Beratungsgebühr anfällt, gibt es auch keinen Betrag, der auf eine spätere Behandlung angerechnet werden müsste.\n\nBeratungstermin buchen\nhttps://palaisdebeaute.de/products/professionelle-hautanalyse-beratung\n\nKontaktformular für individuelle Fragen\nhttps://palaisdebeaute.de/pages/contact",
+              "value": "Der persönliche Beratungstermin mit Hautanalyse bei PDB Aesthetic Room ist kostenlos (0 €).\n\nBeratungstermin buchen\nhttps://palaisdebeaute.de/products/professionelle-hautanalyse-beratung",
+              "type": "string"
+            },
+            {
+              "id": "485c0dc3-7000-439b-a604-7ac7cb46979e",
+              "name": "session_id",
+              "value": "={{$json.body.session_id || $json.body.sessionId || \"\"}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "690cf902-b48e-4fad-8f5a-f2046d9c1c41",
+      "name": "Edit Beratung Anrechnung",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        416,
+        560
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "70f4b6ba-3256-49ea-b511-c1c705a45caf",
+              "name": "reply",
+              "value": "Der persönliche Beratungstermin mit Hautanalyse bei PDB Aesthetic Room ist kostenlos. Deshalb fällt keine Beratungsgebühr an, die bei einer späteren Behandlung angerechnet werden könnte.\n\nBeratungstermin buchen\nhttps://palaisdebeaute.de/products/professionelle-hautanalyse-beratung",
               "type": "string"
             },
             {
@@ -1214,6 +1274,13 @@
         [
           {
             "node": "Edit Kontakt",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Beratung Anrechnung",
             "type": "main",
             "index": 0
           }
@@ -1467,6 +1534,17 @@
       ]
     },
     "Edit Beratung Kosten": {
+      "main": [
+        [
+          {
+            "node": "Respond Beratung",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Beratung Anrechnung": {
       "main": [
         [
           {

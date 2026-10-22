@@ -16,20 +16,28 @@ function route(query) {
   return outputs[branch < 0 ? rules.length : branch][0].node;
 }
 
-test("consultation cost and credit questions receive the documented free price", () => {
+test("consultation cost questions receive one concise booking answer", () => {
   for (const query of [
     "kostet der beratungstermin",
     "Ist die Beratung kostenlos?",
     "Was kostet die Hautanalyse?",
-    "Wird die Beratung bei einer Behandlung angerechnet?",
   ]) {
     assert.equal(route(query), "Edit Beratung Kosten", query);
   }
   const node = workflow.nodes.find((item) => item.name === "Edit Beratung Kosten");
   const reply = node.parameters.assignments.assignments.find((item) => item.name === "reply").value;
-  assert.match(reply, /0,00 €/);
-  assert.match(reply, /keine Beratungsgebühr/);
+  assert.match(reply, /kostenlos \(0 €\)/);
+  assert.doesNotMatch(reply, /angerechnet|Kontaktformular/);
   assert.equal(workflow.connections["Edit Beratung Kosten"].main[0][0].node, "Respond Beratung");
+});
+
+test("credit questions receive the separate explanation", () => {
+  assert.equal(route("Wird die Beratung bei einer Behandlung angerechnet?"), "Edit Beratung Anrechnung");
+  const node = workflow.nodes.find((item) => item.name === "Edit Beratung Anrechnung");
+  const reply = node.parameters.assignments.assignments.find((item) => item.name === "reply").value;
+  assert.match(reply, /keine Beratungsgebühr/);
+  assert.match(reply, /angerechnet/);
+  assert.equal(workflow.connections["Edit Beratung Anrechnung"].main[0][0].node, "Respond Beratung");
 });
 
 test("booking and unrelated price questions retain their existing branches", () => {

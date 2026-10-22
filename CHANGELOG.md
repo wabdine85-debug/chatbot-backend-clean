@@ -8,6 +8,11 @@ Das Format orientiert sich grob an Keep a Changelog. Historische Aenderungen wer
 
 ### Fixed
 
+- Kostenfragen zur Beratung erhalten jetzt eine kurze Antwort mit einem
+  Buchungsweg; Anrechnungsfragen haben einen eigenen Zweig. Die feste
+  Kontakt-Schaltflaeche und Linkbeschriftungen im Shopify-Live-Widget
+  wurden klarer gestaltet; die zweite Zeile lautet `Rueckruf oder E-Mail →`.
+  Ein Abbild der zwei aktiven Shopify-Theme-Dateien liegt nun im Repository.
 - Im aktiven Wisy-n8n-Workflow werden Kosten- und Anrechnungsfragen zur
   einzigen Beratung mit Hautanalyse (0,00 EUR) vor allgemeinen
   Beratungsanfragen beantwortet. Reine Buchungsanfragen behalten ihren
